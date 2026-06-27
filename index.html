@@ -171,27 +171,26 @@
     setTimeout(()=> document.getElementById('copyMsg').innerText='', 2000);
   }
 
-// ===== IKLAN +100 POIN =====
+// ===== IKLAN +100 POIN ANTI DISKIP =====
 document.getElementById('adBtn').onclick = () => {
-  appMsg.innerText = 'Muat iklan...';
+  appMsg.innerText = 'Buka iklan...';
 
-  // CEK DULU SCRIPT MONETAG NYA MASUK APA GAK
-  if(typeof show_254068 !== 'function'){ // <-- GANTI 1234567 JADI ZONE ID LU
+  if(typeof show_254068 !== 'function'){ // GANTI 1234567
     appMsg.innerText = 'ERROR: Zone ID salah atau AdBlock aktif';
     return;
   }
+  
+  show_254068(); // Buka tab doang, gak nunggu .then()
 
-  // KALO MASUK, JALANIN IKLAN. KALO SELESAI BARU KASIH POIN
-  show_254068().then(async () => {
+  // LANGSUNG KASIH POIN 1.5 DETIK SETELAH KLIK
+  setTimeout(async () => {
     const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
     await supabase.from('profiles').update({ points: p.points + 100 }).eq('id', userId);
-    appMsg.innerText = 'Mantap! +100 Poin masuk 🔥';
+    appMsg.innerText = '+100 Poin masuk! 🔥';
     loadProfile();
-  }).catch(() => { 
-    appMsg.innerText = 'Iklan kosong / di-skip'; 
-  });
+  }, 1500); // 1.5 detik jeda
 }
-
+  
   // ===== CHECK-IN +50 POIN =====
   document.getElementById('checkinBtn').onclick = async () => {
     const today = new Date().toISOString().split('T')[0];
