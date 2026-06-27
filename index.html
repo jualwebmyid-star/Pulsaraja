@@ -2,31 +2,87 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PulsaRaja</title>
-  <script src="https://unpkg.com/@supabase/supabase-js@2"></script> <!-- GAK PAKE IMPORT LAGI -->
+  <!-- KUNCI: PAKE CDN.JSDELIVR -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 text-slate-200 p-4 max-w-md mx-auto">
-  <div id="authBox" class="bg-slate-800 p-6 rounded-2xl">
-    <h1 class="text-3xl font-bold text-yellow-400 text-center">PulsaRaja</h1>
-    <input id="email" type="email" placeholder="Email" class="w-full bg-slate-700 p-3 rounded-lg mt-4">
-    <input id="pass" type="password" placeholder="Password min 6" class="w-full bg-slate-700 p-3 rounded-lg mt-2">
-    <button id="signupBtn" class="w-full bg-slate-600 font-bold py-3 rounded-lg mt-3">Daftar Gratis</button>
+<body class="bg-slate-900 text-slate-200 font-sans p-4 max-w-md mx-auto">
+  
+  <div id="authBox" class="bg-slate-800 p-6 rounded-2xl shadow-lg">
+    <h1 class="text-3xl font-bold text-yellow-400 text-center mb-4">PulsaRaja 🔥</h1>
+    <input id="email" type="email" placeholder="Email" class="w-full bg-slate-700 p-3 rounded-lg mb-2">
+    <input id="pass" type="password" placeholder="Password min 6" class="w-full bg-slate-700 p-3 rounded-lg mb-3">
+    <button id="loginBtn" class="w-full bg-blue-600 font-bold py-3 rounded-lg mb-2">Login</button>
+    <button id="signupBtn" class="w-full bg-slate-600 font-bold py-3 rounded-lg">Daftar Gratis</button>
     <p id="authMsg" class="text-red-400 text-sm text-center mt-2"></p>
   </div>
 
+  <div id="appBox" class="hidden">
+    <div class="bg-slate-800 p-6 rounded-2xl text-center mb-4">
+      <p class="text-slate-400">Poin Kamu</p>
+      <p id="points" class="text-5xl font-bold text-yellow-400">0</p>
+    </div>
+    <button id="adBtn" class="w-full bg-green-600 font-bold py-4 rounded-xl mb-3">Nonton Iklan +100 Poin</button>
+    <button id="logoutBtn" class="w-full bg-red-600 font-bold py-2 rounded-lg text-sm">Logout</button>
+    <p id="appMsg" class="text-center text-sm mt-3"></p>
+  </div>
+
 <script>
-  const SUPABASE_URL = 'https://PASTE_URL_LU_DISINI.supabase.co' 
-  const SUPABASE_KEY = 'PASTE_ANON_KEY_LU_DISINI' 
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) // <-- CARA LAMA TAPI AMAN
+  // GANTI 2 INI
+  const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
+  const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
+  
+  // KUNCI: PAKE window.supabase
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) 
+
+  const authBox = document.getElementById('authBox');
+  const appBox = document.getElementById('appBox');
+  const authMsg = document.getElementById('authMsg');
+  const appMsg = document.getElementById('appMsg');
 
   document.getElementById('signupBtn').onclick = async () => {
-    document.getElementById('authMsg').innerText = 'Daftar...'; // Kalo ini muncul = tombol hidup
+    authMsg.innerText = 'Daftar...'; // Kalo ini muncul = udah beres
     const { error } = await supabase.auth.signUp({ 
       email: document.getElementById('email').value, 
       password: document.getElementById('pass').value 
     });
-    document.getElementById('authMsg').innerText = error? 'ERROR: ' + error.message : 'Daftar berhasil!';
+    authMsg.innerText = error? 'ERROR: ' + error.message : 'Daftar berhasil! Coba login.';
+  }
+
+  document.getElementById('loginBtn').onclick = async () => {
+    authMsg.innerText = 'Login...';
+    const { error } = await supabase.auth.signInWithPassword({ 
+      email: document.getElementById('email').value, 
+      password: document.getElementById('pass').value 
+    });
+    authMsg.innerText = error? 'ERROR: ' + error.message : '';
+  }
+
+  document.getElementById('logoutBtn').onclick = async () => await supabase.auth.signOut();
+
+  supabase.auth.onAuthStateChange(async (_event, session) => {
+    if(session) { 
+      authBox.classList.add('hidden'); 
+      appBox.classList.remove('hidden'); 
+      loadProfile(); 
+    } else { 
+      authBox.classList.remove('hidden'); 
+      appBox.classList.add('hidden'); 
+    }
+  });
+
+  async function loadProfile() {
+    const resUser = await supabase.auth.getUser(); 
+    const user = resUser.data.user; 
+    if(!user) return;
+    const res = await supabase.from('profiles').select('points').eq('id', user.id).single(); 
+    document.getElementById('points').innerText = res.data.points.toLocaleString('id-ID');
+  }
+  
+  document.getElementById('adBtn').onclick = async () => {
+    appMsg.innerText = '+100 Poin Simulasi';
   }
 </script>
 </body>
