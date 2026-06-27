@@ -135,11 +135,11 @@
   });
 
   // DAFTARIN SERVICE WORKER
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js', { scope: '/' });
-    });
-  }
+// DAFTARIN SERVICE WORKER - PAKE VERSI INI
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js'); // Buang / nya juga
+}
+  
 </script>
 </body>
 </html>
