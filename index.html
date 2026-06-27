@@ -2,25 +2,36 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Test Supabase</title>
-  <script src="./supabase.js"></script> 
+  <title>PulsaRaja FIX</title>
   <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- KUNCI: IMPORTMAP BIAR GAK DI BLOCK -->
+  <script type="importmap">
+  {
+    "imports": {
+      "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.45.4"
+    }
+  }
+  </script>
 </head>
 <body class="bg-slate-900 text-white p-4 max-w-md mx-auto">
   <div class="bg-slate-800 p-6 rounded-2xl">
-    <h1 class="text-2xl font-bold text-yellow-400">Test Supabase</h1>
-    <button id="tesBtn" class="w-full bg-green-600 font-bold py-3 rounded-lg mt-3">TES KONEK SUPABASE</button>
+    <h1 class="text-2xl font-bold text-yellow-400">Test Supabase FIX</h1>
+    <button id="tesBtn" class="w-full bg-green-600 font-bold py-3 rounded-lg mt-3">TES KONEK</button>
     <p id="msg" class="text-center mt-2 text-yellow-400"></p>
   </div>
 
-<script>
+<script type="module">
+  // KUNCI: IMPORT LANGSUNG, GAK PAKE WINDOW.SUPABASE LAGI
+  import { createClient } from '@supabase/supabase-js'
+
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
   
   document.getElementById('tesBtn').onclick = async () => {
     document.getElementById('msg').innerText = 'Ngetes...';
-    const { data, error } = await supabase.from('profiles').select('count').limit(1);
+    const { data, error } = await supabase.auth.getSession();
     if(error) {
       document.getElementById('msg').innerText = 'ERROR: ' + error.message;
     } else {
