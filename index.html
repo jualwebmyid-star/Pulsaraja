@@ -111,9 +111,10 @@
   }
 
   // KUNCI PWA: DAFTARIN SERVICE WORKER BIAR BISA INSTALL
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./sw.js');
-  }
-</script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js', { scope: '/' }) // Pake / bukan ./
+  });
+}</script>
 </body>
 </html>
