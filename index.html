@@ -1,30 +1,31 @@
 <!DOCTYPE html>
-<!-- v2.1 -->
+<!-- v3.0 NO CDN -->
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>PulsaRaja V2</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <title>PulsaRaja V3</title>
+  <script src="./supabase.js"></script> <!-- KUNCI: FILE LOKAL -->
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-white p-4 max-w-md mx-auto">
   <div class="bg-slate-800 p-6 rounded-2xl">
-    <h1 class="text-3xl font-bold text-yellow-400 text-center">TEST VERCEL</h1>
-    <input id="email" type="email" placeholder="Email" class="w-full bg-slate-700 p-3 rounded-lg mt-4">
-    <input id="pass" type="password" placeholder="Password" class="w-full bg-slate-700 p-3 rounded-lg mt-2">
+    <h1 class="text-3xl font-bold text-yellow-400 text-center">TEST V3</h1>
     <button id="tesBtn" class="w-full bg-green-600 font-bold py-3 rounded-lg mt-3">TES KLIK</button>
     <p id="msg" class="text-center mt-2"></p>
   </div>
 
 <script>
+  // KODE DUMMY DULU. KITA TES TOMBOLNYA AJA
+  document.getElementById('tesBtn').onclick = () => {
+    document.getElementById('msg').innerText = 'TOMBOL HIDUP! FILE LOKAL OKE';
+    alert('TOMBOL HIDUP! FILE LOKAL OKE');
+  }
+
+  // KALO TOMBOL ATAS UDAH HIDUP, BARU AKTIFIN INI
+  /*
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-  
-  document.getElementById('tesBtn').onclick = () => {
-    document.getElementById('msg').innerText = 'TOMBOL HIDUP BOS! VERCEL OKE';
-    alert('TOMBOL HIDUP BOS! VERCEL OKE');
-  }
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)  */
 </script>
 </body>
 </html>
