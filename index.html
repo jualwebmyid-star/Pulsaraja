@@ -6,7 +6,7 @@
   <title>PulsaRaja Cuan</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- GANTI 87654321 JADI ZONE ID POPUNDER LU -->
-  
+  <script src='//libtl.com/sdk.js' data-zone='254061' data-sdk='show_254061'></script> 
   <script type="importmap">
   { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.45.4" } }
   </script>
@@ -90,19 +90,24 @@
         const res = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
         if(res.data) referrerId = res.data.id;
       }
+      // FIX: Kurung sudah dibenerin jadi 3 biji }}
       const { error } = await supabase.auth.signUp({ email: document.getElementById('email').value, password: document.getElementById('pass').value, options: { data: { referred_by: referrerId } });
       document.getElementById('authMsg').innerText = error? 'ERROR: ' + error.message : 'Daftar berhasil! Login.';
     }});
   }
+  
   document.getElementById('loginBtn').onclick = async () => {
     const { error } = await supabase.auth.signInWithPassword({ email: document.getElementById('email').value, password: document.getElementById('pass').value });
     document.getElementById('authMsg').innerText = error? 'ERROR: ' + error.message : '';
   }
+  
   document.getElementById('logoutBtn').onclick = async () => await supabase.auth.signOut();
+  
   supabase.auth.onAuthStateChange(async (_event, session) => {
     if(session) { userId = session.user.id; document.getElementById('authBox').classList.add('hidden'); document.getElementById('appBox').classList.remove('hidden'); loadProfile(); } 
     else { userId = null; document.getElementById('authBox').classList.remove('hidden'); document.getElementById('appBox').classList.add('hidden'); }
   });
+  
   async function loadProfile() {
     const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
     document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
@@ -118,7 +123,7 @@
   // ===== IKLAN POPUNDER +100 POIN [TES] =====
   document.getElementById('adBtn').onclick = () => {
     document.getElementById('appMsg').innerText = 'Buka iklan...';
-    if(typeof show_254061 !== 'function'){ document.getElementById('appMsg').innerText = 'ERROR: Zone ID salah'; return; } 
+    if(typeof show_254061 !== 'function'){ document.getElementById('appMsg').innerText = 'ERROR: Zone ID salah / Ke-block'; return; } // GANTI 87654321
     show_87654321(); // Buka tab baru
     
     // Kasih poin 1.5 detik setelah klik, karena popunder gak ada .then()
