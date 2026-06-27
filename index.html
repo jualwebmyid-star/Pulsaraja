@@ -7,7 +7,6 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-slate-900 text-slate-200 font-sans p-4 max-w-md mx-auto">
-
   <div id="authBox" class="bg-slate-800 p-6 rounded-2xl shadow-lg">
     <h1 class="text-3xl font-bold text-yellow-400 text-center mb-4">PulsaRaja 🔥</h1>
     <input id="email" type="email" placeholder="Email" class="w-full bg-slate-700 p-3 rounded-lg mb-2">
@@ -16,7 +15,6 @@
     <button id="signupBtn" class="w-full bg-slate-600 hover:bg-slate-500 font-bold py-3 rounded-lg">Daftar Gratis</button>
     <p id="authMsg" class="text-red-400 text-sm text-center mt-2"></p>
   </div>
-
   <div id="appBox" class="hidden">
     <div class="bg-slate-800 p-6 rounded-2xl shadow-lg mb-4 text-center">
       <p class="text-slate-400">Poin Kamu</p>
@@ -35,120 +33,65 @@
     <button id="logoutBtn" class="w-full bg-red-600 hover:bg-red-700 font-bold py-2 rounded-lg text-sm">Logout</button>
     <p id="appMsg" class="text-center text-sm mt-3"></p>
   </div>
-
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-  
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-
   document.addEventListener('DOMContentLoaded', () => {
-    console.log("JS Jalan Bos");
-
-    const authBox = document.getElementById('authBox');
-    const appBox = document.getElementById('appBox');
-    const authMsg = document.getElementById('authMsg');
-    const appMsg = document.getElementById('appMsg');
-
+    const authBox = document.getElementById('authBox'); const appBox = document.getElementById('appBox');
+    const authMsg = document.getElementById('authMsg'); const appMsg = document.getElementById('appMsg');
     document.getElementById('signupBtn').onclick = async () => {
       authMsg.innerText = 'Daftar...';
       const refCode = prompt('Punya kode referral? Kosongin aja kalo gak ada');
       let referrerId = null;
       if(refCode) {
         const res = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
-        if(res.data) referrerId = res.data.id;
-        else { authMsg.innerText = 'Kode referral salah'; return; }
+        if(res.data) referrerId = res.data.id; else authMsg.innerText = 'Kode referral salah, skip aja';
       }
-      const { error } = await supabase.auth.signUp({
-        email: document.getElementById('email').value, 
-        password: document.getElementById('pass').value,
-        options: { data: { referred_by: referrerId } }
-      });
+      const { error } = await supabase.auth.signUp({ email: document.getElementById('email').value, password: document.getElementById('pass').value, options: { data: { referred_by: referrerId } });
       authMsg.innerText = error? 'ERROR: ' + error.message : 'Daftar berhasil! Coba login.';
     }
-
     document.getElementById('loginBtn').onclick = async () => {
       authMsg.innerText = 'Login...';
-      const { error } = await supabase.auth.signInWithPassword({ 
-        email: document.getElementById('email').value, 
-        password: document.getElementById('pass').value 
-      });
+      const { error } = await supabase.auth.signInWithPassword({ email: document.getElementById('email').value, password: document.getElementById('pass').value });
       authMsg.innerText = error? 'ERROR: ' + error.message : '';
     }
-
     document.getElementById('logoutBtn').onclick = async () => await supabase.auth.signOut();
-
     supabase.auth.onAuthStateChange(async (_event, session) => {
-      if(session) {
-        authBox.classList.add('hidden');
-        appBox.classList.remove('hidden');
-        loadProfile();
-      } else {
-        authBox.classList.remove('hidden');
-        appBox.classList.add('hidden');
-      }
+      if(session) { authBox.classList.add('hidden'); appBox.classList.remove('hidden'); loadProfile(); } 
+      else { authBox.classList.remove('hidden'); appBox.classList.add('hidden'); }
     });
-
     async function loadProfile() {
-      const resUser = await supabase.auth.getUser(); // CARA AMAN
-      const user = resUser.data.user;
-      if(!user) return;
-      
-      const res = await supabase.from('profiles').select('*').eq('id', user.id).single();
-      const data = res.data;
-      
+      const resUser = await supabase.auth.getUser(); const user = resUser.data.user; if(!user) return;
+      const res = await supabase.from('profiles').select('*').eq('id', user.id).single(); const data = res.data;
       const today = new Date().toISOString().slice(0,10);
-      if (data.last_reset !== today) {
-        await supabase.from('profiles').update({ ad_count_today: 0, last_reset: today }).eq('id', user.id);
-        data.ad_count_today = 0;
-      }
-
+      if (data.last_reset !== today) { await supabase.from('profiles').update({ ad_count_today: 0, last_reset: today }).eq('id', user.id); data.ad_count_today = 0; }
       document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
       document.getElementById('status').innerText = `Status: ${data.is_premium? 'PREMIUM' : 'FREE'} | Iklan: ${data.ad_count_today}/5`;
       document.getElementById('myRefCode').value = data.referral_code;
-      
-      const adBtn = document.getElementById('adBtn');
-      adBtn.disabled = data.ad_count_today >= 5 && !data.is_premium;
-      adBtn.classList.toggle('bg-slate-500', adBtn.disabled);
+      const adBtn = document.getElementById('adBtn'); adBtn.disabled = data.ad_count_today >= 5 && !data.is_premium; adBtn.classList.toggle('bg-slate-500', adBtn.disabled);
     }
-
     document.getElementById('adBtn').onclick = async () => {
-      const resUser = await supabase.auth.getUser();
-      const user = resUser.data.user;
-      const res = await supabase.from('profiles').select('*').eq('id', user.id).single();
-      const data = res.data;
+      const resUser = await supabase.auth.getUser(); const user = resUser.data.user;
+      const res = await supabase.from('profiles').select('*').eq('id', user.id).single(); const data = res.data;
       if(data.ad_count_today >= 5 && !data.is_premium) return appMsg.innerText = 'Limit FREE 5x/hari.';
-      
-      appMsg.innerText = 'Nonton iklan 3 detik...';
-      setTimeout(async () => {
+      appMsg.innerText = 'Nonton iklan 3 detik...'; setTimeout(async () => {
         await supabase.from('profiles').update({ points: data.points + 100, ad_count_today: data.ad_count_today + 1 }).eq('id', user.id);
-        await supabase.from('point_logs').insert({ user_id: user.id, points: 100, source: 'ad' });
-        appMsg.innerText = '+100 Poin masuk!';
-        loadProfile();
+        await supabase.from('point_logs').insert({ user_id: user.id, points: 100, source: 'ad' }); appMsg.innerText = '+100 Poin masuk!'; loadProfile();
       }, 3000);
     }
-
     document.getElementById('withdrawBtn').onclick = async () => {
-      const phone = prompt('Masukkan No HP 08xxx untuk pulsa 10rb:');
-      if(!phone || phone.length < 10) return;
-      const resUser = await supabase.auth.getUser();
-      const user = resUser.data.user;
-      const res = await supabase.from('profiles').select('points').eq('id', user.id).single();
-      const data = res.data;
+      const phone = prompt('Masukkan No HP 08xxx untuk pulsa 10rb:'); if(!phone || phone.length < 10) return;
+      const resUser = await supabase.auth.getUser(); const user = resUser.data.user;
+      const res = await supabase.from('profiles').select('points').eq('id', user.id).single(); const data = res.data;
       if(data.points < 10000) return appMsg.innerText = 'Poin kurang bos, minimal 10.000';
-      
       await supabase.from('profiles').update({ points: data.points - 10000 }).eq('id', user.id);
       await supabase.from('withdraws').insert({ user_id: user.id, phone, amount: 10000 });
       await supabase.from('point_logs').insert({ user_id: user.id, points: -10000, source: 'withdraw' });
-      appMsg.innerText = `Permintaan pulsa ke ${phone} diproses 1x24 jam`;
-      loadProfile();
+      appMsg.innerText = `Permintaan pulsa ke ${phone} diproses 1x24 jam`; loadProfile();
     }
-
-    document.getElementById('copyBtn').onclick = () => {
-      navigator.clipboard.writeText(document.getElementById('myRefCode').value);
-      appMsg.innerText = 'Kode referral disalin!';
-    }
+    document.getElementById('copyBtn').onclick = () => { navigator.clipboard.writeText(document.getElementById('myRefCode').value); appMsg.innerText = 'Kode referral disalin!'; }
   });
 </script>
 </body>
