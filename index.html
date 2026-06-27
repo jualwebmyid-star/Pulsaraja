@@ -5,26 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PulsaRaja Cuan</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- GANTI 87654321 JADI ZONE ID POPUNDER LU -->
-  <script src='//libtl.com/sdk.js' data-zone='254061' data-sdk='show_254061'></script> 
+  <!-- STEP 1: GANTI ZONE ID DI SINI -->
+  <script src='//libtl.com/sdk.js' data-zone='254068' data-sdk='show_254068'></script> 
   <script type="importmap">
-  { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.45.4" } }
+  {
+    "imports": {
+      "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.45.4"
+    }
+  }
   </script>
-  <style>.modal-bg { backdrop-filter: blur(4px); } </style>
+  <style>.modal-bg { backdrop-filter: blur(4px); }</style>
 </head>
 <body class="bg-slate-900 text-slate-200 font-sans">
 
-  <div class="p-4 max-w-md mx-auto">
-    <div id="authBox" class="bg-slate-800 p-6 rounded-2xl shadow-lg mt-10">
-      <h1 class="text-3xl font-bold text-yellow-400 text-center mb-4">PulsaRaja 🔥 [TES]</h1>
-      <input id="email" type="email" placeholder="Email" class="w-full bg-slate-700 p-3 rounded-lg mb-2">
-      <input id="pass" type="password" placeholder="Password min 6" class="w-full bg-slate-700 p-3 rounded-lg mb-3">
-      <button id="loginBtn" class="w-full bg-blue-600 font-bold py-3 rounded-lg mb-2">Login</button>
-      <button id="signupBtn" class="w-full bg-slate-600 font-bold py-3 rounded-lg">Daftar Gratis</button>
+  <main class="p-4 max-w-md mx-auto">
+    <section id="authBox" class="bg-slate-800 p-6 rounded-2xl shadow-lg mt-10">
+      <h1 class="text-3xl font-bold text-yellow-400 text-center mb-4">PulsaRaja 🔥</h1>
+      <input id="email" type="email" placeholder="Email" class="w-full bg-slate-700 p-3 rounded-lg mb-2 outline-none focus:ring-2 focus:ring-blue-500">
+      <input id="pass" type="password" placeholder="Password min 6" class="w-full bg-slate-700 p-3 rounded-lg mb-3 outline-none focus:ring-2 focus:ring-blue-500">
+      <button id="loginBtn" class="w-full bg-blue-600 font-bold py-3 rounded-lg mb-2 hover:bg-blue-700">Login</button>
+      <button id="signupBtn" class="w-full bg-slate-600 font-bold py-3 rounded-lg hover:bg-slate-500">Daftar Gratis</button>
       <p id="authMsg" class="text-red-400 text-sm text-center mt-2 h-5"></p>
-    </div>
+    </section>
 
-    <div id="appBox" class="hidden">
+    <section id="appBox" class="hidden">
       <div class="bg-slate-800 p-6 rounded-2xl text-center mb-4 shadow-lg">
         <p class="text-slate-400">Poin Kamu</p>
         <p id="points" class="text-5xl font-bold text-yellow-400">0</p>
@@ -39,115 +43,163 @@
         <p id="copyMsg" class="text-xs text-center mt-1 h-4 text-green-400"></p>
       </div>
 
-      <button id="adBtn" class="w-full bg-green-600 font-bold py-4 rounded-xl mb-3">Nonton Iklan +100 Poin [POP]</button>
-      <button id="wdBtn" class="w-full bg-yellow-500 text-black font-bold py-3 rounded-xl mb-3">Withdraw 10.000 Poin</button>
-      <button id="logoutBtn" class="w-full bg-red-600 font-bold py-2 rounded-lg text-sm">Logout</button>
+      <button id="adBtn" class="w-full bg-green-600 font-bold py-4 rounded-xl mb-3 hover:bg-green-700">Nonton Iklan +100 Poin</button>
+      <button id="wdBtn" class="w-full bg-yellow-500 text-black font-bold py-3 rounded-xl mb-3 hover:bg-yellow-400">Withdraw 10.000 Poin</button>
+      <button id="logoutBtn" class="w-full bg-red-600 font-bold py-2 rounded-lg text-sm hover:bg-red-700">Logout</button>
       <p id="appMsg" class="text-center text-sm mt-3 text-yellow-400 h-5"></p>
-    </div>
-  </div>
+    </section>
+  </main>
 
-  <!-- MODAL -->
+  <!-- MODAL POPUP -->
   <div id="modal" class="hidden fixed inset-0 bg-black/60 modal-bg flex items-center justify-center p-4 z-50">
-    <div class="bg-slate-800 w-full max-w-sm rounded-2xl p-6">
+    <div class="bg-slate-800 w-full max-w-sm rounded-2xl p-6 shadow-xl">
       <p id="modalTitle" class="font-bold text-lg mb-2 text-yellow-400"></p>
       <p id="modalText" class="text-slate-300 mb-4"></p>
-      <div id="modalInputBox" class="hidden mb-4"><input id="modalInput" type="text" class="w-full bg-slate-700 p-2 rounded-lg"></div>
+      <div id="modalInputBox" class="hidden mb-4"><input id="modalInput" type="text" placeholder="..." class="w-full bg-slate-700 p-2 rounded-lg outline-none"></div>
       <div class="flex gap-2">
-        <button id="modalCancel" class="w-full bg-slate-600 font-bold py-2 rounded-lg">Batal</button>
-        <button id="modalOk" class="w-full bg-yellow-500 text-black font-bold py-2 rounded-lg">OK</button>
+        <button id="modalCancel" class="w-full bg-slate-600 font-bold py-2 rounded-lg hover:bg-slate-500">Batal</button>
+        <button id="modalOk" class="w-full bg-yellow-500 text-black font-bold py-2 rounded-lg hover:bg-yellow-400">OK</button>
       </div>
     </div>
   </div>
 
 <script type="module">
   import { createClient } from '@supabase/supabase-js'
+  
+  // STEP 2: GANTI URL + KEY DI SINI
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
   let userId = null;
 
-  // ===== MODAL =====
+  // ===== FUNGSI MODAL =====
   const modal = document.getElementById('modal');
   const modalTitle = document.getElementById('modalTitle');
   const modalText = document.getElementById('modalText');
   const modalInputBox = document.getElementById('modalInputBox');
   const modalInput = document.getElementById('modalInput');
   let modalCallback = null;
+
   function showModal({title, text, input=false, callback}) {
-    modalTitle.innerText = title; modalText.innerText = text;
-    modalInputBox.classList.toggle('hidden',!input); modalInput.value = '';
-    modal.classList.remove('hidden'); modalCallback = callback;
+    modalTitle.innerText = title;
+    modalText.innerText = text;
+    modalInputBox.classList.toggle('hidden', !input);
+    modalInput.value = '';
+    modal.classList.remove('hidden');
+    modalCallback = callback;
   }
-  function hideModal() { modal.classList.add('hidden'); modalCallback = null; }
+  function hideModal() {
+    modal.classList.add('hidden');
+    modalCallback = null;
+  }
   document.getElementById('modalOk').onclick = () => { if(modalCallback) modalCallback(modalInput.value); hideModal(); }
   document.getElementById('modalCancel').onclick = hideModal;
 
-  // ===== AUTH =====
+  // ===== AUTH LOGIC =====
   document.getElementById('signupBtn').onclick = async () => {
-    showModal({title: 'Kode Referral', text: 'Kosongkan jika tidak ada', input: true, callback: async (refCode) => {
-      let referrerId = null;
-      if(refCode && refCode.trim()!== ''){
-        const res = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
-        if(res.data) referrerId = res.data.id;
+    showModal({
+      title: 'Kode Referral', 
+      text: 'Kosongkan jika tidak ada', 
+      input: true, 
+      callback: async (refCode) => {
+        let referrerId = null;
+        if(refCode && refCode.trim() !== ''){
+          const { data } = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
+          if(data) referrerId = data.id;
+        }
+        const { error } = await supabase.auth.signUp({ 
+          email: document.getElementById('email').value, 
+          password: document.getElementById('pass').value, 
+          options: { data: { referred_by: referrerId } 
+        });
+        document.getElementById('authMsg').innerText = error ? 'ERROR: ' + error.message : 'Daftar berhasil! Silakan Login.';
       }
-      // FIX: Kurung sudah dibenerin jadi 3 biji }}
-      const { error } = await supabase.auth.signUp({ email: document.getElementById('email').value, password: document.getElementById('pass').value, options: { data: { referred_by: referrerId } });
-      document.getElementById('authMsg').innerText = error? 'ERROR: ' + error.message : 'Daftar berhasil! Login.';
-    }});
+    });
   }
   
   document.getElementById('loginBtn').onclick = async () => {
-    const { error } = await supabase.auth.signInWithPassword({ email: document.getElementById('email').value, password: document.getElementById('pass').value });
-    document.getElementById('authMsg').innerText = error? 'ERROR: ' + error.message : '';
+    const { error } = await supabase.auth.signInWithPassword({ 
+      email: document.getElementById('email').value, 
+      password: document.getElementById('pass').value 
+    });
+    document.getElementById('authMsg').innerText = error ? 'ERROR: ' + error.message : '';
   }
   
-  document.getElementById('logoutBtn').onclick = async () => await supabase.auth.signOut();
+  document.getElementById('logoutBtn').onclick = async () => {
+    await supabase.auth.signOut();
+  }
   
   supabase.auth.onAuthStateChange(async (_event, session) => {
-    if(session) { userId = session.user.id; document.getElementById('authBox').classList.add('hidden'); document.getElementById('appBox').classList.remove('hidden'); loadProfile(); } 
-    else { userId = null; document.getElementById('authBox').classList.remove('hidden'); document.getElementById('appBox').classList.add('hidden'); }
+    if(session) { 
+      userId = session.user.id; 
+      document.getElementById('authBox').classList.add('hidden'); 
+      document.getElementById('appBox').classList.remove('hidden'); 
+      loadProfile(); 
+    } else { 
+      userId = null; 
+      document.getElementById('authBox').classList.remove('hidden'); 
+      document.getElementById('appBox').classList.add('hidden'); 
+    }
   });
-  
+
   async function loadProfile() {
     const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
-    document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
-    document.getElementById('myRefCode').value = `https://pulsaraja.vercel.app?ref=${data.referral_code}`;
+    if(data){
+      document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
+      document.getElementById('myRefCode').value = `https://pulsaraja.vercel.app?ref=${data.referral_code}`;
+    }
   }
 
   // ===== COPY REF =====
   document.getElementById('copyBtn').onclick = () => {
     navigator.clipboard.writeText(document.getElementById('myRefCode').value);
-    document.getElementById('copyMsg').innerText = 'Link disalin!'; setTimeout(()=> document.getElementById('copyMsg').innerText='', 2000);
+    document.getElementById('copyMsg').innerText = 'Link disalin!';
+    setTimeout(()=> document.getElementById('copyMsg').innerText='', 2000);
   }
 
-  // ===== IKLAN POPUNDER +100 POIN [TES] =====
+  // ===== IKLAN POPUNDER +100 POIN =====
   document.getElementById('adBtn').onclick = () => {
-    document.getElementById('appMsg').innerText = 'Buka iklan...';
-    if(typeof show_254061 !== 'function'){ document.getElementById('appMsg').innerText = 'ERROR: Zone ID salah / Ke-block'; return; } // GANTI 87654321
-    show_87654321(); // Buka tab baru
+    document.getElementById('appMsg').innerText = 'Membuka iklan...';
+    // STEP 3: GANTI NOMOR 87654321 DI SINI JUGA
+    if(typeof show_254068 !== 'function'){ 
+      document.getElementById('appMsg').innerText = 'ERROR: Zone ID salah atau AdBlock aktif'; 
+      return; 
+    }
+    show_87654321();
     
-    // Kasih poin 1.5 detik setelah klik, karena popunder gak ada .then()
     setTimeout(async () => {
       const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
       await supabase.from('profiles').update({ points: p.points + 100 }).eq('id', userId);
-      document.getElementById('appMsg').innerText = '+100 Poin masuk [TES] 🔥';
+      document.getElementById('appMsg').innerText = '+100 Poin masuk! 🔥';
       loadProfile();
     }, 1500);
   }
 
-  // ===== WD =====
+  // ===== WITHDRAW =====
   document.getElementById('wdBtn').onclick = async () => {
     const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
-    if(p.points < 10000) return showModal({title:'Gagal', text:'Minimal WD 10.000 Poin', callback:()=>{}});
-    showModal({title: 'WD', text: 'Tulis: Pulsa atau DANA', input: true, callback: async (method) => {
-      showModal({title: 'Nomor', text: `No ${method}:`, input: true, callback: async (account) => {
-        await supabase.from('withdrawals').insert({ user_id: userId, amount: 10000, method, account });
-        await supabase.from('profiles').update({ points: p.points - 10000 }).eq('id', userId);
-        showModal({title:'Sukses', text:'WD diajukan', callback:()=>{}}); loadProfile();
-      }});
-    }});
+    if(p.points < 10000) {
+      return showModal({title:'Gagal', text:'Minimal WD 10.000 Poin', callback:()=>{}});
+    }
+    showModal({
+      title: 'Pilih Metode', 
+      text: 'Tulis: Pulsa atau DANA', 
+      input: true, 
+      callback: async (method) => {
+        showModal({
+          title: 'Nomor Tujuan', 
+          text: `Masukkan No ${method}:`, 
+          input: true, 
+          callback: async (account) => {
+            await supabase.from('withdrawals').insert({ user_id: userId, amount: 10000, method, account });
+            await supabase.from('profiles').update({ points: p.points - 10000 }).eq('id', userId);
+            showModal({title:'Sukses', text:'WD 10.000 Poin diajukan', callback:()=>{}}); 
+            loadProfile();
+          }
+        });
+      }
+    });
   }
-
 </script>
 </body>
 </html>
