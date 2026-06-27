@@ -44,97 +44,106 @@
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-  const authBox = document.getElementById('authBox');
-  const appBox = document.getElementById('appBox');
-  const authMsg = document.getElementById('authMsg');
-  const appMsg = document.getElementById('appMsg');
+  // KUNCI: TUNGGU HTML LOADING DULU BARU JALANIN JS
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log("JS Jalan Bos"); // Cek di Console F12
 
-  signupBtn.onclick = async () => {
-    const refCode = prompt('Punya kode referral? Kosongin aja kalo gak ada');
-    authMsg.innerText = 'Daftar...';
-    let referrerId = null;
-    if(refCode) {
-      const { data } = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
-      if(data) referrerId = data.id;
-      else { authMsg.innerText = 'Kode referral salah'; return; }
+    const authBox = document.getElementById('authBox');
+    const appBox = document.getElementById('appBox');
+    const authMsg = document.getElementById('authMsg');
+    const appMsg = document.getElementById('appMsg');
+    const loginBtn = document.getElementById('loginBtn');
+    const signupBtn = document.getElementById('signupBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const adBtn = document.getElementById('adBtn');
+    const withdrawBtn = document.getElementById('withdrawBtn');
+    const copyBtn = document.getElementById('copyBtn');
+
+    signupBtn.onclick = async () => {
+      authMsg.innerText = 'Daftar...';
+      const refCode = prompt('Punya kode referral? Kosongin aja kalo gak ada');
+      let referrerId = null;
+      if(refCode) {
+        const { data } = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
+        if(data) referrerId = data.id;
+        else { authMsg.innerText = 'Kode referral salah'; return; }
+      }
+      const { error } = await supabase.auth.signUp({
+        email: email.value, 
+        password: pass.value,
+        options: { data: { referred_by: referrerId } }
+      });
+      authMsg.innerText = error? 'ERROR: ' + error.message : 'Daftar berhasil! Coba login.';
     }
-    const { error } = await supabase.auth.signUp({
-      email: email.value, 
-      password: pass.value,
-      options: { data: { referred_by: referrerId } }
+
+    loginBtn.onclick = async () => {
+      authMsg.innerText = 'Login...';
+      const { error } = await supabase.auth.signInWithPassword({ email: email.value, password: pass.value });
+      authMsg.innerText = error? 'ERROR: ' + error.message : '';
+    }
+
+    logoutBtn.onclick = async () => await supabase.auth.signOut();
+
+    supabase.auth.onAuthStateChange(async (_event, session) => {
+      if(session) {
+        authBox.classList.add('hidden');
+        appBox.classList.remove('hidden');
+        loadProfile();
+      } else {
+        authBox.classList.remove('hidden');
+        appBox.classList.add('hidden');
+      }
     });
-    authMsg.innerText = error? error.message : 'Daftar berhasil! Cek email buat verifikasi.';
-  }
 
-  loginBtn.onclick = async () => {
-    const { error } = await supabase.auth.signInWithPassword({ email: email.value, password: pass.value });
-    authMsg.innerText = error? error.message : '';
-  }
+    async function loadProfile() {
+      const { data: { user } = await supabase.auth.getUser(); 
+      if(!user) return;
+      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      
+      const today = new Date().toISOString().slice(0,10);
+      if (data.last_reset !== today) {
+        await supabase.from('profiles').update({ ad_count_today: 0, last_reset: today }).eq('id', user.id);
+        data.ad_count_today = 0;
+      }
 
-  logoutBtn.onclick = async () => await supabase.auth.signOut();
+      points.innerText = data.points.toLocaleString('id-ID');
+      status.innerText = `Status: ${data.is_premium? 'PREMIUM' : 'FREE'} | Iklan: ${data.ad_count_today}/5`;
+      myRefCode.value = data.referral_code;
+      adBtn.disabled = data.ad_count_today >= 5 && !data.is_premium;
+      adBtn.classList.toggle('bg-slate-500', adBtn.disabled);
+    }
 
-  supabase.auth.onAuthStateChange(async (_event, session) => {
-    if(session) {
-      authBox.classList.add('hidden');
-      appBox.classList.remove('hidden');
+    adBtn.onclick = async () => {
+      const { data: { user } = await supabase.auth.getUser();
+      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      if(data.ad_count_today >= 5 && !data.is_premium) return appMsg.innerText = 'Limit FREE 5x/hari.';
+      appMsg.innerText = 'Nonton iklan 3 detik...';
+      setTimeout(async () => {
+        await supabase.from('profiles').update({ points: data.points + 100, ad_count_today: data.ad_count_today + 1 }).eq('id', user.id);
+        await supabase.from('point_logs').insert({ user_id: user.id, points: 100, source: 'ad' });
+        appMsg.innerText = '+100 Poin masuk!';
+        loadProfile();
+      }, 3000);
+    }
+
+    withdrawBtn.onclick = async () => {
+      const phone = prompt('Masukkan No HP 08xxx untuk pulsa 10rb:');
+      if(!phone || phone.length < 10) return;
+      const { data: { user } = await supabase.auth.getUser();
+      const { data } = await supabase.from('profiles').select('points').eq('id', user.id).single();
+      if(data.points < 10000) return appMsg.innerText = 'Poin kurang bos, minimal 10.000';
+      await supabase.from('profiles').update({ points: data.points - 10000 }).eq('id', user.id);
+      await supabase.from('withdraws').insert({ user_id: user.id, phone, amount: 10000 });
+      await supabase.from('point_logs').insert({ user_id: user.id, points: -10000, source: 'withdraw' });
+      appMsg.innerText = `Permintaan pulsa ke ${phone} diproses 1x24 jam`;
       loadProfile();
-    } else {
-      authBox.classList.remove('hidden');
-      appBox.classList.add('hidden');
+    }
+
+    copyBtn.onclick = () => {
+      navigator.clipboard.writeText(myRefCode.value);
+      appMsg.innerText = 'Kode referral disalin!';
     }
   });
-
-  async function loadProfile() {
-    const { data: { user } = await supabase.auth.getUser(); // UDAH FIX KURUNG
-    if(!user) return;
-    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-    
-    const today = new Date().toISOString().slice(0,10);
-    if (data.last_reset !== today) {
-      await supabase.from('profiles').update({ ad_count_today: 0, last_reset: today }).eq('id', user.id);
-      data.ad_count_today = 0;
-    }
-
-    points.innerText = data.points.toLocaleString('id-ID');
-    status.innerText = `Status: ${data.is_premium? 'PREMIUM' : 'FREE'} | Iklan: ${data.ad_count_today}/5`;
-    myRefCode.value = data.referral_code;
-    adBtn.disabled = data.ad_count_today >= 5 && !data.is_premium;
-    adBtn.classList.toggle('bg-slate-500', adBtn.disabled);
-  }
-
-  adBtn.onclick = async () => {
-    const { data: { user } = await supabase.auth.getUser(); // UDAH FIX KURUNG
-    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
-    if(data.ad_count_today >= 5 && !data.is_premium) return appMsg.innerText = 'Limit FREE 5x/hari.';
-
-    appMsg.innerText = 'Nonton iklan 3 detik...';
-    adBtn.disabled = true;
-    setTimeout(async () => {
-      await supabase.from('profiles').update({ points: data.points + 100, ad_count_today: data.ad_count_today + 1 }).eq('id', user.id);
-      await supabase.from('point_logs').insert({ user_id: user.id, points: 100, source: 'ad' });
-      appMsg.innerText = '+100 Poin masuk!';
-      loadProfile();
-    }, 3000);
-  }
-
-  withdrawBtn.onclick = async () => {
-    const phone = prompt('Masukkan No HP 08xxx untuk pulsa 10rb:');
-    if(!phone || phone.length < 10) return;
-    const { data: { user } = await supabase.auth.getUser(); // UDAH FIX KURUNG
-    const { data } = await supabase.from('profiles').select('points').eq('id', user.id).single();
-    if(data.points < 10000) return appMsg.innerText = 'Poin kurang bos, minimal 10.000';
-    
-    await supabase.from('profiles').update({ points: data.points - 10000 }).eq('id', user.id);
-    await supabase.from('withdraws').insert({ user_id: user.id, phone, amount: 10000 });
-    await supabase.from('point_logs').insert({ user_id: user.id, points: -10000, source: 'withdraw' });
-    appMsg.innerText = `Permintaan pulsa ke ${phone} diproses 1x24 jam`;
-    loadProfile();
-  }
-
-  copyBtn.onclick = () => {
-    navigator.clipboard.writeText(myRefCode.value);
-    appMsg.innerText = 'Kode referral disalin!';
-  }
 </script>
 </body>
 </html>
