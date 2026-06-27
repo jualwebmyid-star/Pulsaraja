@@ -6,6 +6,7 @@
   <title>PulsaRaja Cuan</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src='//libtl.com/sdk.js' data-zone='254068' data-sdk='show_254068'></script>
+
   <script type="importmap">
   { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.45.4" } }
   </script>
@@ -177,7 +178,7 @@
       appMsg.innerText = 'ERROR: Zone ID salah';
       return;
     }
-    show_1234567().then(async () => {
+    show_254068().then(async () => {
       const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
       await supabase.from('profiles').update({ points: p.points + 100 }).eq('id', userId);
       appMsg.innerText = 'Mantap! +100 Poin masuk 🔥';
