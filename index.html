@@ -3,50 +3,228 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PulsaRaja</title>
+  <title>PulsaRaja - Dapet Pulsa Gratis</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="p-4 max-w-md mx-auto bg-slate-900 text-white">
+<body class="bg-slate-900 text-slate-200 font-sans p-4 max-w-md mx-auto">
 
-  <div id="authBox" class="bg-slate-800 p-5 rounded-2xl mb-4">
-    <h2 class="font-bold mb-2">Login / Daftar</h2>
-    <input id="email" type="email" placeholder="Email" class="w-full bg-slate-700 p-2 rounded mb-2">
-    <input id="pass" type="password" placeholder="Password" class="w-full bg-slate-700 p-2 rounded mb-2">
-    <button id="loginBtn" class="w-full bg-blue-600 py-2 rounded">Login</button>
-    <button id="signupBtn" class="w-full bg-slate-600 py-2 rounded mt-2">Daftar</button>
+  <!-- BOX LOGIN -->
+  <div id="authBox" class="bg-slate-800 p-6 rounded-2xl shadow-lg">
+    <h1 class="text-3xl font-bold text-yellow-400 text-center mb-4">PulsaRaja 🔥</h1>
+    <input id="email" type="email" placeholder="Email" class="w-full bg-slate-700 p-3 rounded-lg mb-2">
+    <input id="pass" type="password" placeholder="Password min 6" class="w-full bg-slate-700 p-3 rounded-lg mb-3">
+    <button id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 font-bold py-3 rounded-lg mb-2">Login</button>
+    <button id="signupBtn" class="w-full bg-slate-600 hover:bg-slate-500 font-bold py-3 rounded-lg">Daftar Gratis</button>
+    <p id="authMsg" class="text-red-400 text-sm text-center mt-2"></p>
   </div>
 
+  <!-- BOX APLIKASI -->
   <div id="appBox" class="hidden">
-    <div class="bg-slate-800 p-5 rounded-2xl text-center mb-4">
-      <p>Poin: <span id="points" class="text-3xl font-bold">0</span></p>
-      <button id="adBtn" class="w-full bg-green-600 py-3 rounded mt-2">Nonton Iklan +100</button>
+    <!-- CARD POIN -->
+    <div class="bg-slate-800 p-6 rounded-2xl shadow-lg mb-4 text-center">
+      <p class="text-slate-400">Poin Kamu</p>
+      <p id="points" class="text-5xl font-bold my-2 text-yellow-400">0</p>
+      <p id="status" class="text-sm text-slate-400">Status: FREE</p>
     </div>
-    <button id="logoutBtn" class="w-full bg-red-600 py-2 rounded">Logout</button>
+
+    <!-- CARD REFERRAL -->
+    <div class="bg-slate-800 p-4 rounded-2xl mb-4">
+      <p class="text-sm text-slate-400 mb-1">Kode Referral Kamu - Undang Teman +1000 Poin</p>
+      <div class="flex gap-2">
+        <input id="myRefCode" readonly class="w-full bg-slate-700 p-2 rounded-lg font-bold text-yellow-400 text-center">
+        <button id="copyBtn" class="bg-yellow-500 text-black font-bold px-4 rounded-lg">Copy</button>
+      </div>
+    </div>
+
+    <!-- TOMBOL AKSI -->
+    <button id="adBtn" class="w-full bg-green-600 hover:bg-green-700 font-bold py-4 rounded-xl mb-3 text-lg">
+      Nonton Iklan +100 Poin
+    </button>
+    <button id="withdrawBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-4 rounded-xl mb-3">
+      Tukar Pulsa 10rb [10000 Poin]
+    </button>
+    <button id="logoutBtn" class="w-full bg-red-600 hover:bg-red-700 font-bold py-2 rounded-lg text-sm">Logout</button>
+    <p id="appMsg" class="text-center text-sm mt-3"></p>
   </div>
 
 <script type="module">
   import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
   
-  // === GANTI 2 INI PUNYA LU BOS ===
+  // === GANTI 2 INI BOS ===
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
 
-  // ...logika login, ambil poin, nambah poin ada di sini...
-  // Nanti gue lengkapin kalo lu udah dapet URL + KEY nya
+  // === AUTH ===
+  signupBtn.onclick = async () => {
+    const refCode = prompt('Punya kode referral? Kosongin aja kalo gak ada');
+    authMsg.innerText = 'Daftar...';
 
-  supabase.auth.onAuthStateChange((_event, session) => {
+    let referrerId = null;
+    if(refCode) {
+      const { data } = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
+      if(data) referrerId = data.id;
+      else { authMsg.innerText = 'Kode referral salah'; return; }
+    }
+
+    const { error } = await supabase.auth.signUp({
+      email: email.value, 
+      password: pass.value,
+      options: { data: { referred_by: referrerId } }
+    });
+    authMsg.innerText = error? error.message : 'Daftar berhasil! Cek email buat verifikasi.';
+  }
+
+  loginBtn.onclick = async () => {
+    const { error } = await supabase.auth.signInWithPassword({ email: email.value, password: pass.value });
+    authMsg.innerText = error? error.message : '';
+  }
+
+  logoutBtn.onclick = async () => await supabase.auth.signOut();
+
+  // === CEK LOGIN ===
+  supabase.auth.onAuthStateChange(async (_event, session) => {
     if(session) {
-      document.getElementById('authBox').classList.add('hidden');
-      document.getElementById('appBox').classList.remove('hidden');
-      loadPoints();
+      authBox.classList.add('hidden');
+      appBox.classList.remove('hidden');
+      loadProfile();
     } else {
-      document.getElementById('authBox').classList.remove('hidden');
-      document.getElementById('appBox').classList.add('hidden');
+      authBox.classList.remove('hidden');
+      appBox.classList.add('hidden');
     }
   });
 
+  // === LOAD DATA USER ===
+  async function loadProfile() {
+    const { data: { user } = await supabase.auth.getUser();
+    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    
+    // Reset harian jam 00:00
+    const today = new Date().toISOString().slice(0,10);
+    if (data.last_reset !== today) {
+      await supabase.from('profiles').update({ ad_count_today: 0, last_reset: today }).eq('id', user.id);
+      data.ad_count_today = 0;
+    }
+
+    points.innerText = data.points.toLocaleString('id-ID');
+    status.innerText = `Status: ${data.is_premium? 'PREMIUM' : 'FREE'} | Iklan: ${data.ad_count_today}/5`;
+    myRefCode.value = data.referral_code;
+    adBtn.disabled = data.ad_count_today >= 5 && !data.is_premium;
+    adBtn.classList.toggle('bg-slate-500', adBtn.disabled);
+  }
+
+  // === TOMBOL IKLAN ===
+  adBtn.onclick = async () => {
+    const { data: { user } = await supabase.auth.getUser();
+    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+
+    if(data.ad_count_today >= 5 && !data.is_premium) return appMsg.innerText = 'Limit FREE 5x/hari. Upgrade Premium.';
+
+    appMsg.innerText = 'Nonton iklan 3 detik...';
+    adBtn.disabled = true;
+    setTimeout(async () => {
+      await supabase.from('profiles').update({ 
+        points: data.points + 100,
+        ad_count_today: data.ad_count_today + 1
+      }).eq('id', user.id);
+      await supabase.from('point_logs').insert({ user_id: user.id, points: 100, source: 'ad' });
+      appMsg.innerText = '+100 Poin masuk!';
+      loadProfile();
+    }, 3000);
+  }
+
+  // === TOMBOL WITHDRAW ===
+  withdrawBtn.onclick = async () => {
+    const phone = prompt('Masukkan No HP 08xxx untuk pulsa 10rb:');
+    if(!phone || phone.length < 10) return;
+    
+    const { data: { user } = await supabase.auth.getUser();
+    const { data } = await supabase.from('profiles').select('points').eq('id', user.id).single();
+
+    if(data.points < 10000) return appMsg.innerText = 'Poin kurang bos, minimal 10.000';
+    
+    await supabase.from('profiles').update({ points: data.points - 10000 }).eq('id', user.id);
+    await supabase.from('withdraws').insert({ user_id: user.id, phone, amount: 10000 });
+    await supabase.from('point_logs').insert({ user_id: user.id, points: -10000, source: 'withdraw' });
+    
+    appMsg.innerText = `Permintaan pulsa ke ${phone} diproses 1x24 jam`;
+    loadProfile();
+  }
+
+  // === COPY KODE ===
+  copyBtn.onclick = () => {
+    navigator.clipboard.writeText(myRefCode.value);
+    appMsg.innerText = 'Kode referral disalin!';
+  }
+</script>
+</body>
+</html>      appBox.classList.add('hidden');
+    }
+  });
+
+  // === LOAD DATA USER ===
+  async function loadProfile() {
+    const { data: { user } = await supabase.auth.getUser();
+    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    
+    // Reset harian jam 00:00
+    const today = new Date().toISOString().slice(0,10);
+    if (data.last_reset !== today) {
+      await supabase.from('profiles').update({ ad_count_today: 0, last_reset: today }).eq('id', user.id);
+      data.ad_count_today = 0;
+    }
+
+    points.innerText = data.points.toLocaleString('id-ID');
+    status.innerText = `Status: ${data.is_premium? 'PREMIUM' : 'FREE'} | Iklan: ${data.ad_count_today}/5`;
+    myRefCode.value = data.referral_code;
+    adBtn.disabled = data.ad_count_today >= 5 && !data.is_premium;
+    adBtn.classList.toggle('bg-slate-500', adBtn.disabled);
+  }
+
+  // === TOMBOL IKLAN ===
+  adBtn.onclick = async () => {
+    const { data: { user } = await supabase.auth.getUser();
+    const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+
+    if(data.ad_count_today >= 5 && !data.is_premium) return appMsg.innerText = 'Limit FREE 5x/hari. Upgrade Premium.';
+
+    appMsg.innerText = 'Nonton iklan 3 detik...';
+    adBtn.disabled = true;
+    setTimeout(async () => {
+      await supabase.from('profiles').update({ 
+        points: data.points + 100,
+        ad_count_today: data.ad_count_today + 1
+      }).eq('id', user.id);
+      await supabase.from('point_logs').insert({ user_id: user.id, points: 100, source: 'ad' });
+      appMsg.innerText = '+100 Poin masuk!';
+      loadProfile();
+    }, 3000);
+  }
+
+  // === TOMBOL WITHDRAW ===
+  withdrawBtn.onclick = async () => {
+    const phone = prompt('Masukkan No HP 08xxx untuk pulsa 10rb:');
+    if(!phone || phone.length < 10) return;
+    
+    const { data: { user } = await supabase.auth.getUser();
+    const { data } = await supabase.from('profiles').select('points').eq('id', user.id).single();
+
+    if(data.points < 10000) return appMsg.innerText = 'Poin kurang bos, minimal 10.000';
+    
+    await supabase.from('profiles').update({ points: data.points - 10000 }).eq('id', user.id);
+    await supabase.from('withdraws').insert({ user_id: user.id, phone, amount: 10000 });
+    await supabase.from('point_logs').insert({ user_id: user.id, points: -10000, source: 'withdraw' });
+    
+    appMsg.innerText = `Permintaan pulsa ke ${phone} diproses 1x24 jam`;
+    loadProfile();
+  }
+
+  // === COPY KODE ===
+  copyBtn.onclick = () => {
+    navigator.clipboard.writeText(myRefCode.value);
+    appMsg.innerText = 'Kode referral disalin!';
+  }
 </script>
 </body>
 </html>
