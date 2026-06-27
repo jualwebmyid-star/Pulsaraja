@@ -171,20 +171,26 @@
     setTimeout(()=> document.getElementById('copyMsg').innerText='', 2000);
   }
 
-  // ===== IKLAN +100 POIN =====
-  document.getElementById('adBtn').onclick = () => {
-    appMsg.innerText = 'Muat iklan...';
-    if(typeof show_254068!== 'function'){ // GANTI 1234567
-      appMsg.innerText = 'ERROR: Zone ID salah';
-      return;
-    }
-    show_254068().then(async () => {
-      const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
-      await supabase.from('profiles').update({ points: p.points + 100 }).eq('id', userId);
-      appMsg.innerText = 'Mantap! +100 Poin masuk 🔥';
-      loadProfile();
-    }).catch(() => { appMsg.innerText = 'Iklan kosong / di-skip'; });
+// ===== IKLAN +100 POIN =====
+document.getElementById('adBtn').onclick = () => {
+  appMsg.innerText = 'Muat iklan...';
+
+  // CEK DULU SCRIPT MONETAG NYA MASUK APA GAK
+  if(typeof show_254068 !== 'function'){ // <-- GANTI 1234567 JADI ZONE ID LU
+    appMsg.innerText = 'ERROR: Zone ID salah atau AdBlock aktif';
+    return;
   }
+
+  // KALO MASUK, JALANIN IKLAN. KALO SELESAI BARU KASIH POIN
+  show_254068().then(async () => {
+    const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
+    await supabase.from('profiles').update({ points: p.points + 100 }).eq('id', userId);
+    appMsg.innerText = 'Mantap! +100 Poin masuk 🔥';
+    loadProfile();
+  }).catch(() => { 
+    appMsg.innerText = 'Iklan kosong / di-skip'; 
+  });
+}
 
   // ===== CHECK-IN +50 POIN =====
   document.getElementById('checkinBtn').onclick = async () => {
