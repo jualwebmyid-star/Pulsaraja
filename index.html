@@ -1,111 +1,17 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PulsaRaja - Dapet Pulsa Gratis</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-slate-900 text-slate-200 font-sans p-4 max-w-md mx-auto">
-  <div id="authBox" class="bg-slate-800 p-6 rounded-2xl shadow-lg">
-    <h1 class="text-3xl font-bold text-yellow-400 text-center mb-4">PulsaRaja 🔥</h1>
-    <input id="email" type="email" placeholder="Email" class="w-full bg-slate-700 p-3 rounded-lg mb-2">
-    <input id="pass" type="password" placeholder="Password min 6" class="w-full bg-slate-700 p-3 rounded-lg mb-3">
-    <button id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 font-bold py-3 rounded-lg mb-2">Login</button>
-    <button id="signupBtn" class="w-full bg-slate-600 hover:bg-slate-500 font-bold py-3 rounded-lg">Daftar Gratis</button>
-    <p id="authMsg" class="text-red-400 text-sm text-center mt-2"></p>
-  </div>
-  <div id="appBox" class="hidden">
-    <div class="bg-slate-800 p-6 rounded-2xl shadow-lg mb-4 text-center">
-      <p class="text-slate-400">Poin Kamu</p>
-      <p id="points" class="text-5xl font-bold my-2 text-yellow-400">0</p>
-      <p id="status" class="text-sm text-slate-400">Status: FREE</p>
-    </div>
-    <div class="bg-slate-800 p-4 rounded-2xl mb-4">
-      <p class="text-sm text-slate-400 mb-1">Kode Referral Kamu - Undang Teman +1000 Poin</p>
-      <div class="flex gap-2">
-        <input id="myRefCode" readonly class="w-full bg-slate-700 p-2 rounded-lg font-bold text-yellow-400 text-center">
-        <button id="copyBtn" class="bg-yellow-500 text-black font-bold px-4 rounded-lg">Copy</button>
-      </div>
-    </div>
-    <button id="adBtn" class="w-full bg-green-600 hover:bg-green-700 font-bold py-4 rounded-xl mb-3 text-lg">Nonton Iklan +100 Poin</button>
-    <button id="withdrawBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-4 rounded-xl mb-3">Tukar Pulsa 10rb [10000 Poin]</button>
-    <button id="logoutBtn" class="w-full bg-red-600 hover:bg-red-700 font-bold py-2 rounded-lg text-sm">Logout</button>
-    <p id="appMsg" class="text-center text-sm mt-3"></p>
-  </div>
-<script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-  const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
-  const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-  
-  document.addEventListener('DOMContentLoaded', () => {
-    const authBox = document.getElementById('authBox'); const appBox = document.getElementById('appBox');
-    const authMsg = document.getElementById('authMsg'); const appMsg = document.getElementById('appMsg');
-    
-    document.getElementById('signupBtn').onclick = async () => {
-      authMsg.innerText = 'Daftar...';
-      const refCode = prompt('Punya kode referral? Kosongin aja kalo gak ada');
-      let referrerId = null;
-      if(refCode) {
-        const res = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
-        if(res.data) referrerId = res.data.id; else authMsg.innerText = 'Kode referral salah, skip aja';
-      }
-      const { error } = await supabase.auth.signUp({ 
-        email: document.getElementById('email').value, 
-        password: document.getElementById('pass').value, 
-        options: { data: { referred_by: referrerId } // <-- FIX: 3 kurung tutup disini
-      });
-      authMsg.innerText = error? 'ERROR: ' + error.message : 'Daftar berhasil! Coba login.';
-    }
-    
-    document.getElementById('loginBtn').onclick = async () => {
-      authMsg.innerText = 'Login...';
-      const { error } = await supabase.auth.signInWithPassword({ email: document.getElementById('email').value, password: document.getElementById('pass').value });
-      authMsg.innerText = error? 'ERROR: ' + error.message : '';
-    }
-    
-    document.getElementById('logoutBtn').onclick = async () => await supabase.auth.signOut();
-    
-    supabase.auth.onAuthStateChange(async (_event, session) => {
-      if(session) { authBox.classList.add('hidden'); appBox.classList.remove('hidden'); loadProfile(); } 
-      else { authBox.classList.remove('hidden'); appBox.classList.add('hidden'); }
-    });
-    
-    async function loadProfile() {
-      const resUser = await supabase.auth.getUser(); const user = resUser.data.user; if(!user) return;
-      const res = await supabase.from('profiles').select('*').eq('id', user.id).single(); const data = res.data;
-      const today = new Date().toISOString().slice(0,10);
-      if (data.last_reset !== today) { await supabase.from('profiles').update({ ad_count_today: 0, last_reset: today }).eq('id', user.id); data.ad_count_today = 0; }
-      document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
-      document.getElementById('status').innerText = `Status: ${data.is_premium? 'PREMIUM' : 'FREE'} | Iklan: ${data.ad_count_today}/5`;
-      document.getElementById('myRefCode').value = data.referral_code;
-      const adBtn = document.getElementById('adBtn'); adBtn.disabled = data.ad_count_today >= 5 && !data.is_premium; adBtn.classList.toggle('bg-slate-500', adBtn.disabled);
-    }
-    
-    document.getElementById('adBtn').onclick = async () => {
-      const resUser = await supabase.auth.getUser(); const user = resUser.data.user;
-      const res = await supabase.from('profiles').select('*').eq('id', user.id).single(); const data = res.data;
-      if(data.ad_count_today >= 5 && !data.is_premium) return appMsg.innerText = 'Limit FREE 5x/hari.';
-      appMsg.innerText = 'Nonton iklan 3 detik...'; setTimeout(async () => {
-        await supabase.from('profiles').update({ points: data.points + 100, ad_count_today: data.ad_count_today + 1 }).eq('id', user.id);
-        await supabase.from('point_logs').insert({ user_id: user.id, points: 100, source: 'ad' }); appMsg.innerText = '+100 Poin masuk!'; loadProfile();
-      }, 3000);
-    }
-    
-    document.getElementById('withdrawBtn').onclick = async () => {
-      const phone = prompt('Masukkan No HP 08xxx untuk pulsa 10rb:'); if(!phone || phone.length < 10) return;
-      const resUser = await supabase.auth.getUser(); const user = resUser.data.user;
-      const res = await supabase.from('profiles').select('points').eq('id', user.id).single(); const data = res.data;
-      if(data.points < 10000) return appMsg.innerText = 'Poin kurang bos, minimal 10.000';
-      await supabase.from('profiles').update({ points: data.points - 10000 }).eq('id', user.id);
-      await supabase.from('withdraws').insert({ user_id: user.id, phone, amount: 10000 });
-      await supabase.from('point_logs').insert({ user_id: user.id, points: -10000, source: 'withdraw' });
-      appMsg.innerText = `Permintaan pulsa ke ${phone} diproses 1x24 jam`; loadProfile();
-    }
-    
-    document.getElementById('copyBtn').onclick = () => { navigator.clipboard.writeText(document.getElementById('myRefCode').value); appMsg.innerText = 'Kode referral disalin!'; }
-  });
+<body style="background:#0f172a;color:white;text-align:center;padding:50px;font-family:sans-serif">
+  <h1>Tes Tombol Bos</h1>
+  <button id="tesBtn" style="background:blue;padding:20px;border-radius:10px;font-size:20px">KLIK GUE</button>
+  <p id="hasil"></p>
+
+<script>
+  alert('1. JS UDAH LOADING'); // Kalo ini gak muncul = Vercel lu error parah
+
+  document.getElementById('tesBtn').onclick = () => {
+    document.getElementById('hasil').innerText = '2. TOMBOL KEPIENCET BOS!!!';
+    alert('2. TOMBOL KEPIENCET BOS!!!'); 
+  }
 </script>
 </body>
 </html>
