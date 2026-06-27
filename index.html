@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0f172a"/> <!-- Warna bar atas HP pas diinstall -->
-  <link rel="manifest" href="./manifest.json"> <!-- KUNCI PWA -->
+  <meta name="theme-color" content="#0f172a"/>
+  <link rel="manifest" href="./manifest.json">
   <title>PulsaRaja</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script type="importmap">
@@ -29,6 +29,9 @@
 
   <!-- BOX APP SETELAH LOGIN -->
   <div id="appBox" class="hidden">
+    <!-- TOMBOL INSTALL MANUAL PWA -->
+    <button id="installBtn" class="hidden w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-lg mb-3 shadow-lg">INSTALL APLIKASI 🔥</button>
+
     <div class="bg-slate-800 p-6 rounded-2xl text-center mb-4 shadow-lg">
       <p class="text-slate-400">Poin Kamu</p>
       <p id="points" class="text-5xl font-bold text-yellow-400">0</p>
@@ -110,11 +113,33 @@
     appMsg.innerText = 'Fitur iklan next bos';
   }
 
-  // KUNCI PWA: DAFTARIN SERVICE WORKER BIAR BISA INSTALL
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js', { scope: '/' }) // Pake / bukan ./
+  // ===== KODE PWA PAKSA MUNCUL =====
+  let deferredPrompt;
+  const installBtn = document.getElementById('installBtn');
+
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault(); // Cegah popup otomatis
+    deferredPrompt = e; // Simpan event nya
+    installBtn.classList.remove('hidden'); // TAMPILIN TOMBOL KUNING
+    console.log('PWA siap diinstall');
   });
-}</script>
+
+  installBtn.addEventListener('click', async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt(); // Munculin popup install
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log(`User pilih: ${outcome}`);
+      deferredPrompt = null;
+      installBtn.classList.add('hidden'); // Sembunyiin tombol lagi
+    }
+  });
+
+  // DAFTARIN SERVICE WORKER
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('/sw.js', { scope: '/' });
+    });
+  }
+</script>
 </body>
 </html>
