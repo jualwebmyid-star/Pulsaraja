@@ -171,25 +171,45 @@
     setTimeout(()=> document.getElementById('copyMsg').innerText='', 2000);
   }
 
-// ===== IKLAN +100 POIN ANTI DISKIP =====
-document.getElementById('adBtn').onclick = () => {
-  appMsg.innerText = 'Buka iklan...';
+// ===== IKLAN +100 POIN + LIMIT HARIAN =====
+document.getElementById('adBtn').onclick = async () => {
+  appMsg.innerText = 'Cek limit...';
 
-  if(typeof show_254068 !== 'function'){ // GANTI 1234567
+  const today = new Date().toISOString().split('T')[0]; // Format: 2025-10-04
+  const { data: p } = await supabase.from('profiles').select('points, is_premium, ad_clicks_today, last_ad_date').eq('id', userId).single();
+
+  // 1. RESET JIKA HARI BARU
+  if(p.last_ad_date!== today){
+    await supabase.from('profiles').update({ ad_clicks_today: 0, last_ad_date: today }).eq('id', userId);
+    p.ad_clicks_today = 0; // Update data lokal biar gak usah load ulang
+  }
+
+  // 2. CEK LIMIT
+  const maxClicks = p.is_premium? 10 : 5; // PREMIUM 10x, FREE 5x
+  if(p.ad_clicks_today >= maxClicks){
+    return showModal({title:'Limit Habis', text:`Kamu udah ${maxClicks}x hari ini. Upgrade PREMIUM buat 10x`, callback:()=>{}});
+  }
+
+  // 3. CEK SCRIPT MONETAG
+  if(typeof show_254068!== 'function'){ // GANTI 1234567 JADI ZONE ID LU
     appMsg.innerText = 'ERROR: Zone ID salah atau AdBlock aktif';
     return;
   }
-  
-  show_254068(); // Buka tab doang, gak nunggu .then()
 
-  // LANGSUNG KASIH POIN 1.5 DETIK SETELAH KLIK
+  appMsg.innerText = `Iklan ${p.ad_clicks_today + 1}/${maxClicks}...`;
+  show_254068 (); // Buka popunder
+
+  // 4. KASIH POIN + TAMBAH COUNTER SETELAH 1.5 DETIK
   setTimeout(async () => {
-    const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
-    await supabase.from('profiles').update({ points: p.points + 100 }).eq('id', userId);
-    appMsg.innerText = '+100 Poin masuk! 🔥';
-    loadProfile();
-  }, 1500); // 1.5 detik jeda
-}
+    const newPoints = p.points + 100;
+    const newClicks = p.ad_clicks_today + 1;
+
+    await supabase.from('profiles').update({ points: newPoints, ad_clicks_today: newClicks }).eq('id', userId);
+
+    appMsg.innerText = `+100 Poin masuk! [${newClicks}/${maxClicks}] 🔥`;
+    loadProfile(); // Refresh tampilan poin
+  }, 1500);
+}  
   
   // ===== CHECK-IN +50 POIN =====
   document.getElementById('checkinBtn').onclick = async () => {
