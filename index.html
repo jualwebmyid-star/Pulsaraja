@@ -3,10 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="monetag" content="0a9bac62f740a53b512cd1f2503de815">
   <title>PulsaRaja Cuan</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script src='//libtl.com/sdk.js' data-zone='254061' data-sdk='show_254061'></script> 
+  <script src='//libtl.com/sdk.js' data-zone='254061' data-sdk='show_254061'></script>
   <script type="importmap">
   { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.45.4" } }
   </script>
@@ -29,11 +28,10 @@
       <p id="status" class="text-sm text-slate-400 mt-1">Status: FREE</p>
     </div>
 
-    <!-- FITUR 3: TUGAS HARIAN -->
     <div class="bg-slate-800 p-4 rounded-2xl mb-4 shadow-lg">
       <p class="font-bold mb-2">Tugas Harian</p>
       <button id="checkinBtn" class="w-full bg-blue-600 font-bold py-2 rounded-lg">Check-in +50 Poin</button>
-      <p id="checkinMsg" class="text-xs text-center mt-1 h-4"></p>
+      <p id="checkinMsg" class="text-xs text-center mt-1 h-4 text-green-400"></p>
     </div>
 
     <div class="bg-slate-800 p-4 rounded-2xl mb-4 shadow-lg">
@@ -41,12 +39,8 @@
       <input id="myRefCode" readonly class="w-full bg-slate-700 p-2 rounded-lg font-bold text-yellow-400 text-center">
     </div>
 
-    <!-- FITUR 1: IKLAN -->
     <button id="adBtn" class="w-full bg-green-600 hover:bg-green-700 font-bold py-4 rounded-xl mb-3 shadow-lg">Nonton Iklan +100 Poin</button>
-
-    <!-- FITUR 2: WD -->
     <button id="wdBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-xl mb-3 shadow-lg">Withdraw Poin</button>
-
     <button id="logoutBtn" class="w-full bg-red-600 font-bold py-2 rounded-lg text-sm">Logout</button>
     <p id="appMsg" class="text-center text-sm mt-3 text-yellow-400 h-5"></p>
   </div>
@@ -58,36 +52,70 @@
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
   
   let userId = null;
+  const authMsg = document.getElementById('authMsg');
+  const appMsg = document.getElementById('appMsg');
 
-  // AUTH... SAMA KAYAK SEBELUMNYA
-  document.getElementById('signupBtn').onclick = async () => { /*...kode signup lu... */ }
-  document.getElementById('loginBtn').onclick = async () => { /*...kode login lu... */ }
+  // ===== AUTH FULL =====
+  document.getElementById('signupBtn').onclick = async () => {
+    authMsg.innerText = 'Daftar...';
+    const refCode = prompt('Kode referral? Kosongin aja kalo gak ada');
+    let referrerId = null;
+    if(refCode && refCode.trim()!== ''){
+      const res = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
+      if(res.data) referrerId = res.data.id;
+    }
+    const { error } = await supabase.auth.signUp({
+      email: document.getElementById('email').value,
+      password: document.getElementById('pass').value,
+      options: { data: { referred_by: referrerId } }
+    });
+    authMsg.innerText = error? 'ERROR: ' + error.message : 'Daftar berhasil! Cek email & login.';
+  }
+
+  document.getElementById('loginBtn').onclick = async () => {
+    authMsg.innerText = 'Login...';
+    const { error } = await supabase.auth.signInWithPassword({
+      email: document.getElementById('email').value,
+      password: document.getElementById('pass').value
+    });
+    authMsg.innerText = error? 'ERROR: ' + error.message : '';
+  }
+
   document.getElementById('logoutBtn').onclick = async () => await supabase.auth.signOut();
+
   supabase.auth.onAuthStateChange(async (_event, session) => {
-    if(session) { userId = session.user.id; document.getElementById('authBox').classList.add('hidden'); document.getElementById('appBox').classList.remove('hidden'); loadProfile(); }
-    else { userId = null; document.getElementById('authBox').classList.remove('hidden'); document.getElementById('appBox').classList.add('hidden'); }
+    if(session) {
+      userId = session.user.id;
+      document.getElementById('authBox').classList.add('hidden');
+      document.getElementById('appBox').classList.remove('hidden');
+      loadProfile();
+    } else {
+      userId = null;
+      document.getElementById('authBox').classList.remove('hidden');
+      document.getElementById('appBox').classList.add('hidden');
+    }
   });
 
   async function loadProfile() {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
-    if(data) {
-      document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
-      document.getElementById('status').innerText = `Status: ${data.is_premium? 'PREMIUM' : 'FREE'}`;
-      document.getElementById('myRefCode').value = data.referral_code;
-    }
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if(error) { appMsg.innerText = 'Gagal load profil'; return; }
+    document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
+    document.getElementById('status').innerText = `Status: ${data.is_premium? 'PREMIUM' : 'FREE'}`;
+    document.getElementById('myRefCode').value = data.referral_code;
   }
 
-  // FITUR 1: IKLAN +100 POIN
+  // ===== FITUR 1: IKLAN +100 POIN =====
   document.getElementById('adBtn').onclick = () => {
-    show_1234567().then(async () => { // Kalo iklan selesai ditonton
+    appMsg.innerText = 'Muat iklan...';
+    show_1234567().then(async () => {
       const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
       await supabase.from('profiles').update({ points: p.points + 100 }).eq('id', userId);
-      document.getElementById('appMsg').innerText = 'Mantap! +100 Poin masuk 🔥';
+      appMsg.innerText = 'Mantap! +100 Poin masuk 🔥';
       loadProfile();
-    }).catch(() => { document.getElementById('appMsg').innerText = 'Iklan di-skip'; });
+    }).catch(() => { appMsg.innerText = 'Iklan di-skip / gagal'; });
   }
 
-  // FITUR 3: CHECK-IN +50 POIN
+  // ===== FITUR 3: CHECK-IN +50 POIN =====
   document.getElementById('checkinBtn').onclick = async () => {
     const today = new Date().toISOString().split('T')[0];
     const { data: p } = await supabase.from('profiles').select('last_checkin, points').eq('id', userId).single();
@@ -97,11 +125,11 @@
     loadProfile();
   }
 
-  // FITUR 2: WD POIN
+  // ===== FITUR 2: WD POIN =====
   document.getElementById('wdBtn').onclick = async () => {
     const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
     if(p.points < 10000) return alert('Minimal WD 10.000 Poin = 10rb Pulsa');
-    const method = prompt('WD via? Pulsa/DANA');
+    const method = prompt('WD via? Tulis: Pulsa atau DANA');
     const account = prompt('No HP / No DANA:');
     if(!method ||!account) return;
     await supabase.from('withdrawals').insert({ user_id: userId, amount: 10000, method, account });
