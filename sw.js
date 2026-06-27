@@ -1,6 +1,5 @@
-const CACHE_NAME = 'pulsaraja-v4'; // Naikin versi biar ke-reset cache lama
+const CACHE_NAME = 'pulsaraja-v5'; // Ganti versi terus biar ke-reset
 const APP_SHELL = [
-  '/', // Ini kunci nya bos
   '/index.html',
   '/manifest.json', 
   '/icon-192.png', 
@@ -8,25 +7,16 @@ const APP_SHELL = [
 ];
 
 self.addEventListener('install', (e) => {
-  e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => {
-      console.log('SW: Caching App Shell');
-      return cache.addAll(APP_SHELL);
-    })
-  );
-  self.skipWaiting();
+  e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(APP_SHELL)));
 });
 
 self.addEventListener('activate', (e) => {
-  e.waitUntil(self.clients.claim());
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)))));
+  self.clients.claim();
 });
 
-// Strategi: Cache First. Gak ada internet? Gas cache.
+// Network First: Coba internet dulu. Gagal? Pake cache.
 self.addEventListener('fetch', (e) => {
   if (e.request.method !== 'GET') return;
-  e.respondWith(
-    caches.match(e.request).then((cached) => {
-      return cached || fetch(e.request);
-    })
-  );
+  e.respondWith(fetch(e.request).catch(() => caches.match(e.request)));
 });
