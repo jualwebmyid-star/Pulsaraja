@@ -1,100 +1,32 @@
 <!DOCTYPE html>
-<!-- v3.1 FINAL -->
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>PulsaRaja</title>
-  <script src="./supabase.js"></script> <!-- FILE LOKAL = AMAN -->
+  <title>Test Supabase</title>
+  <script src="./supabase.js"></script> 
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-slate-900 text-slate-200 font-sans p-4 max-w-md mx-auto">
-  
-  <div id="authBox" class="bg-slate-800 p-6 rounded-2xl shadow-lg">
-    <h1 class="text-3xl font-bold text-yellow-400 text-center mb-4">PulsaRaja 🔥</h1>
-    <input id="email" type="email" placeholder="Email" class="w-full bg-slate-700 p-3 rounded-lg mb-2">
-    <input id="pass" type="password" placeholder="Password min 6" class="w-full bg-slate-700 p-3 rounded-lg mb-3">
-    <button id="loginBtn" class="w-full bg-blue-600 font-bold py-3 rounded-lg mb-2">Login</button>
-    <button id="signupBtn" class="w-full bg-slate-600 font-bold py-3 rounded-lg">Daftar Gratis</button>
-    <p id="authMsg" class="text-red-400 text-sm text-center mt-2"></p>
-  </div>
-
-  <div id="appBox" class="hidden">
-    <div class="bg-slate-800 p-6 rounded-2xl text-center mb-4">
-      <p class="text-slate-400">Poin Kamu</p>
-      <p id="points" class="text-5xl font-bold text-yellow-400">0</p>
-      <p id="status" class="text-sm text-slate-400">Status: FREE</p>
-    </div>
-    <div class="bg-slate-800 p-4 rounded-2xl mb-4">
-      <p class="text-sm text-slate-400 mb-1">Kode Referral Kamu</p>
-      <input id="myRefCode" readonly class="w-full bg-slate-700 p-2 rounded-lg font-bold text-yellow-400 text-center">
-    </div>
-    <button id="adBtn" class="w-full bg-green-600 font-bold py-4 rounded-xl mb-3">Nonton Iklan +100 Poin</button>
-    <button id="logoutBtn" class="w-full bg-red-600 font-bold py-2 rounded-lg text-sm">Logout</button>
-    <p id="appMsg" class="text-center text-sm mt-3"></p>
+<body class="bg-slate-900 text-white p-4 max-w-md mx-auto">
+  <div class="bg-slate-800 p-6 rounded-2xl">
+    <h1 class="text-2xl font-bold text-yellow-400">Test Supabase</h1>
+    <button id="tesBtn" class="w-full bg-green-600 font-bold py-3 rounded-lg mt-3">TES KONEK SUPABASE</button>
+    <p id="msg" class="text-center mt-2 text-yellow-400"></p>
   </div>
 
 <script>
-  // GANTI 2 INI PUNYA LU
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
   
-  const authBox = document.getElementById('authBox');
-  const appBox = document.getElementById('appBox');
-  const authMsg = document.getElementById('authMsg');
-
-  document.getElementById('signupBtn').onclick = async () => {
-    authMsg.innerText = 'Daftar...';
-    const refCode = prompt('Kode referral? Kosongin aja kalo gak ada');
-    let referrerId = null;
-    if(refCode && refCode.trim() !== ''){
-      const res = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
-      if(res.data) referrerId = res.data.id;
+  document.getElementById('tesBtn').onclick = async () => {
+    document.getElementById('msg').innerText = 'Ngetes...';
+    const { data, error } = await supabase.from('profiles').select('count').limit(1);
+    if(error) {
+      document.getElementById('msg').innerText = 'ERROR: ' + error.message;
+    } else {
+      document.getElementById('msg').innerText = 'SUKSES BOS! SUPABASE NYAMBUNG';
+      alert('SUKSES BOS! SUPABASE NYAMBUNG');
     }
-    const { error } = await supabase.auth.signUp({ 
-      email: document.getElementById('email').value, 
-      password: document.getElementById('pass').value,
-      options: { data: { referred_by: referrerId } }
-    });
-    authMsg.innerText = error? 'ERROR: ' + error.message : 'Daftar berhasil! Coba login.';
-  }
-
-  document.getElementById('loginBtn').onclick = async () => {
-    authMsg.innerText = 'Login...';
-    const { error } = await supabase.auth.signInWithPassword({ 
-      email: document.getElementById('email').value, 
-      password: document.getElementById('pass').value 
-    });
-    authMsg.innerText = error? 'ERROR: ' + error.message : '';
-  }
-
-  document.getElementById('logoutBtn').onclick = async () => await supabase.auth.signOut();
-
-  supabase.auth.onAuthStateChange(async (_event, session) => {
-    if(session) { 
-      authBox.classList.add('hidden'); 
-      appBox.classList.remove('hidden'); 
-      loadProfile(); 
-    } else { 
-      authBox.classList.remove('hidden'); 
-      appBox.classList.add('hidden'); 
-    }
-  });
-
-  async function loadProfile() {
-    const resUser = await supabase.auth.getUser(); 
-    const user = resUser.data.user; 
-    if(!user) return;
-    const res = await supabase.from('profiles').select('*').eq('id', user.id).single(); 
-    const data = res.data;
-    document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
-    document.getElementById('status').innerText = `Status: ${data.is_premium? 'PREMIUM' : 'FREE'}`;
-    document.getElementById('myRefCode').value = data.referral_code;
-  }
-  
-  document.getElementById('adBtn').onclick = () => {
-    document.getElementById('appMsg').innerText = 'Fitur iklan aktif';
   }
 </script>
 </body>
