@@ -50,37 +50,34 @@
     const appBox = document.getElementById('appBox');
     const authMsg = document.getElementById('authMsg');
     const appMsg = document.getElementById('appMsg');
-    const loginBtn = document.getElementById('loginBtn');
-    const signupBtn = document.getElementById('signupBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const adBtn = document.getElementById('adBtn');
-    const withdrawBtn = document.getElementById('withdrawBtn');
-    const copyBtn = document.getElementById('copyBtn');
 
-    signupBtn.onclick = async () => {
+    document.getElementById('signupBtn').onclick = async () => {
       authMsg.innerText = 'Daftar...';
       const refCode = prompt('Punya kode referral? Kosongin aja kalo gak ada');
       let referrerId = null;
       if(refCode) {
-        const { data } = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
-        if(data) referrerId = data.id;
+        const res = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
+        if(res.data) referrerId = res.data.id;
         else { authMsg.innerText = 'Kode referral salah'; return; }
       }
       const { error } = await supabase.auth.signUp({
-        email: email.value, 
-        password: pass.value,
+        email: document.getElementById('email').value, 
+        password: document.getElementById('pass').value,
         options: { data: { referred_by: referrerId } }
       });
       authMsg.innerText = error? 'ERROR: ' + error.message : 'Daftar berhasil! Coba login.';
     }
 
-    loginBtn.onclick = async () => {
+    document.getElementById('loginBtn').onclick = async () => {
       authMsg.innerText = 'Login...';
-      const { error } = await supabase.auth.signInWithPassword({ email: email.value, password: pass.value });
+      const { error } = await supabase.auth.signInWithPassword({ 
+        email: document.getElementById('email').value, 
+        password: document.getElementById('pass').value 
+      });
       authMsg.innerText = error? 'ERROR: ' + error.message : '';
     }
 
-    logoutBtn.onclick = async () => await supabase.auth.signOut();
+    document.getElementById('logoutBtn').onclick = async () => await supabase.auth.signOut();
 
     supabase.auth.onAuthStateChange(async (_event, session) => {
       if(session) {
@@ -94,9 +91,12 @@
     });
 
     async function loadProfile() {
-      const { data: { user } = await supabase.auth.getUser(); // FIX: ; diganti }
+      const resUser = await supabase.auth.getUser(); // CARA AMAN
+      const user = resUser.data.user;
       if(!user) return;
-      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      
+      const res = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      const data = res.data;
       
       const today = new Date().toISOString().slice(0,10);
       if (data.last_reset !== today) {
@@ -104,17 +104,22 @@
         data.ad_count_today = 0;
       }
 
-      points.innerText = data.points.toLocaleString('id-ID');
-      status.innerText = `Status: ${data.is_premium? 'PREMIUM' : 'FREE'} | Iklan: ${data.ad_count_today}/5`;
-      myRefCode.value = data.referral_code;
+      document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
+      document.getElementById('status').innerText = `Status: ${data.is_premium? 'PREMIUM' : 'FREE'} | Iklan: ${data.ad_count_today}/5`;
+      document.getElementById('myRefCode').value = data.referral_code;
+      
+      const adBtn = document.getElementById('adBtn');
       adBtn.disabled = data.ad_count_today >= 5 && !data.is_premium;
       adBtn.classList.toggle('bg-slate-500', adBtn.disabled);
     }
 
-    adBtn.onclick = async () => {
-      const { data: { user } } = await supabase.auth.getUser(); // FIX
-      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    document.getElementById('adBtn').onclick = async () => {
+      const resUser = await supabase.auth.getUser();
+      const user = resUser.data.user;
+      const res = await supabase.from('profiles').select('*').eq('id', user.id).single();
+      const data = res.data;
       if(data.ad_count_today >= 5 && !data.is_premium) return appMsg.innerText = 'Limit FREE 5x/hari.';
+      
       appMsg.innerText = 'Nonton iklan 3 detik...';
       setTimeout(async () => {
         await supabase.from('profiles').update({ points: data.points + 100, ad_count_today: data.ad_count_today + 1 }).eq('id', user.id);
@@ -124,12 +129,15 @@
       }, 3000);
     }
 
-    withdrawBtn.onclick = async () => {
+    document.getElementById('withdrawBtn').onclick = async () => {
       const phone = prompt('Masukkan No HP 08xxx untuk pulsa 10rb:');
       if(!phone || phone.length < 10) return;
-      const { data: { user } = await supabase.auth.getUser(); // FIX
-      const { data } = await supabase.from('profiles').select('points').eq('id', user.id).single();
+      const resUser = await supabase.auth.getUser();
+      const user = resUser.data.user;
+      const res = await supabase.from('profiles').select('points').eq('id', user.id).single();
+      const data = res.data;
       if(data.points < 10000) return appMsg.innerText = 'Poin kurang bos, minimal 10.000';
+      
       await supabase.from('profiles').update({ points: data.points - 10000 }).eq('id', user.id);
       await supabase.from('withdraws').insert({ user_id: user.id, phone, amount: 10000 });
       await supabase.from('point_logs').insert({ user_id: user.id, points: -10000, source: 'withdraw' });
@@ -137,8 +145,8 @@
       loadProfile();
     }
 
-    copyBtn.onclick = () => {
-      navigator.clipboard.writeText(myRefCode.value);
+    document.getElementById('copyBtn').onclick = () => {
+      navigator.clipboard.writeText(document.getElementById('myRefCode').value);
       appMsg.innerText = 'Kode referral disalin!';
     }
   });
