@@ -1,16 +1,32 @@
 <!DOCTYPE html>
 <html lang="id">
-<body style="background:#0f172a;color:white;text-align:center;padding:50px;font-family:sans-serif">
-  <h1>Tes Tombol Bos</h1>
-  <button id="tesBtn" style="background:blue;padding:20px;border-radius:10px;font-size:20px">KLIK GUE</button>
-  <p id="hasil"></p>
+<head>
+  <meta charset="UTF-8">
+  <title>PulsaRaja</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script> <!-- GAK PAKE IMPORT LAGI -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-900 text-slate-200 p-4 max-w-md mx-auto">
+  <div id="authBox" class="bg-slate-800 p-6 rounded-2xl">
+    <h1 class="text-3xl font-bold text-yellow-400 text-center">PulsaRaja</h1>
+    <input id="email" type="email" placeholder="Email" class="w-full bg-slate-700 p-3 rounded-lg mt-4">
+    <input id="pass" type="password" placeholder="Password min 6" class="w-full bg-slate-700 p-3 rounded-lg mt-2">
+    <button id="signupBtn" class="w-full bg-slate-600 font-bold py-3 rounded-lg mt-3">Daftar Gratis</button>
+    <p id="authMsg" class="text-red-400 text-sm text-center mt-2"></p>
+  </div>
 
 <script>
-  alert('1. JS UDAH LOADING'); // Kalo ini gak muncul = Vercel lu error parah
+  const SUPABASE_URL = 'https://PASTE_URL_LU_DISINI.supabase.co' 
+  const SUPABASE_KEY = 'PASTE_ANON_KEY_LU_DISINI' 
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY) // <-- CARA LAMA TAPI AMAN
 
-  document.getElementById('tesBtn').onclick = () => {
-    document.getElementById('hasil').innerText = '2. TOMBOL KEPIENCET BOS!!!';
-    alert('2. TOMBOL KEPIENCET BOS!!!'); 
+  document.getElementById('signupBtn').onclick = async () => {
+    document.getElementById('authMsg').innerText = 'Daftar...'; // Kalo ini muncul = tombol hidup
+    const { error } = await supabase.auth.signUp({ 
+      email: document.getElementById('email').value, 
+      password: document.getElementById('pass').value 
+    });
+    document.getElementById('authMsg').innerText = error? 'ERROR: ' + error.message : 'Daftar berhasil!';
   }
 </script>
 </body>
