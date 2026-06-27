@@ -3,143 +3,113 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#0f172a"/>
-  <link rel="manifest" href="./manifest.json">
-  <title>PulsaRaja</title>
+  <meta name="monetag" content="0a9bac62f740a53b512cd1f2503de815">
+  <title>PulsaRaja Cuan</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src='//libtl.com/sdk.js' data-zone='1234567' data-sdk='show_1234567'></script> <!-- GANTI ZONE ID LU -->
   <script type="importmap">
-  {
-    "imports": {
-      "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.45.4"
-    }
-  }
+  { "imports": { "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@2.45.4" } }
   </script>
 </head>
 <body class="bg-slate-900 text-slate-200 font-sans p-4 max-w-md mx-auto">
-  
-  <!-- BOX LOGIN / DAFTAR -->
+
   <div id="authBox" class="bg-slate-800 p-6 rounded-2xl shadow-lg mt-10">
     <h1 class="text-3xl font-bold text-yellow-400 text-center mb-4">PulsaRaja 🔥</h1>
     <input id="email" type="email" placeholder="Email" class="w-full bg-slate-700 p-3 rounded-lg mb-2">
     <input id="pass" type="password" placeholder="Password min 6" class="w-full bg-slate-700 p-3 rounded-lg mb-3">
-    <button id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 font-bold py-3 rounded-lg mb-2">Login</button>
-    <button id="signupBtn" class="w-full bg-slate-600 hover:bg-slate-700 font-bold py-3 rounded-lg">Daftar Gratis</button>
+    <button id="loginBtn" class="w-full bg-blue-600 font-bold py-3 rounded-lg mb-2">Login</button>
+    <button id="signupBtn" class="w-full bg-slate-600 font-bold py-3 rounded-lg">Daftar Gratis</button>
     <p id="authMsg" class="text-red-400 text-sm text-center mt-2 h-5"></p>
   </div>
 
-  <!-- BOX APP SETELAH LOGIN -->
   <div id="appBox" class="hidden">
-    <!-- TOMBOL INSTALL MANUAL PWA -->
-    <button id="installBtn" class="hidden w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-lg mb-3 shadow-lg">INSTALL APLIKASI 🔥</button>
-
     <div class="bg-slate-800 p-6 rounded-2xl text-center mb-4 shadow-lg">
       <p class="text-slate-400">Poin Kamu</p>
       <p id="points" class="text-5xl font-bold text-yellow-400">0</p>
       <p id="status" class="text-sm text-slate-400 mt-1">Status: FREE</p>
     </div>
+
+    <!-- FITUR 3: TUGAS HARIAN -->
+    <div class="bg-slate-800 p-4 rounded-2xl mb-4 shadow-lg">
+      <p class="font-bold mb-2">Tugas Harian</p>
+      <button id="checkinBtn" class="w-full bg-blue-600 font-bold py-2 rounded-lg">Check-in +50 Poin</button>
+      <p id="checkinMsg" class="text-xs text-center mt-1 h-4"></p>
+    </div>
+
     <div class="bg-slate-800 p-4 rounded-2xl mb-4 shadow-lg">
       <p class="text-sm text-slate-400 mb-1">Kode Referral Kamu</p>
       <input id="myRefCode" readonly class="w-full bg-slate-700 p-2 rounded-lg font-bold text-yellow-400 text-center">
     </div>
+
+    <!-- FITUR 1: IKLAN -->
     <button id="adBtn" class="w-full bg-green-600 hover:bg-green-700 font-bold py-4 rounded-xl mb-3 shadow-lg">Nonton Iklan +100 Poin</button>
-    <button id="logoutBtn" class="w-full bg-red-600 hover:bg-red-700 font-bold py-2 rounded-lg text-sm">Logout</button>
+
+    <!-- FITUR 2: WD -->
+    <button id="wdBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-xl mb-3 shadow-lg">Withdraw Poin</button>
+
+    <button id="logoutBtn" class="w-full bg-red-600 font-bold py-2 rounded-lg text-sm">Logout</button>
     <p id="appMsg" class="text-center text-sm mt-3 text-yellow-400 h-5"></p>
   </div>
 
 <script type="module">
   import { createClient } from '@supabase/supabase-js'
-
-  // GANTI 2 INI PUNYA LU BOS
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
   
-  const authBox = document.getElementById('authBox');
-  const appBox = document.getElementById('appBox');
-  const authMsg = document.getElementById('authMsg');
-  const appMsg = document.getElementById('appMsg');
+  let userId = null;
 
-  document.getElementById('signupBtn').onclick = async () => {
-    authMsg.innerText = 'Daftar...';
-    const refCode = prompt('Kode referral? Kosongin aja kalo gak ada');
-    let referrerId = null;
-    if(refCode && refCode.trim() !== ''){
-      const res = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
-      if(res.data) referrerId = res.data.id;
-    }
-    const { error } = await supabase.auth.signUp({ 
-      email: document.getElementById('email').value, 
-      password: document.getElementById('pass').value,
-      options: { data: { referred_by: referrerId } }
-    });
-    authMsg.innerText = error? 'ERROR: ' + error.message : 'Daftar berhasil! Coba login.';
-  }
-
-  document.getElementById('loginBtn').onclick = async () => {
-    authMsg.innerText = 'Login...';
-    const { error } = await supabase.auth.signInWithPassword({ 
-      email: document.getElementById('email').value, 
-      password: document.getElementById('pass').value 
-    });
-    authMsg.innerText = error? 'ERROR: ' + error.message : '';
-  }
-
+  // AUTH... SAMA KAYAK SEBELUMNYA
+  document.getElementById('signupBtn').onclick = async () => { /*...kode signup lu... */ }
+  document.getElementById('loginBtn').onclick = async () => { /*...kode login lu... */ }
   document.getElementById('logoutBtn').onclick = async () => await supabase.auth.signOut();
-
   supabase.auth.onAuthStateChange(async (_event, session) => {
-    if(session) { 
-      authBox.classList.add('hidden'); 
-      appBox.classList.remove('hidden'); 
-      loadProfile(); 
-    } else { 
-      authBox.classList.remove('hidden'); 
-      appBox.classList.add('hidden'); 
-    }
+    if(session) { userId = session.user.id; document.getElementById('authBox').classList.add('hidden'); document.getElementById('appBox').classList.remove('hidden'); loadProfile(); }
+    else { userId = null; document.getElementById('authBox').classList.remove('hidden'); document.getElementById('appBox').classList.add('hidden'); }
   });
 
   async function loadProfile() {
-    const resUser = await supabase.auth.getUser(); 
-    const user = resUser.data.user; 
-    if(!user) return;
-    const res = await supabase.from('profiles').select('*').eq('id', user.id).single(); 
-    if(res.error) { appMsg.innerText = 'Gagal load profil'; return; }
-    const data = res.data;
-    document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
-    document.getElementById('status').innerText = `Status: ${data.is_premium? 'PREMIUM' : 'FREE'}`;
-    document.getElementById('myRefCode').value = data.referral_code;
-  }
-  
-  document.getElementById('adBtn').onclick = () => {
-    appMsg.innerText = 'Fitur iklan next bos';
-  }
-
-  // ===== KODE PWA PAKSA MUNCUL =====
-  let deferredPrompt;
-  const installBtn = document.getElementById('installBtn');
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault(); // Cegah popup otomatis
-    deferredPrompt = e; // Simpan event nya
-    installBtn.classList.remove('hidden'); // TAMPILIN TOMBOL KUNING
-    console.log('PWA siap diinstall');
-  });
-
-  installBtn.addEventListener('click', async () => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt(); // Munculin popup install
-      const { outcome } = await deferredPrompt.userChoice;
-      console.log(`User pilih: ${outcome}`);
-      deferredPrompt = null;
-      installBtn.classList.add('hidden'); // Sembunyiin tombol lagi
+    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if(data) {
+      document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
+      document.getElementById('status').innerText = `Status: ${data.is_premium? 'PREMIUM' : 'FREE'}`;
+      document.getElementById('myRefCode').value = data.referral_code;
     }
-  });
+  }
 
-  // DAFTARIN SERVICE WORKER
-// DAFTARIN SERVICE WORKER - PAKE VERSI INI
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js'); // Buang / nya juga
-}
-  
+  // FITUR 1: IKLAN +100 POIN
+  document.getElementById('adBtn').onclick = () => {
+    show_1234567().then(async () => { // Kalo iklan selesai ditonton
+      const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
+      await supabase.from('profiles').update({ points: p.points + 100 }).eq('id', userId);
+      document.getElementById('appMsg').innerText = 'Mantap! +100 Poin masuk 🔥';
+      loadProfile();
+    }).catch(() => { document.getElementById('appMsg').innerText = 'Iklan di-skip'; });
+  }
+
+  // FITUR 3: CHECK-IN +50 POIN
+  document.getElementById('checkinBtn').onclick = async () => {
+    const today = new Date().toISOString().split('T')[0];
+    const { data: p } = await supabase.from('profiles').select('last_checkin, points').eq('id', userId).single();
+    if(p.last_checkin === today) return document.getElementById('checkinMsg').innerText = 'Udah check-in hari ini';
+    await supabase.from('profiles').update({ points: p.points + 50, last_checkin: today }).eq('id', userId);
+    document.getElementById('checkinMsg').innerText = '+50 Poin check-in masuk';
+    loadProfile();
+  }
+
+  // FITUR 2: WD POIN
+  document.getElementById('wdBtn').onclick = async () => {
+    const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
+    if(p.points < 10000) return alert('Minimal WD 10.000 Poin = 10rb Pulsa');
+    const method = prompt('WD via? Pulsa/DANA');
+    const account = prompt('No HP / No DANA:');
+    if(!method ||!account) return;
+    await supabase.from('withdrawals').insert({ user_id: userId, amount: 10000, method, account });
+    await supabase.from('profiles').update({ points: p.points - 10000 }).eq('id', userId);
+    alert('WD 10.000 Poin diajukan. Tunggu 1x24 jam bos');
+    loadProfile();
+  }
+
 </script>
 </body>
 </html>
