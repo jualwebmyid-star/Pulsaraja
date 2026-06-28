@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaskeun Poin V8</title>
+<title>Gaskeun Poin V9</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>body{font-family:'Inter',sans-serif}</style>
 <script src='//whephiwums.com/sdk.js' data-zone='254068' data-sdk='show_254068'></script>
@@ -12,14 +12,14 @@
 
 <div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-lg p-6 space-y-4">
   <div id="authBox" class="space-y-3">
-    <h1 class="text-2xl font-bold text-center text-cyan-400">Gaskeun Poin V8</h1>
+    <h1 class="text-2xl font-bold text-center text-cyan-400">Gaskeun Poin V9</h1>
     <input id="email" type="email" placeholder="Email" class="w-full p-2 rounded bg-slate-700 border-slate-600">
     <input id="pass" type="password" placeholder="Password" class="w-full p-2 rounded bg-slate-700 border-slate-600">
     <div class="flex gap-2">
       <button id="signupBtn" class="w-full bg-cyan-600 hover:bg-cyan-500 p-2 rounded font-bold">Daftar</button>
       <button id="loginBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-2 rounded font-bold">Login</button>
     </div>
-    <p id="authMsg" class="text-center text-sm h-8"></p> <!-- Gue gedein biar muat 2 baris -->
+    <p id="authMsg" class="text-center text-sm h-10"></p> <!-- Gue gedein lagi -->
   </div>
 
   <div id="appBox" class="hidden space-y-4">
@@ -65,10 +65,10 @@
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  // ===== 1. GANTI 4 INI DULU BOS =====
+  // ===== GANTI 4 INI DULU BOS =====
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
-  const BASE_URL = 'https://pulsaraja.vercel.app'; // PENTING
+  const BASE_URL = 'https://pulsaraja.vercel.app';
   const REK_BCA = '1234567890 a.n NAMA LU';
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
@@ -100,22 +100,21 @@
   modalOk.onclick = () => { if(modalCallback) modalCallback(modalInput.value); hideModal(); }
   modalCancel.onclick = hideModal;
 
-  // ===== AUTH V8 - PAKE.SINGLE() + JEDA 5 DETIK =====
+  // ===== AUTH V9 - JEDA 10 DETIK + ERROR 406 =====
   document.getElementById('signupBtn').onclick = async () => {
     authMsg.innerText = 'Daftar...';
     const currentRef = getRefCode();
-    console.log('--- TES REF V8 ---');
+    console.log('--- TES REF V9 ---');
     console.log('URL:', window.location.href);
     console.log('Kode Keambil:', `'${currentRef}'`);
 
     let referrerId = null;
     if(currentRef && currentRef.length > 3){
-      // KUNCI: PAKE.SINGLE() BIAR GAK AMBIGU
       const { data: refProfile, error: refError } = await supabase
-       .from('profiles')
-       .select('id')
-       .eq('referral_code', currentRef)
-       .single();
+      .from('profiles')
+      .select('id')
+      .eq('referral_code', currentRef)
+      .single();
 
       console.log('Hasil Supabase:', refProfile, refError);
 
@@ -123,7 +122,8 @@
         referrerId = refProfile.id;
         authMsg.innerText = `Daftar pakai kode ref: ${currentRef} ✅`;
       } else {
-        authMsg.innerText = `Kode ref SALAH. ${refError.message}`;
+        // Kalo 406 = RLS belum dibuka
+        authMsg.innerText = `Kode ref GAGAL DICEK. Error: ${refError.code || 'RLS 406'}. Run SQL Policy dulu bos.`;
       }
     }
 
@@ -137,7 +137,7 @@
       authMsg.innerText = 'ERROR SIGNUP: ' + error.message;
     } else {
       authMsg.innerText = authMsg.innerText || 'Daftar berhasil! Auto login...';
-      await new Promise(r => setTimeout(r, 5000)); // JEDA 5 DETIK BOS
+      await new Promise(r => setTimeout(r, 10000)); // JEDA 10 DETIK BOS, BACA SEPUASNYA
     }
   }
 
