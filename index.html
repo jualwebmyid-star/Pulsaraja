@@ -3,71 +3,95 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Test Supabase V10.5 PUBLIK</title>
-<h1 style="color:lime">INI FILE V10.5 TEST PUBLIK</h1>
-<script src="/js/supabase.js"></script> 
+<title>Pulsar V10.7 PUBLIK ONLY</title>
+<h1 style="color:#0f0;text-align:center">PULSAR V10.7 - NO ADMIN</h1>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script> 
 <style>
-body{font-family:sans-serif;background:#111;color:#eee;margin:0;padding:20px}
-.card{background:#222;padding:15px;border-radius:8px;margin-bottom:15px}
+body{font-family:'Segoe UI',sans-serif;background:#111;color:#eee;margin:0;padding:20px}
+.wrap{max-width:800px;margin:auto}
+.card{background:#1c1c1c;padding:16px;border-radius:10px;margin-bottom:16px;border:1px solid #2a2a2a}
 table{width:100%;border-collapse:collapse;margin-top:10px}
-th,td{padding:8px;border:1px solid #444;text-align:left;font-size:14px}
+th,td{padding:10px;border-bottom:1px solid #2a2a2a;text-align:left;font-size:14px}
+th{background:#222;color:#aaa}
+.loading{color:#ff0}
+.error{color:#f55;font-weight:bold}
+a{color:#0af;text-decoration:none}
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<h2>Test Koneksi Supabase Langsung</h2>
+  <div class="card">
+    <h2>Status Koneksi: <span id="status" class="loading">Loading...</span></h2>
+    <p><small>Buka F12 > Console buat liat error detail bos</small></p>
+  </div>
 
-<div class="card">
-  <h3>Data Video</h3>
-  <div id="video-list">Loading video...</div>
-</div>
+  <div class="card">
+    <h3>🎬 Daftar Video</h3>
+    <div id="video-list" class="loading">Ambil data video...</div>
+  </div>
 
-<div class="card">
-  <h3>Data Users</h3>
-  <table><thead><tr><th>Email</th><th>Poin</th><th>Role</th></tr></thead><tbody id="users-tbody"><tr><td colspan="3">Loading...</td></tr></tbody></table>
+  <div class="card">
+    <h3>👥 Daftar User</h3>
+    <table><thead><tr><th>Email</th><th>Poin</th><th>Role</th></tr></thead><tbody id="users-tbody"><tr><td colspan="3" class="loading">Ambil data user...</td></tr></tbody></table>
+  </div>
+
 </div>
 
 <script>
-// ==================== 1. KONFIG SUPABASE - GANTI PUNYA LU ====================
+// ==================== 1. GANTI INI PUNYA LU BOS ====================
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ==================== 2. LANGSUNG LOAD DATA, TANPA LOGIN ====================
-document.addEventListener('DOMContentLoaded', () => { loadDataPublik(); });
+const statusEl = document.getElementById('status');
 
-async function loadDataPublik() {
+// ==================== 2. JALAN OTOMATIS PAS BUKA ====================
+document.addEventListener('DOMContentLoaded', loadData);
+
+async function loadData() {
     try {
-        console.log('Mulai load data...');
+        console.log('1. Client Supabase OK');
+        statusEl.innerText = 'Konek...';
 
-        const { data: vids, error: vidsError } = await supabase.from('videos').select('*').order('id', { ascending: false });
+        // Ambil Video
+        const { data: vids, error: vidsError } = await supabase.from('videos').select('*').order('id', { ascending: false }).limit(20);
         if (vidsError) throw vidsError; 
         renderVideos(vids || []);
 
-        const { data: users, error: usersError } = await supabase.from('profiles').select('email, points, role').order('id', { ascending: false });
+        // Ambil Users/Profiles 
+        const { data: users, error: usersError } = await supabase.from('profiles').select('email, points, role').order('id', { ascending: false }).limit(20);
         if (usersError) throw usersError; 
         renderUsers(users || []);
 
-        console.log('Sukses load semua data bos');
+        statusEl.innerText = 'Sukses ✅';
+        statusEl.className = '';
+        console.log('2. Data Sukses Diambil');
 
     } catch (error) { 
-      alert('GAGAL LOAD DATA: ' + error.message); 
       console.error('ERROR DETAIL:', error); 
-      document.getElementById('video-list').innerText = 'GAGAL: ' + error.message; 
+      statusEl.innerText = 'GAGAL ❌';
+      statusEl.className = 'error';
+      document.getElementById('video-list').innerHTML = `<p class="error">Gagal: ${error.message}</p>`; 
+      document.getElementById('users-tbody').innerHTML = `<tr><td colspan="3" class="error">${error.message}</td></tr>`;
     }
 }
 
-// ==================== 3. RENDER ====================
+// ==================== 3. CETAK KE HTML ====================
 function renderVideos(data) {
     const list = document.getElementById('video-list');
-    if (data.length === 0) return list.innerHTML = `<p>Belum ada video di DB.</p>`;
-    list.innerHTML = data.map(v => `<div style="background:#000;padding:8px;margin-top:5px;border-radius:5px;"><b>${v.title}</b><br><small>${v.youtube_url}</small></div>`).join('');
+    if (data.length === 0) return list.innerHTML = `<p style="color:#aaa">Tabel 'videos' kosong bos.</p>`;
+    list.innerHTML = data.map(v => `
+      <div style="background:#000;padding:12px;margin-top:8px;border-radius:8px;">
+        <b>${v.title || 'Tanpa Judul'}</b><br>
+        <small><a href="${v.youtube_url}" target="_blank">${v.youtube_url}</a></small>
+      </div>`).join('');
 }
 
 function renderUsers(data) {
     const tbody = document.getElementById('users-tbody');
-    if (data.length === 0) return tbody.innerHTML = `<tr><td colspan="3">Belum ada user</td></tr>`;
-    tbody.innerHTML = data.map(u => `<tr><td>${u.email}</td><td>${u.points}</td><td>${u.role}</td></tr>`).join('');
+    if (data.length === 0) return tbody.innerHTML = `<tr><td colspan="3" style="color:#aaa">Tabel 'profiles' kosong.</td></tr>`;
+    tbody.innerHTML = data.map(u => `<tr><td>${u.email || '-'}</td><td>${u.points ?? 0}</td><td>${u.role || '-'}</td></tr>`).join('');
 }
 </script>
 </body>
