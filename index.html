@@ -3,130 +3,72 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Admin V10.5 OFFLINE</title>
+<title>Test Supabase V10.5 PUBLIK</title>
+<h1 style="color:lime">INI FILE V10.5 TEST PUBLIK</h1>
 <script src="/js/supabase.js"></script> 
 <style>
 body{font-family:sans-serif;background:#111;color:#eee;margin:0;padding:20px}
 .card{background:#222;padding:15px;border-radius:8px;margin-bottom:15px}
 table{width:100%;border-collapse:collapse;margin-top:10px}
 th,td{padding:8px;border:1px solid #444;text-align:left;font-size:14px}
-input,button{padding:8px;border-radius:5px;border:1px solid #444;background:#000;color:#eee;margin-right:5px}
-button{cursor:pointer;background:#333} 
-#loading-text{text-align:center;padding:50px;font-size:18px}
 </style>
 </head>
 <body>
 
-<div id="loading-text">Loading data... Tunggu ya bos</div>
+<h2>Test Koneksi Supabase Langsung</h2>
 
-<div id="admin-content" style="display:none;">
-  <h2>Panel Admin V10.5 OFFLINE</h2>
+<div class="card">
+  <h3>Data Video</h3>
+  <div id="video-list">Loading video...</div>
+</div>
 
-  <div class="card">
-    <h3>Upload Video YouTube</h3>
-    <form id="form-upload-video">
-      <input id="video-title" placeholder="Judul Video" required>
-      <input id="video-url" placeholder="Link Youtube" required>
-      <button type="submit">Upload</button>
-    </form>
-  </div>
-
-  <div class="card">
-    <h3>Data Withdraw</h3>
-    <table><thead><tr><th>ID</th><th>User ID</th><th>Jumlah</th><th>Rek</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="wd-tbody"></tbody></table>
-  </div>
-
-  <div class="card">
-    <h3>Data Video</h3>
-    <div id="video-list"></div>
-  </div>
-
-  <div class="card">
-    <h3>Data Users</h3>
-    <table><thead><tr><th>Email</th><th>Poin</th><th>Role</th><th>Upgrade</th></tr></thead><tbody id="users-tbody"></tbody></table>
-  </div>
+<div class="card">
+  <h3>Data Users</h3>
+  <table><thead><tr><th>Email</th><th>Poin</th><th>Role</th></tr></thead><tbody id="users-tbody"><tr><td colspan="3">Loading...</td></tr></tbody></table>
 </div>
 
 <script>
-// ==================== KONFIG SUPABASE - GANTI INI BOS ====================
-const SUPABASE_URL = 'https://PASTE_URL_SUPABASE_LU.supabase.co'; 
-const SUPABASE_ANON_KEY = 'PASTE_ANON_KEY_LU'; 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+// ==================== 1. KONFIG SUPABASE - GANTI PUNYA LU ====================
+  const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
+  const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ==================== MAIN ====================
-document.addEventListener('DOMContentLoaded', () => { checkAdmin(); });
+// ==================== 2. LANGSUNG LOAD DATA, TANPA LOGIN ====================
+document.addEventListener('DOMContentLoaded', () => { loadDataPublik(); });
 
-async function checkAdmin() {
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) return window.location.href = '/login.html';
-
-    const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-    if (error || !profile || profile.role !== 'admin') {
-        alert('Akses ditolak. Lu bukan Admin bos. Error: ' + (error?.message || ''));
-        return window.location.href = '/dashboard.html';
-    }
-    await loadAdminData();
-    document.getElementById('loading-text').style.display = 'none';
-    document.getElementById('admin-content').style.display = 'block';
-}
-
-async function loadAdminData() {
+async function loadDataPublik() {
     try {
-        const { data: wd, error: wdError } = await supabase.from('withdrawals').select('*').order('id', { ascending: false });
-        if (wdError) throw wdError; renderWithdrawals(wd || []);
+        console.log('Mulai load data...');
 
         const { data: vids, error: vidsError } = await supabase.from('videos').select('*').order('id', { ascending: false });
-        if (vidsError) throw vidsError; renderVideos(vids || []);
+        if (vidsError) throw vidsError; 
+        renderVideos(vids || []);
 
-        const { data: users, error: usersError } = await supabase.from('profiles').select('*').order('id', { ascending: false });
-        if (usersError) throw usersError; renderUsers(users || []);
+        const { data: users, error: usersError } = await supabase.from('profiles').select('email, points, role').order('id', { ascending: false });
+        if (usersError) throw usersError; 
+        renderUsers(users || []);
+
+        console.log('Sukses load semua data bos');
 
     } catch (error) { 
       alert('GAGAL LOAD DATA: ' + error.message); 
-      console.error('Gagal load:', error); 
-      document.getElementById('loading-text').innerText = 'Gagal load: ' + error.message; 
+      console.error('ERROR DETAIL:', error); 
+      document.getElementById('video-list').innerText = 'GAGAL: ' + error.message; 
     }
 }
 
-// ==================== RENDER ====================
-function renderWithdrawals(data) {
-    const tbody = document.getElementById('wd-tbody');
-    if (data.length === 0) return tbody.innerHTML = `<tr><td colspan="6">Belum ada data WD</td></tr>`;
-    tbody.innerHTML = data.map(wd => `<tr><td>${wd.id}</td><td>${wd.user_id}</td><td>${wd.amount}</td><td>${wd.e_wallet} - ${wd.e_wallet_number}</td><td>${wd.status}</td><td>${wd.status === 'pending' ? `<button onclick="updateWD(${wd.id}, 'paid')">Approve</button> <button onclick="updateWD(${wd.id}, 'rejected')">Tolak</button>` : '-'}</td></tr>`).join('');
-}
-
+// ==================== 3. RENDER ====================
 function renderVideos(data) {
     const list = document.getElementById('video-list');
-    if (data.length === 0) return list.innerHTML = `<p>Belum ada video.</p>`;
-    list.innerHTML = data.map(v => `<div style="display:flex;justify-content:space-between;background:#000;padding:8px;margin-top:5px;border-radius:5px;"><p><b>${v.title}</b><br><small>${v.youtube_url}</small></p><button onclick="deleteVideo(${v.id})">Hapus</button></div>`).join('');
+    if (data.length === 0) return list.innerHTML = `<p>Belum ada video di DB.</p>`;
+    list.innerHTML = data.map(v => `<div style="background:#000;padding:8px;margin-top:5px;border-radius:5px;"><b>${v.title}</b><br><small>${v.youtube_url}</small></div>`).join('');
 }
 
 function renderUsers(data) {
     const tbody = document.getElementById('users-tbody');
-    if (data.length === 0) return tbody.innerHTML = `<tr><td colspan="4">Belum ada user</td></tr>`;
-    tbody.innerHTML = data.map(u => `<tr><td>${u.email}</td><td>${u.points}</td><td>${u.role}</td><td>${u.upgrade_status}</td></tr>`).join('');
+    if (data.length === 0) return tbody.innerHTML = `<tr><td colspan="3">Belum ada user</td></tr>`;
+    tbody.innerHTML = data.map(u => `<tr><td>${u.email}</td><td>${u.points}</td><td>${u.role}</td></tr>`).join('');
 }
-
-// ==================== ACTIONS ====================
-async function updateWD(id, status) {
-    if(!confirm(`Yakin mau ${status}?`)) return;
-    const { error } = await supabase.from('withdrawals').update({ status }).eq('id', id);
-    if (error) return alert('Gagal: ' + error.message); alert(`WD ${status}`); loadAdminData(); 
-}
-
-async function deleteVideo(id) {
-    if(!confirm('Hapus video ini?')) return;
-    const { error } = await supabase.from('videos').delete().eq('id', id);
-    if (error) return alert('Gagal: ' + error.message); loadAdminData();
-}
-
-document.getElementById('form-upload-video').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const title = document.getElementById('video-title').value; const url = document.getElementById('video-url').value;
-    if(!title || !url) return alert('Isi semua bos');
-    const { error } = await supabase.from('videos').insert([{ title, youtube_url: url }]);
-    if (error) return alert('Gagal upload: ' + error.message); alert('Video ke-upload'); e.target.reset(); loadAdminData();
-});
 </script>
 </body>
 </html>
