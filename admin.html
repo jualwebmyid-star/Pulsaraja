@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Admin V10.5 OFFLINE</title>
+<title>Panel Admin V10.5 FIX</title>
 <script src="/js/supabase.js"></script> 
 <style>
 body{font-family:sans-serif;background:#111;color:#eee;margin:0;padding:20px}
@@ -20,7 +20,7 @@ button{cursor:pointer;background:#333}
 <div id="loading-text">Loading data... Tunggu ya bos</div>
 
 <div id="admin-content" style="display:none;">
-  <h2>Panel Admin V10.5 OFFLINE</h2>
+  <h2>Panel Admin V10.5 FIX</h2>
 
   <div class="card">
     <h3>Upload Video YouTube</h3>
@@ -48,12 +48,12 @@ button{cursor:pointer;background:#333}
 </div>
 
 <script>
-// ==================== KONFIG SUPABASE - GANTI INI BOS ====================
+// ==================== 1. KONFIG SUPABASE - CUMA ADA 1 KALI DISINI BOS ====================
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// ==================== MAIN ====================
+// ==================== 2. MAIN ====================
 document.addEventListener('DOMContentLoaded', () => { checkAdmin(); });
 
 async function checkAdmin() {
@@ -88,7 +88,7 @@ async function loadAdminData() {
     }
 }
 
-// ==================== RENDER ====================
+// ==================== 3. RENDER ====================
 function renderWithdrawals(data) {
     const tbody = document.getElementById('wd-tbody');
     if (data.length === 0) return tbody.innerHTML = `<tr><td colspan="6">Belum ada data WD</td></tr>`;
@@ -107,7 +107,7 @@ function renderUsers(data) {
     tbody.innerHTML = data.map(u => `<tr><td>${u.email}</td><td>${u.points}</td><td>${u.role}</td><td>${u.upgrade_status}</td></tr>`).join('');
 }
 
-// ==================== ACTIONS ====================
+// ==================== 4. ACTIONS ====================
 async function updateWD(id, status) {
     if(!confirm(`Yakin mau ${status}?`)) return;
     const { error } = await supabase.from('withdrawals').update({ status }).eq('id', id);
