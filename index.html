@@ -3,12 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Panel Admin</title>
-<script type="module">
-  import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
-  window.supabase = { createClient } // Biar kode lama lu tetep jalan
-</script>
-  <style>
+<title>Panel Admin V10.8 FIX</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
 body{font-family:sans-serif;background:#0f172a;color:#e2e8f0;margin:0;padding:20px}
 .card{background:#1e293b;padding:20px;border-radius:12px;margin-bottom:20px}
 h2,h3{margin-top:0} table{width:100%;border-collapse:collapse;margin-top:10px}
@@ -27,7 +24,7 @@ button{cursor:pointer;background:#3b82f6;border:none} button:hover{opacity:0.8}
 <div id="loading-text">Loading data... Tunggu ya bos</div>
 
 <div id="admin-content" style="display:none;">
-  <h2>Panel Admin V10.9</h2>
+  <h2>Panel Admin V10.8</h2>
 
   <div class="card">
     <h3>Upload Video YouTube</h3>
@@ -56,9 +53,9 @@ button{cursor:pointer;background:#3b82f6;border:none} button:hover{opacity:0.8}
 
 <script>
 // ==================== KONFIG SUPABASE - GANTI INI BOS ====================
-const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
-const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
+  const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ==================== STATE GLOBAL ====================
 let wdData = []; let videosData = []; let userData = [];
@@ -72,7 +69,7 @@ async function checkAdmin() {
 
     const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', user.id).single();
     if (error || !profile || profile.role !== 'admin') {
-        alert('Akses ditolak. Lu bukan Admin bos.');
+        alert('Akses ditolak. Lu bukan Admin bos. Error: ' + (error?.message || 'Role bukan admin'));
         return window.location.href = '/dashboard.html';
     }
     await loadAdminData();
@@ -91,7 +88,11 @@ async function loadAdminData() {
         const { data: users, error: usersError } = await supabase.from('profiles').select('*').order('points', { ascending: false });
         if (usersError) throw usersError; userData = users || []; renderUsers(userData);
 
-    } catch (error) { console.error('Gagal load:', error); document.getElementById('loading-text').innerText = 'Gagal load: ' + error.message; }
+    } catch (error) { 
+      alert('GAGAL LOAD: ' + error.message); // <-- Ini biar langsung nongol errornya
+      console.error('Gagal load:', error); 
+      document.getElementById('loading-text').innerText = 'Gagal load: ' + error.message; 
+    }
 }
 
 // ==================== RENDER ====================
