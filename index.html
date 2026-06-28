@@ -298,92 +298,108 @@
     clearInterval(ytInterval);
   }
 
-  // ===== PANEL ADMIN TABS =====
-  document.querySelectorAll('.tab-btn').forEach(b => b.onclick = (e) => {
-    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-    e.target.classList.add('active');
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-    document.getElementById('tab-' + e.target.dataset.tab).classList.remove('hidden');
-    if(e.target.dataset.tab === 'videos') loadVideoList();
-  });
+// Pastiin lu udah init supabaseClient di atas ya bos
+const supabase = supabaseClient; 
 
-  document.getElementById('adminBtn').onclick = () => {
-    document.getElementById('appBox').classList.add('hidden');
-    document.getElementById('adminBox').classList.remove('hidden');
-    loadAdminData();
-  }
-  document.getElementById('backBtn').onclick = () => { document.getElementById('adminBox').classList.add('hidden'); document.getElementById('appBox').classList.remove('hidden'); }
+let wdData = [];
+let videosData = [];
+let userData = [];
 
-  // ===== KELOLA VIDEO ADMIN =====
-  async function loadVideoList() {
-    const list = document.getElementById('videoList');
-    list.innerHTML = 'Loading...';
-    const { data } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
-    if(!data) return list.innerHTML = 'Gagal load';
-    let html = '';
-    data.forEach(v => {
-      html += `<div class="bg-slate-700 p-2 rounded flex justify-between items-center">
-        <a href="${v.youtube_embed_url}" target="_blank" class="underline truncate w-40">${v.youtube_embed_url}</a>
-        <div class="flex gap-1">
-          <button data-id="${v.id}" class="toggleBtn ${v.is_active? 'bg-yellow-600' : 'bg-green-600'} px-2 py-1 rounded text-[10px]">${v.is_active? 'Nonaktif' : 'Aktifkan'}</button>
-          <button data-id="${v.id}" class="delBtn bg-red-600 px-2 py-1 rounded text-[10px]">Hapus</button>
-        </div>
-      </div>`;
-    });
-    list.innerHTML = html || '<p class="text-slate-400">Belum ada video</p>';
+document.addEventListener('DOMContentLoaded', () => {
+    checkAdmin(); // Cek role dulu baru load
+});
 
-    document.querySelectorAll('.toggleBtn').forEach(b => b.onclick = async (e) => {
-      const id = e.target.dataset.id;
-      const isActive = e.target.classList.contains('bg-yellow-600');
-      await supabase.from('videos').update({ is_active:!isActive }).eq('id', id);
-      loadVideoList();
-    });
-    document.querySelectorAll('.delBtn').forEach(b => b.onclick = async (e) => {
-      await supabase.from('videos').delete().eq('id', e.target.dataset.id);
-      loadVideoList();
-    });
-  }
+async function checkAdmin() {
+    const { data: { user } = await supabase.auth.getUser();
+    if (!user) return window.location.href = '/login.html';
 
-  document.getElementById('addYtBtn').onclick = async () => {
-    const link = document.getElementById('newYtLink').value;
-    if(!link.includes('embed')) return showModal({title:'Gagal', text:'Wajib pake link EMBED dari YT', callback:()=>{}});
-    const { error } = await supabase.from('videos').insert({ youtube_embed_url: link });
-    if(error) document.getElementById('videoMsg').innerText = 'Gagal tambah';
-    else {
-      document.getElementById('newYtLink').value = '';
-      document.getElementById('videoMsg').innerText = 'Video ditambah ✅';
-      setTimeout(()=> document.getElementById('videoMsg').innerText='', 2000);
-      loadVideoList();
+    const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+
+    if (error || profile?.role !== 'admin') {
+        alert('Akses ditolak. Bukan Admin.');
+        return window.location.href = '/dashboard.html';
     }
-  }
+    
+    // Kalo lolos admin, baru load semua data
+    loadAdminData();
+    document.getElementById('loading-text').style.display = 'none'; // Sembunyiin "Loading data..."
+    document.getElementById('admin-content').style.display = 'block'; // Tampilin konten
+}
 
-  // ===== WD & UPGRADE ADMIN =====
-  async function loadAdminData() {
-    const list = document.getElementById('adminList');
-    list.innerHTML = 'Loading data...';
-    const { data: pendingUpgrades } = await supabase.from('profiles').select('id, email, upgrade_proof_url').eq('upgrade_status', 'pending');
-    const { data: pendingWd } = await supabase.from('withdrawals').select('id, user_id, amount, method, account').eq('status', 'pending');
-    let html = '<h3 class="font-bold text-purple-400 border-b border-slate-600 pb-1">Upgrade Pending</h3>';
-    if(pendingUpgrades.length === 0) html += '<p class="text-sm text-slate-400">Kosong</p>';
-    pendingUpgrades.forEach(u => {
-      html += `<div class="bg-slate-700 p-2 rounded text-xs space-y-1"><p><b>Email:</b> ${u.email}</p><a href="${u.upgrade_proof_url}" target="_blank" class="text-cyan-400 underline">Lihat Bukti</a><button data-id="${u.id}" class="approveUp bg-green-600 w-full mt-1 p-1 rounded hover:bg-green-500 font-bold">Approve PREMIUM</button></div>`;
-    });
-    html += '<h3 class="font-bold text-yellow-400 mt-3 border-b border-slate-600 pb-1">WD Pending</h3>';
-    if(pendingWd.length === 0) html += '<p class="text-sm text-slate-400">Kosong</p>';
-    pendingWd.forEach(w => {
-      html += `<div class="bg-slate-700 p-2 rounded text-xs space-y-1"><p><b>Jumlah:</b> ${w.amount} Poin via ${w.method}</p><p><b>No:</b> ${w.account}</p><button data-id="${w.id}" class="approveWd bg-green-600 w-full mt-1 p-1 rounded hover:bg-green-500 font-bold">Tandai Sudah Transfer</button></div>`;
-    });
-    list.innerHTML = html;
-    document.querySelectorAll('.approveUp').forEach(b => b.onclick = async (e) => {
-      await supabase.from('profiles').update({ upgrade_status: 'approved' }).eq('id', e.target.dataset.id);
-      loadAdminData();
-    });
-    document.querySelectorAll('.approveWd').forEach(b => b.onclick = async (e) => {
-      await supabase.from('withdrawals').update({ status: 'done' }).eq('id', e.target.dataset.id);
-      loadAdminData();
-    });
-  }
+async function loadAdminData() {
+    try {
+        // 1. LOAD WITHDRAWALS -> Kalo null jadi []
+        const { data: wd, error: wdError } = await supabase.from('withdrawals').select('*').order('created_at', { ascending: false });
+        if (wdError) throw wdError;
+        wdData = wd || []; // <-- KUNCI ANTI CRASH
+        renderWithdrawals(wdData);
 
+        // 2. LOAD VIDEOS -> Kalo null jadi []
+        const { data: vids, error: vidsError } = await supabase.from('videos').select('*');
+        if (vidsError) throw vidsError;
+        videosData = vids || []; // <-- KUNCI ANTI CRASH
+        renderVideos(videosData);
+
+        // 3. LOAD USERS -> Kalo null jadi []
+        const { data: users, error: usersError } = await supabase.from('profiles').select('*').order('points', { ascending: false });
+        if (usersError) throw usersError;
+        userData = users || []; // <-- KUNCI ANTI CRASH
+        renderUsers(userData);
+
+    } catch (error) {
+        console.error('Gagal load data admin:', error.message);
+        document.getElementById('loading-text').innerText = 'Gagal load data: ' + error.message;
+    }
+}
+
+function renderWithdrawals(data) {
+    const tbody = document.getElementById('wd-tbody');
+    if (data.length === 0) { // <-- Sekarang aman karena data pasti array
+        tbody.innerHTML = `<tr><td colspan="6" class="text-center">Belum ada data WD</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = data.map(wd => `
+        <tr>
+            <td>${wd.id}</td>
+            <td>${wd.user_id}</td>
+            <td>${wd.amount}</td>
+            <td>${wd.e_wallet} - ${wd.e_wallet_number}</td>
+            <td><span class="badge badge-${wd.status}">${wd.status}</span></td>
+            <td><button onclick="approveWD(${wd.id})">Approve</button></td>
+        </tr>
+    `).join('');
+}
+
+function renderVideos(data) {
+    const list = document.getElementById('video-list');
+    if (data.length === 0) {
+        list.innerHTML = `<p>Belum ada video. Upload dulu bos.</p>`;
+        return;
+    }
+    list.innerHTML = data.map(v => `<div>${v.title} - <button onclick="deleteVideo(${v.id})">Hapus</button></div>`).join('');
+}
+
+function renderUsers(data) {
+    const tbody = document.getElementById('users-tbody');
+    if (data.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4">Belum ada user</td></tr>`;
+        return;
+    }
+    tbody.innerHTML = data.map(u => `
+        <tr>
+            <td>${u.email}</td>
+            <td>${u.points}</td>
+            <td>${u.role}</td>
+            <td>${u.upgrade_status}</td>
+        </tr>
+    `).join('');
+}
+
+// Contoh fungsi approve
+async function approveWD(id) {
+    await supabase.from('withdrawals').update({ status: 'paid' }).eq('id', id);
+    loadAdminData(); // Refresh
+}
   // ===== FITUR LAINNYA =====
   document.getElementById('copyBtn').onclick = () => {
     navigator.clipboard.writeText(document.getElementById('myRefCode').value);
