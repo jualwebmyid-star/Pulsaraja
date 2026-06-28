@@ -3,43 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaskeun Poin V7</title>
+<title>Gaskeun Poin V8</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>body{font-family:'Inter',sans-serif}</style>
-<!-- GANTI ZONE ID MONETAG LU DISINI -->
 <script src='//whephiwums.com/sdk.js' data-zone='254068' data-sdk='show_254068'></script>
 </head>
 <body class="bg-slate-900 text-slate-200 flex items-center justify-center min-h-screen p-4">
 
 <div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-lg p-6 space-y-4">
-
-  <!-- AUTH BOX -->
   <div id="authBox" class="space-y-3">
-    <h1 class="text-2xl font-bold text-center text-cyan-400">Gaskeun Poin V7</h1>
+    <h1 class="text-2xl font-bold text-center text-cyan-400">Gaskeun Poin V8</h1>
     <input id="email" type="email" placeholder="Email" class="w-full p-2 rounded bg-slate-700 border-slate-600">
     <input id="pass" type="password" placeholder="Password" class="w-full p-2 rounded bg-slate-700 border-slate-600">
     <div class="flex gap-2">
       <button id="signupBtn" class="w-full bg-cyan-600 hover:bg-cyan-500 p-2 rounded font-bold">Daftar</button>
       <button id="loginBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-2 rounded font-bold">Login</button>
     </div>
-    <p id="authMsg" class="text-center text-sm h-5"></p>
+    <p id="authMsg" class="text-center text-sm h-8"></p> <!-- Gue gedein biar muat 2 baris -->
   </div>
 
-  <!-- APP BOX -->
   <div id="appBox" class="hidden space-y-4">
     <div class="flex justify-between items-center">
       <h2 class="text-xl font-bold">Dashboard</h2>
       <button id="logoutBtn" class="text-xs bg-red-600 hover:bg-red-500 px-3 py-1 rounded">Logout</button>
     </div>
-
     <div class="bg-slate-700 p-4 rounded-lg text-center">
       <p class="text-sm text-slate-400">Poin Kamu</p>
       <p id="points" class="text-4xl font-bold text-yellow-400">0</p>
     </div>
-
     <button id="adBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">Tonton Iklan +100</button>
     <p id="appMsg" class="text-center text-sm h-5"></p>
-
     <div class="bg-slate-700 p-3 rounded-lg space-y-2">
       <p class="font-bold">Link Referral Kamu</p>
       <div class="flex gap-2">
@@ -48,18 +41,15 @@
       </div>
       <p id="copyMsg" class="text-xs text-green-400 h-4"></p>
     </div>
-
     <div class="bg-slate-700 p-3 rounded-lg space-y-2">
       <p class="font-bold">Upgrade Akun</p>
       <p id="premiumStatus" class="text-sm">Status: FREE</p>
       <button id="upgradeBtn" class="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-bold">Upgrade PREMIUM 10rb</button>
     </div>
-
     <button id="wdBtn" class="w-full bg-yellow-600 hover:bg-yellow-500 p-2 rounded font-bold">Withdraw 10.000 Poin</button>
   </div>
 </div>
 
-<!-- MODAL -->
 <div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4">
   <div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3">
     <h3 id="modalTitle" class="text-lg font-bold"></h3>
@@ -75,10 +65,10 @@
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  // ===== 1. GANTI 3 INI DULU BOS =====
+  // ===== 1. GANTI 4 INI DULU BOS =====
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
-  const BASE_URL = 'https://pulsaraja.vercel.app'; // PENTING BUAT LINK REF
+  const BASE_URL = 'https://pulsaraja.vercel.app'; // PENTING
   const REK_BCA = '1234567890 a.n NAMA LU';
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
@@ -86,15 +76,13 @@
   const authMsg = document.getElementById('authMsg');
   const appMsg = document.getElementById('appMsg');
 
-  // ===== 2. SISTEM AMBIL REF PALING BANDEL =====
   function getRefCode() {
     const url = window.location.href;
     const match = url.match(/[?&]ref=([^&]+)/i);
     return match? match[1].trim() : null;
   }
-  const refFromUrl = getRefCode();
 
-  // ===== 3. SISTEM MODAL =====
+  // ===== MODAL =====
   const modal = document.getElementById('modal');
   const modalTitle = document.getElementById('modalTitle');
   const modalText = document.getElementById('modalText');
@@ -112,23 +100,30 @@
   modalOk.onclick = () => { if(modalCallback) modalCallback(modalInput.value); hideModal(); }
   modalCancel.onclick = hideModal;
 
-  // ===== 4. AUTH DENGAN JEDA 2 DETIK =====
+  // ===== AUTH V8 - PAKE.SINGLE() + JEDA 5 DETIK =====
   document.getElementById('signupBtn').onclick = async () => {
     authMsg.innerText = 'Daftar...';
     const currentRef = getRefCode();
-    console.log('--- TES REF ---');
+    console.log('--- TES REF V8 ---');
     console.log('URL:', window.location.href);
     console.log('Kode Keambil:', `'${currentRef}'`);
 
     let referrerId = null;
     if(currentRef && currentRef.length > 3){
-      const res = await supabase.from('profiles').select('id').eq('referral_code', currentRef);
-      console.log('Hasil Supabase:', res);
-      if(res.data && res.data.length > 0) {
-        referrerId = res.data[0].id;
+      // KUNCI: PAKE.SINGLE() BIAR GAK AMBIGU
+      const { data: refProfile, error: refError } = await supabase
+       .from('profiles')
+       .select('id')
+       .eq('referral_code', currentRef)
+       .single();
+
+      console.log('Hasil Supabase:', refProfile, refError);
+
+      if(refProfile) {
+        referrerId = refProfile.id;
         authMsg.innerText = `Daftar pakai kode ref: ${currentRef} ✅`;
       } else {
-        authMsg.innerText = `Kode ref ${currentRef} SALAH`;
+        authMsg.innerText = `Kode ref SALAH. ${refError.message}`;
       }
     }
 
@@ -138,10 +133,11 @@
       options: { data: { referred_by: referrerId } }
     });
 
-    if(error) { authMsg.innerText = 'ERROR: ' + error.message; }
-    else {
+    if(error) {
+      authMsg.innerText = 'ERROR SIGNUP: ' + error.message;
+    } else {
       authMsg.innerText = authMsg.innerText || 'Daftar berhasil! Auto login...';
-      await new Promise(r => setTimeout(r, 2000)); // Jeda biar kebaca
+      await new Promise(r => setTimeout(r, 5000)); // JEDA 5 DETIK BOS
     }
   }
 
@@ -173,7 +169,6 @@
     if(data){
       document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
       document.getElementById('myRefCode').value = `${BASE_URL}?ref=${data.referral_code}`;
-
       const statusEl = document.getElementById('premiumStatus');
       const btnEl = document.getElementById('upgradeBtn');
       if(data.upgrade_status === 'approved'){
