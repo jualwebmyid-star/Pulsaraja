@@ -107,53 +107,61 @@
   modalOk.onclick = () => { if(modalCallback) modalCallback(modalInput.value); hideModal(); }
   modalCancel.onclick = hideModal;
 
-  // ===== AUTH =====
-  document.getElementById('signupBtn').onclick = async () => {
-    authMsg.innerText = 'Daftar...';
-    const currentRef = getRefCode(); // Ambil lagi biar fresh
-    console.log('REF KEDETEKSI:', currentRef); // CEK DI F12
+// ===== AUTH =====
+document.getElementById('signupBtn').onclick = async () => {
+  authMsg.innerText = 'Daftar...';
+  const currentRef = getRefCode();
+  console.log('REF KEDETEKSI:', currentRef);
 
-    let referrerId = null;
-    if(currentRef && currentRef.length > 3){
-      const res = await supabase.from('profiles').select('id').eq('referral_code', currentRef).single();
-      if(res.data) {
-        referrerId = res.data.id;
-        authMsg.innerText = `Daftar pakai kode ref: ${currentRef} ✅`;
-      } else {
-        authMsg.innerText = `Kode ref ${currentRef} salah`;
-      }
-    }
-
-    const { error } = await supabase.auth.signUp({
-      email: document.getElementById('email').value,
-      password: document.getElementById('pass').value,
-      options: { data: { referred_by: referrerId } }
-    });
-    authMsg.innerText = error? 'ERROR: ' + error.message : authMsg.innerText || 'Daftar berhasil! Login bos.';
-  }
-
-  document.getElementById('loginBtn').onclick = async () => {
-    authMsg.innerText = 'Login...';
-    const { error } = await supabase.auth.signInWithPassword({
-      email: document.getElementById('email').value, password: document.getElementById('pass').value
-    });
-    authMsg.innerText = error? 'ERROR: ' + error.message : '';
-  }
-
-  document.getElementById('logoutBtn').onclick = async () => await supabase.auth.signOut();
-
-  supabase.auth.onAuthStateChange(async (_event, session) => {
-    if(session) {
-      userId = session.user.id;
-      document.getElementById('authBox').classList.add('hidden');
-      document.getElementById('appBox').classList.remove('hidden');
-      loadProfile();
+  let referrerId = null;
+  if(currentRef && currentRef.length > 3){
+    const res = await supabase.from('profiles').select('id').eq('referral_code', currentRef).single();
+    if(res.data) {
+      referrerId = res.data.id;
+      authMsg.innerText = `Daftar pakai kode ref: ${currentRef} ✅`;
     } else {
-      userId = null;
-      document.getElementById('authBox').classList.remove('hidden');
-      document.getElementById('appBox').classList.add('hidden');
+      authMsg.innerText = `Kode ref ${currentRef} salah`;
     }
+  }
+
+  const { error } = await supabase.auth.signUp({
+    email: document.getElementById('email').value,
+    password: document.getElementById('pass').value,
+    options: { data: { referred_by: referrerId } }
   });
+  
+  if(error) {
+    authMsg.innerText = 'ERROR: ' + error.message;
+  } else {
+    // KUNCI NYA DISINI BOS: KASIH JEDA 2 DETIK
+    authMsg.innerText = authMsg.innerText || 'Daftar berhasil! Auto login...';
+    await new Promise(r => setTimeout(r, 2000)); // Jeda 2 detik biar kebaca
+  }
+}
+
+document.getElementById('loginBtn').onclick = async () => {
+  authMsg.innerText = 'Login...';
+  const { error } = await supabase.auth.signInWithPassword({
+    email: document.getElementById('email').value, password: document.getElementById('pass').value
+  });
+  authMsg.innerText = error? 'ERROR: ' + error.message : '';
+}
+
+document.getElementById('logoutBtn').onclick = async () => await supabase.auth.signOut();
+
+// GANTI INI BIAR GAK LANGSUNG KE-LEMPEAR PAS SIGNUP
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if(session && event === 'SIGNED_IN') { // <-- TAMBAHIN CEK EVENT
+    userId = session.user.id;
+    document.getElementById('authBox').classList.add('hidden');
+    document.getElementById('appBox').classList.remove('hidden');
+    loadProfile();
+  } else if(event === 'SIGNED_OUT') {
+    userId = null;
+    document.getElementById('authBox').classList.remove('hidden');
+    document.getElementById('appBox').classList.add('hidden');
+  }
+});
 
   async function loadProfile() {
     const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
