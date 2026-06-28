@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Pulsa Raja - Nonton Dapet Pulsa</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<!-- FIX: PAKE SCRIPT BIASA, JANGAN IMPORT -->
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>body{font-family:'Inter',sans-serif} iframe{pointer-events:none;}</style>
 </head>
@@ -113,7 +112,6 @@
 </div>
 
 <script>
-  // FIX: JANGAN PAKE IMPORT LAGI
   const { createClient } = supabase;
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co'
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY'
@@ -155,14 +153,15 @@
     if(currentRef){
       const { data: refProfile } = await supabaseClient.from('profiles').select('id').eq('referral_code', currentRef).single();
       if(refProfile) { referrerId = refProfile.id; authMsg.innerText = `Daftar pakai kode ref: ${currentRef} ✅`; }
+      else { authMsg.innerText = `Kode ref ${currentRef} gak ketemu` }
     }
     const { error } = await supabaseClient.auth.signUp({
       email: document.getElementById('email').value,
       password: document.getElementById('pass').value,
-      options: { data: { referred_by: referrerId } }
+      options: { data: { referred_by: referrerId } // KIRIM UUID PENGANJAK
     });
     if(error) { authMsg.innerText = 'ERROR: ' + error.message; }
-    else { authMsg.innerText = authMsg.innerText || 'Daftar berhasil!'; await new Promise(r => setTimeout(r, 3000)); }
+    else { authMsg.innerText = authMsg.innerText || 'Daftar berhasil! Cek email'; }
   }
   document.getElementById('loginBtn').onclick = async () => {
     authMsg.innerText = 'Login...';
