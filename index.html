@@ -3,26 +3,43 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaskeun Poin V10</title>
+<title>Gaskeun Poin V11</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>body{font-family:'Inter',sans-serif} iframe{pointer-events:none;}</style>
 </head>
 <body class="bg-slate-900 text-slate-200 flex items-center justify-center min-h-screen p-4">
 
 <div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-lg p-6 space-y-4">
-  <!-- AUTH -->
-  <div id="authBox" class="space-y-3">
-    <h1 class="text-2xl font-bold text-center text-cyan-400">Gaskeun Poin V10</h1>
-    <input id="email" type="email" placeholder="Email" class="w-full p-2 rounded bg-slate-700">
-    <input id="pass" type="password" placeholder="Password" class="w-full p-2 rounded bg-slate-700">
-    <div class="flex gap-2">
-      <button id="signupBtn" class="w-full bg-cyan-600 p-2 rounded font-bold">Daftar</button>
-      <button id="loginBtn" class="w-full bg-slate-600 p-2 rounded font-bold">Login</button>
+
+  <!-- AUTH / LANDING PAGE BARU -->
+  <div id="authBox" class="space-y-4">
+    <!-- HEADER JUALAN -->
+    <div class="text-center space-y-2">
+      <h1 class="text-3xl font-extrabold text-cyan-400">Gaskeun Poin 💸</h1>
+      <p class="text-sm text-slate-400">Nonton 15 Detik = Dapet Duit. Segampang itu.</p>
     </div>
-    <p id="authMsg" class="text-center text-sm h-10"></p>
+
+    <!-- BENEFIT / BUKTI SOSIAL -->
+    <div class="bg-slate-700/50 p-3 rounded-lg space-y-2 text-xs">
+      <div class="flex items-center gap-2"><span>🔥</span> <p><b>+100 Poin</b> tiap misi nonton YT</p></div>
+      <div class="flex items-center gap-2"><span>💰</span> <p><b>WD 10.000</b> langsung cair ke DANA/BCA</p></div>
+      <div class="flex items-center gap-2"><span>👑</span> <p><b>PREMIUM 10rb</b> Limit 20x/hari. Auto cuan 2x lipat</p></div>
+      <div class="flex items-center gap-2"><span>🎁</span> <p><b>Referral</b> Ajak temen, sama-sama cuan</p></div>
+    </div>
+
+    <!-- FORM LOGIN/DAFTAR -->
+    <div class="space-y-3 pt-2">
+      <input id="email" type="email" placeholder="Masukkan Email" class="w-full p-3 rounded bg-slate-700 text-sm">
+      <input id="pass" type="password" placeholder="Password" class="w-full p-3 rounded bg-slate-700 text-sm">
+      <div class="flex gap-2">
+        <button id="signupBtn" class="w-full bg-cyan-600 hover:bg-cyan-500 p-3 rounded-lg font-extrabold">DAFTAR GRATIS</button>
+        <button id="loginBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-3 rounded-lg font-bold">LOGIN</button>
+      </div>
+      <p id="authMsg" class="text-center text-sm h-5 text-yellow-400"></p>
+    </div>
   </div>
 
-  <!-- APP USER -->
+  <!-- APP USER - SAMA PERSIS -->
   <div id="appBox" class="hidden space-y-4">
     <div class="flex justify-between items-center">
       <h2 class="text-xl font-bold">Dashboard</h2>
@@ -35,7 +52,6 @@
       <p class="text-sm text-slate-400">Poin Kamu</p>
       <p id="points" class="text-4xl font-bold text-yellow-400">0</p>
     </div>
-    <!-- GANTI JADI MISI YT -->
     <button id="ytBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">Misi Nonton YT +100</button>
     <p id="appMsg" class="text-center text-sm h-5"></p>
     <div class="bg-slate-700 p-3 rounded-lg space-y-2">
@@ -53,7 +69,7 @@
     <button id="wdBtn" class="w-full bg-yellow-600 p-2 rounded font-bold">Withdraw 10.000 Poin</button>
   </div>
 
-  <!-- PANEL ADMIN -->
+  <!-- PANEL ADMIN - SAMA PERSIS -->
   <div id="adminBox" class="hidden space-y-3">
     <h2 class="text-xl font-bold text-red-400">Panel Admin</h2>
     <button id="backBtn" class="w-full bg-slate-600 p-2 rounded">Kembali</button>
@@ -61,7 +77,7 @@
   </div>
 </div>
 
-<!-- MODAL YT -->
+<!-- MODAL YT - SAMA PERSIS -->
 <div id="ytModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
   <div class="bg-slate-800 rounded-lg p-3 w-full max-w-lg space-y-2">
     <p class="text-center font-bold">Tonton 15 Detik Ya Bos. Jangan di Close</p>
@@ -71,7 +87,7 @@
   </div>
 </div>
 
-<!-- MODAL BIASA -->
+<!-- MODAL BIASA - SAMA PERSIS -->
 <div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-40">
   <div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3">
     <h3 id="modalTitle" class="text-lg font-bold"></h3>
@@ -91,7 +107,7 @@
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
   const BASE_URL = 'https://pulsaraja.vercel.app';
   const REK_BCA = '1234567890 a.n NAMA LU';
-  const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // GANTI LINK YT LU. PAKE EMBED
+  const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
   let userId = null;
@@ -250,12 +266,9 @@
 
   // ===== LAINNYA =====
   document.getElementById('copyBtn').onclick = () => { navigator.clipboard.writeText(document.getElementById('myRefCode').value); }
-
-  // [FIX WD] INI DOANG YANG GUE TAMBAHIN BOS
   document.getElementById('wdBtn').onclick = async () => {
     const { data: p, error } = await supabase.from('profiles').select('points').eq('id', userId).single();
     if(error || p.points < 10000) return showModal({title:'Gagal', text:'Poin kamu kurang dari 10.000', callback:()=>{}});
-
     showModal({
       title:'Withdraw 10.000 Poin',
       text:`Transfer ke:\n${REK_BCA}\n\nMasukkan No. Rek/Dana lu:`,
@@ -264,14 +277,12 @@
         if(!acc) return;
         const { error: wdError } = await supabase.from('withdrawals').insert({user_id:userId, amount:10000, method:'Bank/Dana', account:acc, status:'pending'});
         if(wdError) return showModal({title:'Error DB', text: wdError.message, callback:()=>{}});
-
         await supabase.from('profiles').update({points: p.points - 10000}).eq('id', userId);
         appMsg.innerText = 'WD 10.000 poin diajukan. Tunggu admin bos.';
         loadProfile();
       }
     });
   }
-
   document.getElementById('upgradeBtn').onclick = async () => {
     showModal({title:'Upgrade 10rb', text:`Transfer ke:\n${REK_BCA}\n\nUpload bukti di sini:`, input:true, callback: async (url) => {
       if(!url) return;
