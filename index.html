@@ -3,429 +3,163 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaskeun Poin - Nonton YT Dibayar</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>body{font-family:'Inter',sans-serif} button:disabled{opacity:0.5;cursor:not-allowed;}.tab-btn.active{background-color:rgb(51 65 85);}</style>
+<title>Panel Admin V10.5</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:sans-serif;background:#111;color:#eee;margin:0;padding:20px}
+.card{background:#222;padding:15px;border-radius:8px;margin-bottom:15px}
+table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:8px;border:1px solid #444;text-align:left;font-size:14px}
+input,button{padding:8px;border-radius:5px;border:1px solid #444;background:#000;color:#eee;margin-right:5px}
+button{cursor:pointer;background:#333} 
+#loading-text{text-align:center;padding:50px;font-size:18px}
+</style>
 </head>
-<body class="bg-slate-900 text-slate-200 min-h-screen">
+<body>
 
-<!-- ===== LANDING PAGE COPYWRITING NGEGAS ===== -->
-<div id="landingBox" class="w-full max-w-4xl mx-auto p-6 space-y-8">
-  <header class="text-center pt-10">
-    <h1 class="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">Gaskeun Poin</h1>
-    <p class="text-xl text-slate-400 mt-2">Nonton Video YouTube = Dapet Cuan 💰</p>
-  </header>
-  <div class="grid md:grid-cols-3 gap-6 text-center">
-    <div class="bg-slate-800 p-6 rounded-2xl"><div class="text-4xl">🎯</div><h3 class="font-bold text-lg mt-2">Video Gak Itu-itu</h3><p class="text-sm text-slate-400">Ratusan video beda tiap hari. Dijamin gak bosen.</p></div>
-    <div class="bg-slate-800 p-6 rounded-2xl"><div class="text-4xl">⚡</div><h3 class="font-bold text-lg mt-2">Login Dibayar</h3><p class="text-sm text-slate-400">Buka web tiap hari dapet bonus +500 Poin. Gratis.</p></div>
-    <div class="bg-slate-800 p-6 rounded-2xl"><div class="text-4xl">💸</div><h3 class="font-bold text-lg mt-2">WD Kilat</h3><p class="text-sm text-slate-400">Kumpul 10.000 Poin = Langsung cair ke DANA/Pulsa 10rb.</p></div>
-  </div>
-  <div class="text-center">
-    <button id="goToLoginBtn" class="bg-cyan-600 hover:bg-cyan-500 px-8 py-3 rounded-lg font-bold text-lg shadow-lg shadow-cyan-500/30">Mulai Gaskeun Sekarang</button>
-  </div>
-  <footer class="text-center text-xs text-slate-500 pt-10">© 2026 Gaskeun Poin. Upgrade PREMIUM buat limit 20x/hari.</footer>
-</div>
+<div id="loading-text">Loading data... Tunggu ya bos</div>
 
-<!-- ===== BOX LOGIN / APP / ADMIN ===== -->
-<div id="mainAppBox" class="hidden w-full flex items-center justify-center min-h-screen p-4">
-<div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-lg p-6 space-y-4">
+<div id="admin-content" style="display:none;">
+  <h2>Panel Admin V10.5</h2>
 
-  <!-- 1. AUTH BOX -->
-  <div id="authBox" class="space-y-3">
-    <button id="backToLandingBtn" class="text-sm text-cyan-400 hover:underline">< Kembali</button>
-    <h1 class="text-2xl font-bold text-center text-cyan-400">Login / Daftar</h1>
-    <input id="email" type="email" placeholder="Email" class="w-full p-2 rounded bg-slate-700">
-    <input id="pass" type="password" placeholder="Password" class="w-full p-2 rounded bg-slate-700">
-    <div class="flex gap-2">
-      <button id="signupBtn" class="w-full bg-cyan-600 hover:bg-cyan-500 p-2 rounded font-bold">Daftar</button>
-      <button id="loginBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-2 rounded font-bold">Login</button>
-    </div>
-    <p id="authMsg" class="text-center text-sm h-10"></p>
+  <div class="card">
+    <h3>Upload Video YouTube</h3>
+    <form id="form-upload-video">
+      <input id="video-title" placeholder="Judul Video" required>
+      <input id="video-url" placeholder="Link Youtube" required>
+      <button type="submit">Upload</button>
+    </form>
   </div>
 
-  <!-- 2. APP BOX USER -->
-  <div id="appBox" class="hidden space-y-4">
-    <div class="flex justify-between items-center">
-      <h2 class="text-xl font-bold">Dashboard</h2>
-      <div class="flex gap-2">
-        <button id="adminBtn" class="hidden text-xs bg-red-700 hover:bg-red-600 px-3 py-1 rounded font-bold">ADMIN</button>
-        <button id="logoutBtn" class="text-xs bg-red-600 hover:bg-red-500 px-3 py-1 rounded">Logout</button>
-      </div>
-    </div>
-    <div class="bg-slate-700 p-4 rounded-lg text-center">
-      <p class="text-sm text-slate-400">Poin Kamu</p>
-      <p id="points" class="text-4xl font-bold text-yellow-400">0</p>
-    </div>
-    <button id="dailyBtn" class="w-full bg-blue-600 hover:bg-blue-500 p-3 rounded-lg font-bold text-lg">Claim Login Harian +500</button>
-    <button id="ytBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">Misi Nonton YT +100</button>
-    <p id="appMsg" class="text-center text-sm h-5"></p>
-    <div class="bg-slate-700 p-3 rounded-lg space-y-2">
-      <p class="font-bold">Link Referral Kamu</p>
-      <div class="flex gap-2">
-        <input id="myRefCode" readonly class="w-full p-2 rounded bg-slate-900 text-xs">
-        <button id="copyBtn" class="bg-cyan-600 px-3 rounded">Salin</button>
-      </div>
-      <p id="copyMsg" class="text-xs text-green-400 h-4"></p>
-    </div>
-    <div class="bg-slate-700 p-3 rounded-lg space-y-2">
-      <p class="font-bold">Upgrade Akun</p>
-      <p id="premiumStatus" class="text-sm">Status: FREE</p>
-      <button id="upgradeBtn" class="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-bold">Upgrade PREMIUM 10rb</button>
-    </div>
-    <button id="wdBtn" class="w-full bg-yellow-600 hover:bg-yellow-500 p-2 rounded font-bold">Withdraw 10.000 Poin</button>
+  <div class="card">
+    <h3>Data Withdraw</h3>
+    <table><thead><tr><th>ID</th><th>User ID</th><th>Jumlah</th><th>Rek</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="wd-tbody"></tbody></table>
   </div>
 
-  <!-- 3. ADMIN BOX -->
-  <div id="adminBox" class="hidden space-y-3">
-    <h2 class="text-xl font-bold text-red-400">Panel Admin</h2>
-    <div class="flex gap-2 border-b border-slate-600">
-      <button data-tab="withdraw" class="tab-btn active p-2 text-sm">WD & Upgrade</button>
-      <button data-tab="videos" class="tab-btn p-2 text-sm">Kelola Video</button>
-    </div>
-    <!-- TAB WD -->
-    <div id="tab-withdraw" class="tab-content space-y-2">
-      <button id="backBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-2 rounded">Kembali ke Dashboard</button>
-      <div id="adminList" class="space-y-2 max-h-96 overflow-y-auto pr-2"></div>
-    </div>
-    <!-- TAB VIDEO BARU -->
-    <div id="tab-videos" class="tab-content hidden space-y-2">
-      <div class="bg-slate-700 p-3 rounded-lg space-y-2">
-        <label class="font-bold text-sm">Tambah Link YT Baru</label>
-        <input id="newYtLink" type="text" placeholder="https://www.youtube.com/embed/ID" class="w-full p-2 rounded bg-slate-900 text-xs">
-        <button id="addYtBtn" class="w-full bg-cyan-600 p-2 rounded font-bold">+ Tambah Video</button>
-        <p id="videoMsg" class="text-xs text-green-400 h-4"></p>
-      </div>
-      <div id="videoList" class="space-y-2 max-h-64 overflow-y-auto pr-2 text-xs"></div>
-    </div>
+  <div class="card">
+    <h3>Data Video</h3>
+    <div id="video-list"></div>
   </div>
-</div>
-</div>
 
-<!-- 4. MODAL YT -->
-<div id="ytModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
-  <div class="bg-slate-800 rounded-lg p-3 w-full max-w-lg space-y-2">
-    <p id="ytVideoTitle" class="text-center font-bold">Tonton 15 Detik Ya Bos</p>
-    <div class="aspect-video"><iframe id="ytFrame" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-    <p id="ytTimer" class="text-center text-2xl font-bold text-yellow-400">15</p>
-    <button id="ytCloseBtn" disabled class="w-full bg-slate-600 p-2 rounded font-bold">Tunggu...</button>
+  <div class="card">
+    <h3>Data Users</h3>
+    <table><thead><tr><th>Email</th><th>Poin</th><th>Role</th><th>Upgrade</th></tr></thead><tbody id="users-tbody"></tbody></table>
   </div>
 </div>
 
-<!-- 5. MODAL BIASA -->
-<div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-  <div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3">
-    <h3 id="modalTitle" class="text-lg font-bold"></h3>
-    <p id="modalText" class="text-sm whitespace-pre-wrap"></p>
-    <div id="modalInputBox" class="hidden"><input id="modalInput" class="w-full p-2 rounded bg-slate-700"></div>
-    <div class="flex gap-2 justify-end">
-      <button id="modalCancel" class="px-4 py-2 bg-slate-600 rounded">Batal</button>
-      <button id="modalOk" class="px-4 py-2 bg-cyan-600 rounded font-bold">OK</button>
-    </div>
-  </div>
-</div>
+<script>
+// ==================== KONFIG SUPABASE - GANTI INI BOS ====================
+const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
+const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
+const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+// ==================== MAIN ====================
+document.addEventListener('DOMContentLoaded', () => { checkAdmin(); });
 
-  // ===== 1. GANTI 4 INI DULU BOS =====
-  const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
-  const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
-  const BASE_URL = 'https://pulsaraja.vercel.app';
-  const REK_BCA = '1234567890 a.n NAMA LU';
+async function checkAdmin() {
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return window.location.href = '/login.html';
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-  let userId = null;
-  const authMsg = document.getElementById('authMsg');
-  const appMsg = document.getElementById('appMsg');
-  const ADMIN_EMAIL = 'admin@gaskeun.com';
-  const dailyBtn = document.getElementById('dailyBtn');
-
-  // ===== NAVIGASI LANDING =====
-  document.getElementById('goToLoginBtn').onclick = () => {
-    document.getElementById('landingBox').classList.add('hidden');
-    document.getElementById('mainAppBox').classList.remove('hidden');
-  }
-  document.getElementById('backToLandingBtn').onclick = () => {
-    document.getElementById('mainAppBox').classList.add('hidden');
-    document.getElementById('landingBox').classList.remove('hidden');
-  }
-
-  function getRefCode() { const url = window.location.href; const match = url.match(/[?&]ref=([^&]+)/i); return match? match[1].trim() : null; }
-
-  // ===== MODAL HELPER =====
-  const modal = document.getElementById('modal');
-  const modalTitle = document.getElementById('modalTitle');
-  const modalText = document.getElementById('modalText');
-  const modalInputBox = document.getElementById('modalInputBox');
-  const modalInput = document.getElementById('modalInput');
-  const modalOk = document.getElementById('modalOk');
-  const modalCancel = document.getElementById('modalCancel');
-  let modalCallback = null;
-  function showModal({title, text, input=false, callback}) {
-    modalTitle.innerText = title; modalText.innerText = text;
-    modalInputBox.classList.toggle('hidden',!input); modalInput.value = '';
-    modal.classList.remove('hidden'); modalCallback = callback;
-  }
-  function hideModal() { modal.classList.add('hidden'); modalCallback = null; }
-  modalOk.onclick = () => { if(modalCallback) modalCallback(modalInput.value); hideModal(); }
-  modalCancel.onclick = hideModal;
-
-  // ===== AUTH LOGIC =====
-  document.getElementById('signupBtn').onclick = async () => {
-    authMsg.innerText = 'Daftar...';
-    const currentRef = getRefCode();
-    let referrerId = null;
-    if(currentRef){
-      const { data: refProfile } = await supabase.from('profiles').select('id').eq('referral_code', currentRef).single();
-      if(refProfile) { referrerId = refProfile.id; authMsg.innerText = `Daftar pakai kode ref: ${currentRef} ✅`; }
+    const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', user.id).single();
+    if (error || !profile || profile.role !== 'admin') {
+        alert('Akses ditolak. Lu bukan Admin bos. Error: ' + (error?.message || ''));
+        return window.location.href = '/dashboard.html';
     }
-    const { error } = await supabase.auth.signUp({
-      email: document.getElementById('email').value,
-      password: document.getElementById('pass').value,
-      options: { data: { referred_by: referrerId } }
-    });
-    if(error) { authMsg.innerText = 'ERROR: ' + error.message; }
-    else { authMsg.innerText = authMsg.innerText || 'Daftar berhasil! Cek email buat verifikasi.'; await new Promise(r => setTimeout(r, 3000)); }
-  }
-  document.getElementById('loginBtn').onclick = async () => {
-    authMsg.innerText = 'Login...';
-    const { error } = await supabase.auth.signInWithPassword({ email: document.getElementById('email').value, password: document.getElementById('pass').value });
-    authMsg.innerText = error? 'ERROR: ' + error.message : '';
-  }
-  document.getElementById('logoutBtn').onclick = async () => await supabase.auth.signOut();
+    await loadAdminData();
+    document.getElementById('loading-text').style.display = 'none';
+    document.getElementById('admin-content').style.display = 'block';
+}
 
-  supabase.auth.onAuthStateChange(async (event, session) => {
-    if(session && event === 'SIGNED_IN') {
-      userId = session.user.id;
-      document.getElementById('authBox').classList.add('hidden');
-      document.getElementById('appBox').classList.remove('hidden');
-      document.getElementById('adminBox').classList.add('hidden');
-      if(session.user.email === ADMIN_EMAIL) document.getElementById('adminBtn').classList.remove('hidden');
-      loadProfile();
-    } else if(event === 'SIGNED_OUT') {
-      userId = null;
-      document.getElementById('authBox').classList.remove('hidden');
-      document.getElementById('appBox').classList.add('hidden');
-      document.getElementById('adminBox').classList.add('hidden');
+async function loadAdminData() {
+    try {
+        // 1. WD - V10.5 masih ambil user_id doang, gak join email
+        const { data: wd, error: wdError } = await supabase.from('withdrawals').select('*').order('id', { ascending: false });
+        if (wdError) throw wdError; renderWithdrawals(wd || []);
+
+        // 2. VIDEOS
+        const { data: vids, error: vidsError } = await supabase.from('videos').select('*').order('id', { ascending: false });
+        if (vidsError) throw vidsError; renderVideos(vids || []);
+
+        // 3. USERS
+        const { data: users, error: usersError } = await supabase.from('profiles').select('*').order('id', { ascending: false });
+        if (usersError) throw usersError; renderUsers(users || []);
+
+    } catch (error) { 
+      alert('GAGAL LOAD DATA: ' + error.message); // <-- Biar langsung ketauan errornya
+      console.error('Gagal load:', error); 
+      document.getElementById('loading-text').innerText = 'Gagal load: ' + error.message; 
     }
-  });
+}
 
-  async function loadProfile() {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
-    if(data){
-      document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
-      document.getElementById('myRefCode').value = `${BASE_URL}?ref=${data.referral_code}`;
-      const statusEl = document.getElementById('premiumStatus');
-      const btnEl = document.getElementById('upgradeBtn');
-      if(data.upgrade_status === 'approved'){ statusEl.innerText = 'Status: PREMIUM 🔥'; btnEl.classList.add('hidden'); }
-      else if(data.upgrade_status === 'pending'){ statusEl.innerText = 'Status: MENUNGGU APPROVAL...'; btnEl.innerText = 'Tunggu Approval'; btnEl.disabled = true; btnEl.classList.remove('bg-purple-600'); btnEl.classList.add('bg-slate-500'); }
-      else { statusEl.innerText = 'Status: FREE'; btnEl.disabled = false; btnEl.innerText = 'Upgrade PREMIUM 10rb'; btnEl.classList.remove('bg-slate-500'); btnEl.classList.add('bg-purple-600'); }
+// ==================== RENDER V10.5 POLOS ====================
+function renderWithdrawals(data) {
+    const tbody = document.getElementById('wd-tbody');
+    if (data.length === 0) return tbody.innerHTML = `<tr><td colspan="6">Belum ada data WD</td></tr>`;
+    tbody.innerHTML = data.map(wd => `
+        <tr>
+            <td>${wd.id}</td>
+            <td>${wd.user_id}</td> 
+            <td>${wd.amount}</td>
+            <td>${wd.e_wallet} - ${wd.e_wallet_number}</td>
+            <td>${wd.status}</td>
+            <td>
+                ${wd.status === 'pending' ? `<button onclick="updateWD(${wd.id}, 'paid')">Approve</button> <button onclick="updateWD(${wd.id}, 'rejected')">Tolak</button>` : '-'}
+            </td>
+        </tr>
+    `).join('');
+}
 
-      const today = new Date().toISOString().split('T')[0];
-      if(data.last_login_date === today){
-        dailyBtn.innerText = 'Udah Claim Hari Ini ✅';
-        dailyBtn.disabled = true;
-      } else {
-        dailyBtn.innerText = 'Claim Login Harian +500';
-        dailyBtn.disabled = false;
-      }
-    }
-  }
-
-  // ===== MISI LOGIN HARIAN +500 =====
-  dailyBtn.onclick = async () => {
-    const today = new Date().toISOString().split('T')[0];
-    const { data: p } = await supabase.from('profiles').select('points, last_login_date').eq('id', userId).single();
-    if(p.last_login_date === today) return showModal({title:'Gagal', text:'Kamu udah claim hari ini bos.', callback:()=>{}});
-    const newPoints = p.points + 500;
-    await supabase.from('profiles').update({ points: newPoints, last_login_date: today }).eq('id', userId);
-    appMsg.innerText = `+500 Poin Login Harian masuk! 🔥`;
-    loadProfile();
-  }
-
-  // ===== MISI NONTON YT 15 DETIK RANDOM =====
-  const ytModal = document.getElementById('ytModal');
-  const ytFrame = document.getElementById('ytFrame');
-  const ytTimer = document.getElementById('ytTimer');
-  const ytCloseBtn = document.getElementById('ytCloseBtn');
-  const ytVideoTitle = document.getElementById('ytVideoTitle');
-  let ytInterval = null;
-
-  document.getElementById('ytBtn').onclick = async () => {
-    appMsg.innerText = 'Ambil video random...';
-    const today = new Date().toISOString().split('T')[0];
-    const { data: p } = await supabase.from('profiles').select('points, upgrade_status, ad_clicks_today, last_ad_date').eq('id', userId).single();
-    if(p.last_ad_date!== today){
-      await supabase.from('profiles').update({ ad_clicks_today: 0, last_ad_date: today }).eq('id', userId);
-      p.ad_clicks_today = 0;
-    }
-    const maxClicks = p.upgrade_status === 'approved'? 20 : 5;
-    if(p.ad_clicks_today >= maxClicks) return showModal({title:'Limit Habis', text:`Kamu udah ${maxClicks}x nonton hari ini.`, callback:()=>{}});
-
-    // AMBIL 1 VIDEO RANDOM YANG AKTIF
-    const { data: videos, error } = await supabase.from('videos').select('*').eq('is_active', true);
-    if(error ||!videos || videos.length === 0) return showModal({title:'Error', text:'Belum ada video aktif dari admin', callback:()=>{}});
-
-    const randomVideo = videos[Math.floor(Math.random() * videos.length)];
-    ytVideoTitle.innerText = `Video ${p.ad_clicks_today + 1} dari ${maxClicks}`;
-    ytFrame.src = randomVideo.youtube_embed_url + "?autoplay=1&mute=1&controls=0&rel=0";
-    ytModal.classList.remove('hidden');
-
-    let timeLeft = 15;
-    ytTimer.innerText = timeLeft;
-    ytCloseBtn.disabled = true;
-    ytCloseBtn.innerText = `Tunggu ${timeLeft}s...`;
-
-    ytInterval = setInterval(async () => {
-      timeLeft--;
-      ytTimer.innerText = timeLeft;
-      ytCloseBtn.innerText = `Tunggu ${timeLeft}s...`;
-      if(timeLeft <= 0){
-        clearInterval(ytInterval);
-        ytCloseBtn.disabled = false;
-        ytCloseBtn.innerText = 'Klaim +100 Poin';
-        const newPoints = p.points + 100;
-        const newClicks = p.ad_clicks_today + 1;
-        await supabase.from('profiles').update({ points: newPoints, ad_clicks_today: newClicks }).eq('id', userId);
-        appMsg.innerText = `+100 Poin masuk! [${newClicks}/${maxClicks}] 🔥`;
-        loadProfile();
-      }
-    }, 1000);
-  }
-  ytCloseBtn.onclick = () => {
-    ytModal.classList.add('hidden');
-    ytFrame.src = '';
-    clearInterval(ytInterval);
-  }
-
-  // ===== PANEL ADMIN TABS =====
-  document.querySelectorAll('.tab-btn').forEach(b => b.onclick = (e) => {
-    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
-    e.target.classList.add('active');
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
-    document.getElementById('tab-' + e.target.dataset.tab).classList.remove('hidden');
-    if(e.target.dataset.tab === 'videos') loadVideoList();
-  });
-
-  document.getElementById('adminBtn').onclick = () => {
-    document.getElementById('appBox').classList.add('hidden');
-    document.getElementById('adminBox').classList.remove('hidden');
-    loadAdminData();
-  }
-  document.getElementById('backBtn').onclick = () => { document.getElementById('adminBox').classList.add('hidden'); document.getElementById('appBox').classList.remove('hidden'); }
-
-  // ===== KELOLA VIDEO ADMIN =====
-  async function loadVideoList() {
-    const list = document.getElementById('videoList');
-    list.innerHTML = 'Loading...';
-    const { data } = await supabase.from('videos').select('*').order('created_at', { ascending: false });
-    if(!data) return list.innerHTML = 'Gagal load';
-    let html = '';
-    data.forEach(v => {
-      html += `<div class="bg-slate-700 p-2 rounded flex justify-between items-center">
-        <a href="${v.youtube_embed_url}" target="_blank" class="underline truncate w-40">${v.youtube_embed_url}</a>
-        <div class="flex gap-1">
-          <button data-id="${v.id}" class="toggleBtn ${v.is_active? 'bg-yellow-600' : 'bg-green-600'} px-2 py-1 rounded text-[10px]">${v.is_active? 'Nonaktif' : 'Aktifkan'}</button>
-          <button data-id="${v.id}" class="delBtn bg-red-600 px-2 py-1 rounded text-[10px]">Hapus</button>
+function renderVideos(data) {
+    const list = document.getElementById('video-list');
+    if (data.length === 0) return list.innerHTML = `<p>Belum ada video.</p>`;
+    list.innerHTML = data.map(v => `
+        <div style="display:flex;justify-content:space-between;background:#000;padding:8px;margin-top:5px;border-radius:5px;">
+            <p><b>${v.title}</b><br><small>${v.youtube_url}</small></p>
+            <button onclick="deleteVideo(${v.id})">Hapus</button>
         </div>
-      </div>`;
-    });
-    list.innerHTML = html || '<p class="text-slate-400">Belum ada video</p>';
+    `).join('');
+}
 
-    document.querySelectorAll('.toggleBtn').forEach(b => b.onclick = async (e) => {
-      const id = e.target.dataset.id;
-      const isActive = e.target.classList.contains('bg-yellow-600');
-      await supabase.from('videos').update({ is_active:!isActive }).eq('id', id);
-      loadVideoList();
-    });
-    document.querySelectorAll('.delBtn').forEach(b => b.onclick = async (e) => {
-      await supabase.from('videos').delete().eq('id', e.target.dataset.id);
-      loadVideoList();
-    });
-  }
+function renderUsers(data) {
+    const tbody = document.getElementById('users-tbody');
+    if (data.length === 0) return tbody.innerHTML = `<tr><td colspan="4">Belum ada user</td></tr>`;
+    tbody.innerHTML = data.map(u => `
+        <tr>
+            <td>${u.email}</td>
+            <td>${u.points}</td>
+            <td>${u.role}</td>
+            <td>${u.upgrade_status}</td>
+        </tr>
+    `).join('');
+}
 
-  document.getElementById('addYtBtn').onclick = async () => {
-    const link = document.getElementById('newYtLink').value;
-    if(!link.includes('embed')) return showModal({title:'Gagal', text:'Wajib pake link EMBED dari YT', callback:()=>{}});
-    const { error } = await supabase.from('videos').insert({ youtube_embed_url: link });
-    if(error) document.getElementById('videoMsg').innerText = 'Gagal tambah';
-    else {
-      document.getElementById('newYtLink').value = '';
-      document.getElementById('videoMsg').innerText = 'Video ditambah ✅';
-      setTimeout(()=> document.getElementById('videoMsg').innerText='', 2000);
-      loadVideoList();
-    }
-  }
+// ==================== ACTIONS ====================
+async function updateWD(id, status) {
+    if(!confirm(`Yakin mau ${status}?`)) return;
+    const { error } = await supabase.from('withdrawals').update({ status }).eq('id', id);
+    if (error) return alert('Gagal: ' + error.message); 
+    alert(`WD ${status}`); 
+    loadAdminData(); 
+}
 
-  // ===== WD & UPGRADE ADMIN =====
-  async function loadAdminData() {
-    const list = document.getElementById('adminList');
-    list.innerHTML = 'Loading data...';
-    const { data: pendingUpgrades } = await supabase.from('profiles').select('id, email, upgrade_proof_url').eq('upgrade_status', 'pending');
-    const { data: pendingWd } = await supabase.from('withdrawals').select('id, user_id, amount, method, account').eq('status', 'pending');
-    let html = '<h3 class="font-bold text-purple-400 border-b border-slate-600 pb-1">Upgrade Pending</h3>';
-    if(pendingUpgrades.length === 0) html += '<p class="text-sm text-slate-400">Kosong</p>';
-    pendingUpgrades.forEach(u => {
-      html += `<div class="bg-slate-700 p-2 rounded text-xs space-y-1"><p><b>Email:</b> ${u.email}</p><a href="${u.upgrade_proof_url}" target="_blank" class="text-cyan-400 underline">Lihat Bukti</a><button data-id="${u.id}" class="approveUp bg-green-600 w-full mt-1 p-1 rounded hover:bg-green-500 font-bold">Approve PREMIUM</button></div>`;
-    });
-    html += '<h3 class="font-bold text-yellow-400 mt-3 border-b border-slate-600 pb-1">WD Pending</h3>';
-    if(pendingWd.length === 0) html += '<p class="text-sm text-slate-400">Kosong</p>';
-    pendingWd.forEach(w => {
-      html += `<div class="bg-slate-700 p-2 rounded text-xs space-y-1"><p><b>Jumlah:</b> ${w.amount} Poin via ${w.method}</p><p><b>No:</b> ${w.account}</p><button data-id="${w.id}" class="approveWd bg-green-600 w-full mt-1 p-1 rounded hover:bg-green-500 font-bold">Tandai Sudah Transfer</button></div>`;
-    });
-    list.innerHTML = html;
-    document.querySelectorAll('.approveUp').forEach(b => b.onclick = async (e) => {
-      await supabase.from('profiles').update({ upgrade_status: 'approved' }).eq('id', e.target.dataset.id);
-      loadAdminData();
-    });
-    document.querySelectorAll('.approveWd').forEach(b => b.onclick = async (e) => {
-      await supabase.from('withdrawals').update({ status: 'done' }).eq('id', e.target.dataset.id);
-      loadAdminData();
-    });
-  }
+async function deleteVideo(id) {
+    if(!confirm('Hapus video ini?')) return;
+    const { error } = await supabase.from('videos').delete().eq('id', id);
+    if (error) return alert('Gagal: ' + error.message); 
+    loadAdminData();
+}
 
-  // ===== FITUR LAINNYA =====
-  document.getElementById('copyBtn').onclick = () => {
-    navigator.clipboard.writeText(document.getElementById('myRefCode').value);
-    document.getElementById('copyMsg').innerText = 'Link berhasil disalin!';
-    setTimeout(()=> document.getElementById('copyMsg').innerText='', 2000);
-  }
-  document.getElementById('wdBtn').onclick = async () => {
-    const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
-    if(p.points < 10000) return showModal({title:'Gagal', text:'Minimal WD 10.000 Poin = 10rb Pulsa/DANA', callback:()=>{}});
-    showModal({
-      title: 'Withdraw Poin', text: 'WD 10.000 Poin ke: Pulsa/DANA', input: true,
-      callback: async (method) => {
-        if(!method || (method.toLowerCase()!== 'pulsa' && method.toLowerCase()!== 'dana')) return showModal({title:'Gagal', text:'Ketik: pulsa atau dana', callback:()=>{}});
-        showModal({
-          title: 'Nomor Tujuan', text: `Masukkan No ${method}:`, input: true,
-          callback: async (account) => {
-            if(!account) return;
-            await supabase.from('withdrawals').insert({ user_id: userId, amount: 10000, method, account });
-            await supabase.from('profiles').update({ points: p.points - 10000 }).eq('id', userId);
-            showModal({title:'Sukses', text:'WD 10.000 Poin diajukan. Tunggu admin transfer 1x24 jam', callback:()=>{}});
-            loadProfile();
-          }
-        });
-      }
-    });
-  }
-  document.getElementById('upgradeBtn').onclick = async () => {
-    const { data: p } = await supabase.from('profiles').select('upgrade_status').eq('id', userId).single();
-    if(p.upgrade_status === 'approved') return showModal({title:'Udah PREMIUM', text:'Akun kamu udah PREMIUM bos', callback:()=>{}});
-    if(p.upgrade_status === 'pending') return showModal({title:'Tunggu Dulu', text:'Bukti transfer kamu lagi dicek admin', callback:()=>{}});
-    showModal({
-      title: 'Transfer ke BCA',
-      text: `Transfer Rp10.000 ke:\n${REK_BCA}\n\nLalu upload bukti ke imgur.com dan paste linknya di bawah.`,
-      input: true,
-      callback: async (proofUrl) => {
-        if(!proofUrl ||!proofUrl.startsWith('http')) return showModal({title:'Gagal', text:'Masukkan link foto valid dari imgur.com', callback:()=>{}});
-        await supabase.from('profiles').update({ upgrade_status: 'pending', upgrade_proof_url: proofUrl }).eq('id', userId);
-        showModal({title:'Sukses', text:'Bukti diterima. Tunggu admin approve 1x24 jam', callback:()=>{}});
-        loadProfile();
-      }
-    });
-  }
+document.getElementById('form-upload-video').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const title = document.getElementById('video-title').value; 
+    const url = document.getElementById('video-url').value;
+    if(!title || !url) return alert('Isi semua bos');
+    const { error } = await supabase.from('videos').insert([{ title, youtube_url: url }]);
+    if (error) return alert('Gagal upload: ' + error.message); 
+    alert('Video ke-upload'); 
+    e.target.reset(); 
+    loadAdminData();
+});
 </script>
 </body>
 </html>
