@@ -3,270 +3,128 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaskeun Poin - Nonton YT Dibayar</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<style>body{font-family:'Inter',sans-serif} button:disabled{opacity:0.5;cursor:not-allowed;}.tab-btn.active{background-color:rgb(51 65 85);}</style>
+<title>Panel Admin</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body{font-family:sans-serif;background:#0f172a;color:#e2e8f0;margin:0;padding:20px}
+.card{background:#1e293b;padding:20px;border-radius:12px;margin-bottom:20px}
+h2,h3{margin-top:0} table{width:100%;border-collapse:collapse;margin-top:10px}
+th,td{padding:10px;border-bottom:1px solid #334155;text-align:left;font-size:14px}
+input,button{padding:10px;border-radius:8px;border:1px solid #334155;background:#0f172a;color:#e2e8f0}
+button{cursor:pointer;background:#3b82f6;border:none} button:hover{opacity:0.8}
+.btn-approve{background:#22c55e} .btn-tolak{background:#ef4444} .btn-hapus{background:#f97316}
+.badge{padding:4px 8px;border-radius:6px;font-size:12px} .badge.pending{background:#f59e0b} .badge.paid{background:#22c55e} .badge.rejected{background:#ef4444}
+.video-item{display:flex;justify-content:space-between;align-items:center;background:#0f172a;padding:10px;border-radius:8px;margin-top:8px}
+#loading-text{text-align:center;padding:50px;font-size:18px}
+.text-center{text-align:center}
+</style>
 </head>
-<body class="bg-slate-900 text-slate-200 min-h-screen">
+<body>
 
-<!-- ===== LANDING PAGE COPYWRITING NGEGAS ===== -->
-<div id="landingBox" class="w-full max-w-4xl mx-auto p-6 space-y-8">
-  <header class="text-center pt-10">
-    <h1 class="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">Gaskeun Poin</h1>
-    <p class="text-xl text-slate-400 mt-2">Nonton Video YouTube = Dapet Cuan 💰</p>
-  </header>
-  <div class="grid md:grid-cols-3 gap-6 text-center">
-    <div class="bg-slate-800 p-6 rounded-2xl"><div class="text-4xl">🎯</div><h3 class="font-bold text-lg mt-2">Video Gak Itu-itu</h3><p class="text-sm text-slate-400">Ratusan video beda tiap hari. Dijamin gak bosen.</p></div>
-    <div class="bg-slate-800 p-6 rounded-2xl"><div class="text-4xl">⚡</div><h3 class="font-bold text-lg mt-2">Login Dibayar</h3><p class="text-sm text-slate-400">Buka web tiap hari dapet bonus +500 Poin. Gratis.</p></div>
-    <div class="bg-slate-800 p-6 rounded-2xl"><div class="text-4xl">💸</div><h3 class="font-bold text-lg mt-2">WD Kilat</h3><p class="text-sm text-slate-400">Kumpul 10.000 Poin = Langsung cair ke DANA/Pulsa 10rb.</p></div>
-  </div>
-  <div class="text-center">
-    <button id="goToLoginBtn" class="bg-cyan-600 hover:bg-cyan-500 px-8 py-3 rounded-lg font-bold text-lg shadow-lg shadow-cyan-500/30">Mulai Gaskeun Sekarang</button>
-  </div>
-  <footer class="text-center text-xs text-slate-500 pt-10">© 2026 Gaskeun Poin. Upgrade PREMIUM buat limit 20x/hari.</footer>
-</div>
+<div id="loading-text">Loading data... Tunggu ya bos</div>
 
-<!-- ===== BOX LOGIN / APP / ADMIN ===== -->
-<div id="mainAppBox" class="hidden w-full flex items-center justify-center min-h-screen p-4">
-<div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-lg p-6 space-y-4">
+<div id="admin-content" style="display:none;">
+  <h2>Panel Admin V10.9</h2>
 
-  <!-- 1. AUTH BOX -->
-  <div id="authBox" class="space-y-3">
-    <button id="backToLandingBtn" class="text-sm text-cyan-400 hover:underline">< Kembali</button>
-    <h1 class="text-2xl font-bold text-center text-cyan-400">Login / Daftar</h1>
-    <input id="email" type="email" placeholder="Email" class="w-full p-2 rounded bg-slate-700">
-    <input id="pass" type="password" placeholder="Password" class="w-full p-2 rounded bg-slate-700">
-    <div class="flex gap-2">
-      <button id="signupBtn" class="w-full bg-cyan-600 hover:bg-cyan-500 p-2 rounded font-bold">Daftar</button>
-      <button id="loginBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-2 rounded font-bold">Login</button>
-    </div>
-    <p id="authMsg" class="text-center text-sm h-10"></p>
+  <div class="card">
+    <h3>Upload Video YouTube</h3>
+    <form id="form-upload-video" style="display:flex;gap:10px;">
+      <input id="video-title" placeholder="Judul Video" required style="flex:1;">
+      <input id="video-url" placeholder="Link Youtube" required style="flex:2;">
+      <button type="submit">Upload</button>
+    </form>
   </div>
 
-  <!-- 2. APP BOX USER -->
-  <div id="appBox" class="hidden space-y-4">
-    <div class="flex justify-between items-center">
-      <h2 class="text-xl font-bold">Dashboard</h2>
-      <div class="flex gap-2">
-        <button id="adminBtn" class="hidden text-xs bg-red-700 hover:bg-red-600 px-3 py-1 rounded font-bold">ADMIN</button>
-        <button id="logoutBtn" class="text-xs bg-red-600 hover:bg-red-500 px-3 py-1 rounded">Logout</button>
-      </div>
-    </div>
-    <div class="bg-slate-700 p-4 rounded-lg text-center">
-      <p class="text-sm text-slate-400">Poin Kamu</p>
-      <p id="points" class="text-4xl font-bold text-yellow-400">0</p>
-    </div>
-    <button id="dailyBtn" class="w-full bg-blue-600 hover:bg-blue-500 p-3 rounded-lg font-bold text-lg">Claim Login Harian +500</button>
-    <button id="ytBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">Misi Nonton YT +100</button>
-    <p id="appMsg" class="text-center text-sm h-5"></p>
-    <div class="bg-slate-700 p-3 rounded-lg space-y-2">
-      <p class="font-bold">Link Referral Kamu</p>
-      <div class="flex gap-2">
-        <input id="myRefCode" readonly class="w-full p-2 rounded bg-slate-900 text-xs">
-        <button id="copyBtn" class="bg-cyan-600 px-3 rounded">Salin</button>
-      </div>
-      <p id="copyMsg" class="text-xs text-green-400 h-4"></p>
-    </div>
-    <div class="bg-slate-700 p-3 rounded-lg space-y-2">
-      <p class="font-bold">Upgrade Akun</p>
-      <p id="premiumStatus" class="text-sm">Status: FREE</p>
-      <button id="upgradeBtn" class="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-bold">Upgrade PREMIUM 10rb</button>
-    </div>
-    <button id="wdBtn" class="w-full bg-yellow-600 hover:bg-yellow-500 p-2 rounded font-bold">Withdraw 10.000 Poin</button>
+  <div class="card">
+    <h3>Data Withdraw</h3>
+    <table><thead><tr><th>ID</th><th>Email</th><th>Jumlah</th><th>Rek</th><th>Status</th><th>Aksi</th></tr></thead><tbody id="wd-tbody"></tbody></table>
   </div>
 
-  <!-- 3. ADMIN BOX -->
-  <div id="adminBox" class="hidden space-y-3">
-    <h2 class="text-xl font-bold text-red-400">Panel Admin</h2>
-    <div class="flex gap-2 border-b border-slate-600">
-      <button data-tab="withdraw" class="tab-btn active p-2 text-sm">WD & Upgrade</button>
-      <button data-tab="videos" class="tab-btn p-2 text-sm">Kelola Video</button>
-    </div>
-    <!-- TAB WD -->
-    <div id="tab-withdraw" class="tab-content space-y-2">
-      <button id="backBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-2 rounded">Kembali ke Dashboard</button>
-      <div id="adminList" class="space-y-2 max-h-96 overflow-y-auto pr-2"></div>
-    </div>
-    <!-- TAB VIDEO BARU -->
-    <div id="tab-videos" class="tab-content hidden space-y-2">
-      <div class="bg-slate-700 p-3 rounded-lg space-y-2">
-        <label class="font-bold text-sm">Tambah Link YT Baru</label>
-        <input id="newYtLink" type="text" placeholder="https://www.youtube.com/embed/ID" class="w-full p-2 rounded bg-slate-900 text-xs">
-        <button id="addYtBtn" class="w-full bg-cyan-600 p-2 rounded font-bold">+ Tambah Video</button>
-        <p id="videoMsg" class="text-xs text-green-400 h-4"></p>
-      </div>
-      <div id="videoList" class="space-y-2 max-h-64 overflow-y-auto pr-2 text-xs"></div>
-    </div>
+  <div class="card">
+    <h3>Data Video</h3>
+    <div id="video-list"></div>
   </div>
-</div>
-</div>
 
-<!-- 4. MODAL YT -->
-<div id="ytModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
-  <div class="bg-slate-800 rounded-lg p-3 w-full max-w-lg space-y-2">
-    <p id="ytVideoTitle" class="text-center font-bold">Tonton 15 Detik Ya Bos</p>
-    <div class="aspect-video"><iframe id="ytFrame" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-    <p id="ytTimer" class="text-center text-2xl font-bold text-yellow-400">15</p>
-    <button id="ytCloseBtn" disabled class="w-full bg-slate-600 p-2 rounded font-bold">Tunggu...</button>
+  <div class="card">
+    <h3>Data Users</h3>
+    <table><thead><tr><th>Email</th><th>Poin</th><th>Ref</th><th>Role</th><th>Upgrade</th></tr></thead><tbody id="users-tbody"></tbody></table>
   </div>
 </div>
 
-<!-- 5. MODAL BIASA -->
-<div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-  <div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3">
-    <h3 id="modalTitle" class="text-lg font-bold"></h3>
-    <p id="modalText" class="text-sm whitespace-pre-wrap"></p>
-    <div id="modalInputBox" class="hidden"><input id="modalInput" class="w-full p-2 rounded bg-slate-700"></div>
-    <div class="flex gap-2 justify-end">
-      <button id="modalCancel" class="px-4 py-2 bg-slate-600 rounded">Batal</button>
-      <button id="modalOk" class="px-4 py-2 bg-cyan-600 rounded font-bold">OK</button>
-    </div>
-  </div>
-</div>
-
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-// ==================== KONFIG SUPABASE ====================
-const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co'; // GANTI INI BOS
-const SUPABASE_ANON_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY'; // GANTI INI BOS
+<script>
+// ==================== KONFIG SUPABASE - GANTI INI BOS ====================
+const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
+const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // ==================== STATE GLOBAL ====================
-let wdData = [];
-let videosData = [];
-let userData = [];
+let wdData = []; let videosData = []; let userData = [];
 
 // ==================== MAIN ====================
-document.addEventListener('DOMContentLoaded', () => {
-    checkAdmin(); 
-});
+document.addEventListener('DOMContentLoaded', () => { checkAdmin(); });
 
 async function checkAdmin() {
     const { data: { user } = await supabase.auth.getUser();
     if (!user) return window.location.href = '/login.html';
 
     const { data: profile, error } = await supabase.from('profiles').select('role').eq('id', user.id).single();
-
     if (error || !profile || profile.role !== 'admin') {
         alert('Akses ditolak. Lu bukan Admin bos.');
         return window.location.href = '/dashboard.html';
     }
-    
-    // Lolos admin, load semua
     await loadAdminData();
     document.getElementById('loading-text').style.display = 'none';
     document.getElementById('admin-content').style.display = 'block';
 }
 
 async function loadAdminData() {
-    document.getElementById('loading-text').innerText = 'Loading data...';
     try {
-        // 1. LOAD WD
         const { data: wd, error: wdError } = await supabase.from('withdrawals').select('*, profiles(email)').order('created_at', { ascending: false });
-        if (wdError) throw wdError;
-        wdData = wd || []; // Anti null
-        renderWithdrawals(wdData);
+        if (wdError) throw wdError; wdData = wd || []; renderWithdrawals(wdData);
 
-        // 2. LOAD VIDEOS
         const { data: vids, error: vidsError } = await supabase.from('videos').select('*').order('id', { ascending: false });
-        if (vidsError) throw vidsError;
-        videosData = vids || []; // Anti null
-        renderVideos(videosData);
+        if (vidsError) throw vidsError; videosData = vids || []; renderVideos(videosData);
 
-        // 3. LOAD USERS
         const { data: users, error: usersError } = await supabase.from('profiles').select('*').order('points', { ascending: false });
-        if (usersError) throw usersError;
-        userData = users || []; // Anti null
-        renderUsers(userData);
+        if (usersError) throw usersError; userData = users || []; renderUsers(userData);
 
-    } catch (error) {
-        console.error('Gagal load data admin:', error);
-        document.getElementById('loading-text').innerText = 'Gagal load data: ' + error.message;
-    }
+    } catch (error) { console.error('Gagal load:', error); document.getElementById('loading-text').innerText = 'Gagal load: ' + error.message; }
 }
 
 // ==================== RENDER ====================
 function renderWithdrawals(data) {
     const tbody = document.getElementById('wd-tbody');
-    if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="6" class="text-center p-3">Belum ada data WD bos</td></tr>`;
-        return;
-    }
-    tbody.innerHTML = data.map(wd => `
-        <tr>
-            <td>${wd.id}</td>
-            <td>${wd.profiles?.email || wd.user_id}</td>
-            <td>${wd.amount.toLocaleString('id-ID')}</td>
-            <td>${wd.e_wallet} - ${wd.e_wallet_number}</td>
-            <td><span class="badge ${wd.status}">${wd.status}</span></td>
-            <td>
-                ${wd.status === 'pending' ? `<button class="btn-approve" onclick="updateWD(${wd.id}, 'paid')">Approve</button> <button class="btn-tolak" onclick="updateWD(${wd.id}, 'rejected')">Tolak</button>` : '-'}
-            </td>
-        </tr>
-    `).join('');
+    if (data.length === 0) return tbody.innerHTML = `<tr><td colspan="6" class="text-center p-3">Belum ada data WD</td></tr>`;
+    tbody.innerHTML = data.map(wd => `<tr><td>${wd.id}</td><td>${wd.profiles?.email || wd.user_id}</td><td>${wd.amount.toLocaleString('id-ID')}</td><td>${wd.e_wallet} - ${wd.e_wallet_number}</td><td><span class="badge ${wd.status}">${wd.status}</span></td><td>${wd.status === 'pending' ? `<button class="btn-approve" onclick="updateWD(${wd.id}, 'paid')">Approve</button> <button class="btn-tolak" onclick="updateWD(${wd.id}, 'rejected')">Tolak</button>` : '-'}</td></tr>`).join('');
 }
-
 function renderVideos(data) {
     const list = document.getElementById('video-list');
-    if (data.length === 0) {
-        list.innerHTML = `<p class="p-3">Belum ada video. Upload dulu bos.</p>`;
-        return;
-    }
-    list.innerHTML = data.map(v => `
-        <div class="video-item">
-            <p><b>${v.title}</b><br><small>${v.youtube_url}</small></p>
-            <button class="btn-hapus" onclick="deleteVideo(${v.id})">Hapus</button>
-        </div>
-    `).join('');
+    if (data.length === 0) return list.innerHTML = `<p class="p-3">Belum ada video.</p>`;
+    list.innerHTML = data.map(v => `<div class="video-item"><p><b>${v.title}</b><br><small>${v.youtube_url}</small></p><button class="btn-hapus" onclick="deleteVideo(${v.id})">Hapus</button></div>`).join('');
 }
-
 function renderUsers(data) {
     const tbody = document.getElementById('users-tbody');
-    if (data.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5">Belum ada user</td></tr>`;
-        return;
-    }
-    tbody.innerHTML = data.map(u => `
-        <tr>
-            <td>${u.email}</td>
-            <td>${u.points.toLocaleString('id-ID')}</td>
-            <td>${u.referred_by ? 'Punya Upline' : '-'}</td>
-            <td>${u.role}</td>
-            <td>${u.upgrade_status}</td>
-        </tr>
-    `).join('');
+    if (data.length === 0) return tbody.innerHTML = `<tr><td colspan="5">Belum ada user</td></tr>`;
+    tbody.innerHTML = data.map(u => `<tr><td>${u.email}</td><td>${u.points.toLocaleString('id-ID')}</td><td>${u.referred_by ? 'Ada' : '-'}</td><td>${u.role}</td><td>${u.upgrade_status}</td></tr>`).join('');
 }
 
 // ==================== ACTIONS ====================
 async function updateWD(id, status) {
     if(!confirm(`Yakin mau ${status} WD ini?`)) return;
     const { error } = await supabase.from('withdrawals').update({ status: status }).eq('id', id);
-    if (error) return alert('Gagal: ' + error.message);
-    alert(`WD ${status}`);
-    loadAdminData(); 
+    if (error) return alert('Gagal: ' + error.message); alert(`WD ${status}`); loadAdminData(); 
 }
-
 async function deleteVideo(id) {
     if(!confirm('Hapus video ini?')) return;
     const { error } = await supabase.from('videos').delete().eq('id', id);
-    if (error) return alert('Gagal: ' + error.message);
-    loadAdminData();
+    if (error) return alert('Gagal: ' + error.message); loadAdminData();
 }
-
-// Form Upload Video
-document.getElementById('form-upload-video')?.addEventListener('submit', async (e) => {
+document.getElementById('form-upload-video').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const title = document.getElementById('video-title').value;
-    const url = document.getElementById('video-url').value;
+    const title = document.getElementById('video-title').value; const url = document.getElementById('video-url').value;
     if(!title || !url) return alert('Isi semua bos');
-
     const { error } = await supabase.from('videos').insert([{ title, youtube_url: url }]);
-    if (error) return alert('Gagal upload: ' + error.message);
-    
-    alert('Video ke-upload');
-    e.target.reset();
-    loadAdminData();
+    if (error) return alert('Gagal upload: ' + error.message); alert('Video ke-upload'); e.target.reset(); loadAdminData();
 });
 </script>
 </body>
