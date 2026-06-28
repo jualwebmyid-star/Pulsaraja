@@ -3,16 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaskeun Poin V10.3</title>
+<title>Gaskeun Poin - Nonton YT Dibayar</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>body{font-family:'Inter',sans-serif} button:disabled{opacity:0.5;cursor:not-allowed;}</style>
 </head>
-<body class="bg-slate-900 text-slate-200 flex items-center justify-center min-h-screen p-4">
+<body class="bg-slate-900 text-slate-200 min-h-screen">
 
+<!-- ===== LANDING PAGE COPYWRITING NGEGAS ===== -->
+<div id="landingBox" class="w-full max-w-4xl mx-auto p-6 space-y-8">
+  <header class="text-center pt-10">
+    <h1 class="text-5xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-500">Gaskeun Poin</h1>
+    <p class="text-xl text-slate-400 mt-2">Nonton Video YouTube = Dapet Cuan 💰</p>
+  </header>
+
+  <div class="grid md:grid-cols-3 gap-6 text-center">
+    <div class="bg-slate-800 p-6 rounded-2xl">
+      <div class="text-4xl">🎯</div>
+      <h3 class="font-bold text-lg mt-2">Misi Gampang</h3>
+      <p class="text-sm text-slate-400">Tinggal nonton video 15 detik. Selesai dapet +100 Poin.</p>
+    </div>
+    <div class="bg-slate-800 p-6 rounded-2xl">
+      <div class="text-4xl">⚡</div>
+      <h3 class="font-bold text-lg mt-2">Login Dibayar</h3>
+      <p class="text-sm text-slate-400">Buka web tiap hari dapet bonus +500 Poin. Gratis.</p>
+    </div>
+    <div class="bg-slate-800 p-6 rounded-2xl">
+      <div class="text-4xl">💸</div>
+      <h3 class="font-bold text-lg mt-2">WD Kilat</h3>
+      <p class="text-sm text-slate-400">Kumpul 10.000 Poin = Langsung cair ke DANA/Pulsa 10rb.</p>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <button id="goToLoginBtn" class="bg-cyan-600 hover:bg-cyan-500 px-8 py-3 rounded-lg font-bold text-lg shadow-lg shadow-cyan-500/30">Mulai Gaskeun Sekarang</button>
+  </div>
+
+  <footer class="text-center text-xs text-slate-500 pt-10">© 2026 Gaskeun Poin. Upgrade PREMIUM buat limit 20x/hari.</footer>
+</div>
+
+<!-- ===== BOX LOGIN / APP / ADMIN ===== -->
+<div id="mainAppBox" class="hidden w-full flex items-center justify-center min-h-screen p-4">
 <div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-lg p-6 space-y-4">
+
   <!-- 1. AUTH BOX -->
   <div id="authBox" class="space-y-3">
-    <h1 class="text-2xl font-bold text-center text-cyan-400">Gaskeun Poin V10.3</h1>
+    <button id="backToLandingBtn" class="text-sm text-cyan-400 hover:underline">< Kembali</button>
+    <h1 class="text-2xl font-bold text-center text-cyan-400">Login / Daftar</h1>
     <input id="email" type="email" placeholder="Email" class="w-full p-2 rounded bg-slate-700">
     <input id="pass" type="password" placeholder="Password" class="w-full p-2 rounded bg-slate-700">
     <div class="flex gap-2">
@@ -36,10 +72,7 @@
       <p id="points" class="text-4xl font-bold text-yellow-400">0</p>
     </div>
 
-    <!-- MISI 1: LOGIN HARIAN -->
     <button id="dailyBtn" class="w-full bg-blue-600 hover:bg-blue-500 p-3 rounded-lg font-bold text-lg">Claim Login Harian +500</button>
-
-    <!-- MISI 2: NONTON YT -->
     <button id="ytBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">Misi Nonton YT +100</button>
 
     <p id="appMsg" class="text-center text-sm h-5"></p>
@@ -62,9 +95,17 @@
   <!-- 3. ADMIN BOX -->
   <div id="adminBox" class="hidden space-y-3">
     <h2 class="text-xl font-bold text-red-400">Panel Admin</h2>
+    <!-- INI FITUR BARU GANTI LINK YT -->
+    <div class="bg-slate-700 p-3 rounded-lg space-y-2">
+      <label class="font-bold text-sm">Ganti Link YouTube Misi</label>
+      <input id="ytLinkInput" type="text" placeholder="https://www.youtube.com/embed/ID" class="w-full p-2 rounded bg-slate-900 text-xs">
+      <button id="saveYtLinkBtn" class="w-full bg-cyan-600 p-2 rounded font-bold">Simpan Link Baru</button>
+      <p id="adminMsg" class="text-xs text-green-400 h-4"></p>
+    </div>
     <button id="backBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-2 rounded">Kembali ke Dashboard</button>
     <div id="adminList" class="space-y-2 max-h-96 overflow-y-auto pr-2"></div>
   </div>
+</div>
 </div>
 
 <!-- 4. MODAL YT -->
@@ -93,19 +134,36 @@
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  // ===== 1. GANTI 5 INI DULU BOS =====
+  // ===== 1. GANTI 4 INI DULU BOS =====
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
   const BASE_URL = 'https://pulsaraja.vercel.app';
   const REK_BCA = '1234567890 a.n NAMA LU';
-  const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // GANTI LINK YT EMBED LU
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
   let userId = null;
+  let YOUTUBE_LINK = ''; // LINK DIAMBIL DARI DB
   const authMsg = document.getElementById('authMsg');
   const appMsg = document.getElementById('appMsg');
   const ADMIN_EMAIL = 'admin@gaskeun.com';
   const dailyBtn = document.getElementById('dailyBtn');
+
+  // ===== NAVIGASI LANDING =====
+  document.getElementById('goToLoginBtn').onclick = () => {
+    document.getElementById('landingBox').classList.add('hidden');
+    document.getElementById('mainAppBox').classList.remove('hidden');
+  }
+  document.getElementById('backToLandingBtn').onclick = () => {
+    document.getElementById('mainAppBox').classList.add('hidden');
+    document.getElementById('landingBox').classList.remove('hidden');
+  }
+
+  // ===== AMBIL LINK YT DARI DB PAS LOAD =====
+  async function loadSettings() {
+    const { data } = await supabase.from('settings').select('value').eq('key', 'youtube_link').single();
+    if(data) YOUTUBE_LINK = data.value;
+  }
+  loadSettings();
 
   function getRefCode() { const url = window.location.href; const match = url.match(/[?&]ref=([^&]+)/i); return match? match[1].trim() : null; }
 
@@ -178,7 +236,6 @@
       else if(data.upgrade_status === 'pending'){ statusEl.innerText = 'Status: MENUNGGU APPROVAL...'; btnEl.innerText = 'Tunggu Approval'; btnEl.disabled = true; btnEl.classList.remove('bg-purple-600'); btnEl.classList.add('bg-slate-500'); }
       else { statusEl.innerText = 'Status: FREE'; btnEl.disabled = false; btnEl.innerText = 'Upgrade PREMIUM 10rb'; btnEl.classList.remove('bg-slate-500'); btnEl.classList.add('bg-purple-600'); }
 
-      // CEK LOGIN HARIAN
       const today = new Date().toISOString().split('T')[0];
       if(data.last_login_date === today){
         dailyBtn.innerText = 'Udah Claim Hari Ini ✅';
@@ -194,11 +251,7 @@
   dailyBtn.onclick = async () => {
     const today = new Date().toISOString().split('T')[0];
     const { data: p } = await supabase.from('profiles').select('points, last_login_date').eq('id', userId).single();
-
-    if(p.last_login_date === today){
-      return showModal({title:'Gagal', text:'Kamu udah claim hari ini bos. Besok lagi ya', callback:()=>{}});
-    }
-
+    if(p.last_login_date === today) return showModal({title:'Gagal', text:'Kamu udah claim hari ini bos.', callback:()=>{}});
     const newPoints = p.points + 500;
     await supabase.from('profiles').update({ points: newPoints, last_login_date: today }).eq('id', userId);
     appMsg.innerText = `+500 Poin Login Harian masuk! 🔥`;
@@ -213,20 +266,16 @@
   let ytInterval = null;
 
   document.getElementById('ytBtn').onclick = async () => {
+    if(!YOUTUBE_LINK) return showModal({title:'Error', text:'Link YT belum diset admin', callback:()=>{}});
     appMsg.innerText = 'Cek limit...';
     const today = new Date().toISOString().split('T')[0];
     const { data: p } = await supabase.from('profiles').select('points, upgrade_status, ad_clicks_today, last_ad_date').eq('id', userId).single();
-
-    // RESET LIMIT YT JAM 00.00
     if(p.last_ad_date!== today){
       await supabase.from('profiles').update({ ad_clicks_today: 0, last_ad_date: today }).eq('id', userId);
       p.ad_clicks_today = 0;
     }
-
     const maxClicks = p.upgrade_status === 'approved'? 20 : 5;
-    if(p.ad_clicks_today >= maxClicks){
-      return showModal({title:'Limit Habis', text:`Kamu udah ${maxClicks}x nonton hari ini. Upgrade PREMIUM buat 20x`, callback:()=>{}});
-    }
+    if(p.ad_clicks_today >= maxClicks) return showModal({title:'Limit Habis', text:`Kamu udah ${maxClicks}x nonton hari ini.`, callback:()=>{}});
 
     ytFrame.src = YOUTUBE_LINK + "?autoplay=1&mute=1&controls=0&rel=0";
     ytModal.classList.remove('hidden');
@@ -257,9 +306,26 @@
     clearInterval(ytInterval);
   }
 
-  // ===== PANEL ADMIN 1 KLIK =====
-  document.getElementById('adminBtn').onclick = () => { document.getElementById('appBox').classList.add('hidden'); document.getElementById('adminBox').classList.remove('hidden'); loadAdminData(); }
+  // ===== PANEL ADMIN + GANTI LINK YT =====
+  document.getElementById('adminBtn').onclick = async () => {
+    document.getElementById('appBox').classList.add('hidden');
+    document.getElementById('adminBox').classList.remove('hidden');
+    document.getElementById('ytLinkInput').value = YOUTUBE_LINK; // Isi input dengan link sekarang
+    loadAdminData();
+  }
   document.getElementById('backBtn').onclick = () => { document.getElementById('adminBox').classList.add('hidden'); document.getElementById('appBox').classList.remove('hidden'); }
+
+  document.getElementById('saveYtLinkBtn').onclick = async () => {
+    const newLink = document.getElementById('ytLinkInput').value;
+    if(!newLink.includes('embed')) return showModal({title:'Gagal', text:'Wajib pake link EMBED dari YT', callback:()=>{}});
+    const { error } = await supabase.from('settings').update({ value: newLink }).eq('key', 'youtube_link');
+    if(error) document.getElementById('adminMsg').innerText = 'Gagal simpan';
+    else {
+      YOUTUBE_LINK = newLink; // Update di memory juga
+      document.getElementById('adminMsg').innerText = 'Link berhasil diganti! ✅';
+      setTimeout(()=> document.getElementById('adminMsg').innerText='', 2000);
+    }
+  }
 
   async function loadAdminData() {
     const list = document.getElementById('adminList');
