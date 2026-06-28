@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pulsa Raja - Nonton Dapet Pulsa</title>
+<title>Gaskeun Poin V11</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>body{font-family:'Inter',sans-serif} iframe{pointer-events:none;}</style>
 </head>
@@ -11,36 +11,30 @@
 
 <div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-lg p-6 space-y-4">
 
-  <!-- AUTH / LANDING PAGE PULSA RAJA -->
+  <!-- AUTH / LANDING PAGE BARU -->
   <div id="authBox" class="space-y-4">
     <!-- HEADER JUALAN -->
     <div class="text-center space-y-2">
-      <h1 class="text-4xl font-black text-yellow-400">👑 Pulsa Raja</h1>
-      <p class="text-sm text-slate-300">Kerajaan Cuan Dari HP. Nonton 15 Detik, Cair ke DANA.</p>
+      <h1 class="text-3xl font-extrabold text-cyan-400">Gaskeun Poin 💸</h1>
+      <p class="text-sm text-slate-400">Nonton 15 Detik = Dapet Duit. Segampang itu.</p>
     </div>
 
-    <!-- BUKTI TRANSFER / TRUST -->
-    <div class="bg-green-900/40 border-green-700 p-2 rounded-lg text-center text-xs font-bold text-green-300">
-      ✅ SUDAH BAYAR 1.247 MEMBER BULAN INI
-    </div>
-
-    <!-- BENEFIT / KENAPA HARUS GABUNG -->
-    <div class="bg-slate-700/50 p-3 rounded-lg space-y-2 text-sm">
-      <div class="flex items-center gap-3"><span class="text-xl">⚡</span> <p><b>Misi Cepet:</b> Nonton YT 15 detik = <b>+100 Poin</b></p></div>
-      <div class="flex items-center gap-3"><span class="text-xl">💸</span> <p><b>WD 10.000:</b> Minimal kecil, langsung transfer DANA/BCA</p></div>
-      <div class="flex items-center gap-3"><span class="text-xl">👑</span> <p><b>Akun Raja:</b> Bayar 10rb sekali, misi 20x/hari</p></div>
-      <div class="flex items-center gap-3"><span class="text-xl">🤝</span> <p><b>Referral OP:</b> Ajak 1 temen, bonus seumur hidup</p></div>
+    <!-- BENEFIT / BUKTI SOSIAL -->
+    <div class="bg-slate-700/50 p-3 rounded-lg space-y-2 text-xs">
+      <div class="flex items-center gap-2"><span>🔥</span> <p><b>+100 Poin</b> tiap misi nonton YT</p></div>
+      <div class="flex items-center gap-2"><span>💰</span> <p><b>WD 10.000</b> langsung cair ke DANA/BCA</p></div>
+      <div class="flex items-center gap-2"><span>👑</span> <p><b>PREMIUM 10rb</b> Limit 20x/hari. Auto cuan 2x lipat</p></div>
+      <div class="flex items-center gap-2"><span>🎁</span> <p><b>Referral</b> Ajak temen, sama-sama cuan</p></div>
     </div>
 
     <!-- FORM LOGIN/DAFTAR -->
     <div class="space-y-3 pt-2">
-      <input id="email" type="email" placeholder="Email Aktif Kamu" class="w-full p-3 rounded bg-slate-700 text-sm focus:ring-2 focus:ring-yellow-400 outline-none">
-      <input id="pass" type="password" placeholder="Buat Password" class="w-full p-3 rounded bg-slate-700 text-sm focus:ring-2 focus:ring-yellow-400 outline-none">
+      <input id="email" type="email" placeholder="Masukkan Email" class="w-full p-3 rounded bg-slate-700 text-sm">
+      <input id="pass" type="password" placeholder="Password" class="w-full p-3 rounded bg-slate-700 text-sm">
       <div class="flex gap-2">
-        <button id="signupBtn" class="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 p-3 rounded-lg font-black text-lg shadow-lg shadow-yellow-500/30">DAFTAR JADI RAJA</button>
-        <button id="loginBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-3 rounded-lg font-bold">Login</button>
+        <button id="signupBtn" class="w-full bg-cyan-600 hover:bg-cyan-500 p-3 rounded-lg font-extrabold">DAFTAR GRATIS</button>
+        <button id="loginBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-3 rounded-lg font-bold">LOGIN</button>
       </div>
-      <p class="text-center text-[11px] text-slate-400">Gratis 100% Daftar. Gak ada biaya tersembunyi.</p>
       <p id="authMsg" class="text-center text-sm h-5 text-yellow-400"></p>
     </div>
   </div>
@@ -48,31 +42,31 @@
   <!-- APP USER - SAMA PERSIS -->
   <div id="appBox" class="hidden space-y-4">
     <div class="flex justify-between items-center">
-      <h2 class="text-xl font-bold">Dashboard 👑</h2>
+      <h2 class="text-xl font-bold">Dashboard</h2>
       <div class="flex gap-2">
         <button id="adminBtn" class="hidden text-xs bg-red-700 px-3 py-1 rounded font-bold">ADMIN</button>
         <button id="logoutBtn" class="text-xs bg-red-600 px-3 py-1 rounded">Logout</button>
       </div>
     </div>
-    <div class="bg-slate-700 p-4 rounded-lg text-center border-2 border-yellow-500/30">
-      <p class="text-sm text-slate-400">Saldo Poin Kamu</p>
-      <p id="points" class="text-4xl font-black text-yellow-400">0</p>
+    <div class="bg-slate-700 p-4 rounded-lg text-center">
+      <p class="text-sm text-slate-400">Poin Kamu</p>
+      <p id="points" class="text-4xl font-bold text-yellow-400">0</p>
     </div>
-    <button id="ytBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">⚡ Misi Nonton YT +100</button>
+    <button id="ytBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">Misi Nonton YT +100</button>
     <p id="appMsg" class="text-center text-sm h-5"></p>
     <div class="bg-slate-700 p-3 rounded-lg space-y-2">
-      <p class="font-bold">Link Referral Kerajaan Kamu</p>
+      <p class="font-bold">Link Referral Kamu</p>
       <div class="flex gap-2">
         <input id="myRefCode" readonly class="w-full p-2 rounded bg-slate-900 text-xs">
-        <button id="copyBtn" class="bg-yellow-500 text-slate-900 px-3 rounded font-bold">Salin</button>
+        <button id="copyBtn" class="bg-cyan-600 px-3 rounded">Salin</button>
       </div>
     </div>
     <div class="bg-slate-700 p-3 rounded-lg space-y-2">
-      <p class="font-bold">Upgrade Jadi Raja 👑</p>
-      <p id="premiumStatus" class="text-sm">Status: RAKYAT FREE</p>
-      <button id="upgradeBtn" class="w-full bg-purple-600 p-2 rounded font-bold">Upgrade RAJA 10rb</button>
+      <p class="font-bold">Upgrade Akun</p>
+      <p id="premiumStatus" class="text-sm">Status: FREE</p>
+      <button id="upgradeBtn" class="w-full bg-purple-600 p-2 rounded font-bold">Upgrade PREMIUM 10rb</button>
     </div>
-    <button id="wdBtn" class="w-full bg-yellow-600 hover:bg-yellow-500 p-2 rounded font-bold text-slate-900">💸 Withdraw 10.000 Poin</button>
+    <button id="wdBtn" class="w-full bg-yellow-600 p-2 rounded font-bold">Withdraw 10.000 Poin</button>
   </div>
 
   <!-- PANEL ADMIN - SAMA PERSIS -->
@@ -101,7 +95,7 @@
     <div id="modalInputBox" class="hidden"><input id="modalInput" class="w-full p-2 rounded bg-slate-700"></div>
     <div class="flex gap-2 justify-end">
       <button id="modalCancel" class="px-4 py-2 bg-slate-600 rounded">Batal</button>
-      <button id="modalOk" class="px-4 py-2 bg-yellow-500 text-slate-900 rounded font-bold">OK</button>
+      <button id="modalOk" class="px-4 py-2 bg-cyan-600 rounded font-bold">OK</button>
     </div>
   </div>
 </div>
@@ -111,9 +105,9 @@
 
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
-  const BASE_URL = 'https://pulsaraja.vercel.app'; // <-- GANTI DOMAIN LU BOS
-  const REK_BCA = '1234567890 a.n NAMA LU'; // <-- GANTI REKENING LU BOS
-  const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // <-- GANTI LINK YT LU
+  const BASE_URL = 'https://pulsaraja.vercel.app';
+  const REK_BCA = '1234567890 a.n NAMA LU';
+  const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
   let userId = null;
@@ -188,9 +182,9 @@
       document.getElementById('myRefCode').value = `${BASE_URL}?ref=${data.referral_code}`;
       const statusEl = document.getElementById('premiumStatus');
       const btnEl = document.getElementById('upgradeBtn');
-      if(data.upgrade_status === 'approved'){ statusEl.innerText = 'Status: RAJA 👑'; btnEl.classList.add('hidden'); }
+      if(data.upgrade_status === 'approved'){ statusEl.innerText = 'Status: PREMIUM 🔥'; btnEl.classList.add('hidden'); }
       else if(data.upgrade_status === 'pending'){ statusEl.innerText = 'Status: MENUNGGU APPROVAL...'; btnEl.disabled = true; btnEl.classList.add('bg-slate-500'); }
-      else { statusEl.innerText = 'Status: RAKYAT FREE'; }
+      else { statusEl.innerText = 'Status: FREE'; }
     }
   }
 
