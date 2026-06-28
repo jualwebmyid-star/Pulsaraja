@@ -3,39 +3,38 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaskeun Poin V10</title>
+<title>Gaskeun Poin V10 FULL</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <style>body{font-family:'Inter',sans-serif} iframe{pointer-events:none;}</style>
 </head>
 <body class="bg-slate-900 text-slate-200 flex items-center justify-center min-h-screen p-4">
 
 <div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-lg p-6 space-y-4">
-  <!-- AUTH -->
+  <!-- 1. AUTH BOX -->
   <div id="authBox" class="space-y-3">
     <h1 class="text-2xl font-bold text-center text-cyan-400">Gaskeun Poin V10</h1>
     <input id="email" type="email" placeholder="Email" class="w-full p-2 rounded bg-slate-700">
     <input id="pass" type="password" placeholder="Password" class="w-full p-2 rounded bg-slate-700">
     <div class="flex gap-2">
-      <button id="signupBtn" class="w-full bg-cyan-600 p-2 rounded font-bold">Daftar</button>
-      <button id="loginBtn" class="w-full bg-slate-600 p-2 rounded font-bold">Login</button>
+      <button id="signupBtn" class="w-full bg-cyan-600 hover:bg-cyan-500 p-2 rounded font-bold">Daftar</button>
+      <button id="loginBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-2 rounded font-bold">Login</button>
     </div>
     <p id="authMsg" class="text-center text-sm h-10"></p>
   </div>
 
-  <!-- APP USER -->
+  <!-- 2. APP BOX USER -->
   <div id="appBox" class="hidden space-y-4">
     <div class="flex justify-between items-center">
       <h2 class="text-xl font-bold">Dashboard</h2>
       <div class="flex gap-2">
-        <button id="adminBtn" class="hidden text-xs bg-red-700 px-3 py-1 rounded font-bold">ADMIN</button>
-        <button id="logoutBtn" class="text-xs bg-red-600 px-3 py-1 rounded">Logout</button>
+        <button id="adminBtn" class="hidden text-xs bg-red-700 hover:bg-red-600 px-3 py-1 rounded font-bold">ADMIN</button>
+        <button id="logoutBtn" class="text-xs bg-red-600 hover:bg-red-500 px-3 py-1 rounded">Logout</button>
       </div>
     </div>
     <div class="bg-slate-700 p-4 rounded-lg text-center">
       <p class="text-sm text-slate-400">Poin Kamu</p>
       <p id="points" class="text-4xl font-bold text-yellow-400">0</p>
     </div>
-    <!-- GANTI JADI MISI YT -->
     <button id="ytBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">Misi Nonton YT +100</button>
     <p id="appMsg" class="text-center text-sm h-5"></p>
     <div class="bg-slate-700 p-3 rounded-lg space-y-2">
@@ -44,24 +43,25 @@
         <input id="myRefCode" readonly class="w-full p-2 rounded bg-slate-900 text-xs">
         <button id="copyBtn" class="bg-cyan-600 px-3 rounded">Salin</button>
       </div>
+      <p id="copyMsg" class="text-xs text-green-400 h-4"></p>
     </div>
     <div class="bg-slate-700 p-3 rounded-lg space-y-2">
       <p class="font-bold">Upgrade Akun</p>
       <p id="premiumStatus" class="text-sm">Status: FREE</p>
-      <button id="upgradeBtn" class="w-full bg-purple-600 p-2 rounded font-bold">Upgrade PREMIUM 10rb</button>
+      <button id="upgradeBtn" class="w-full bg-purple-600 hover:bg-purple-500 p-2 rounded font-bold">Upgrade PREMIUM 10rb</button>
     </div>
-    <button id="wdBtn" class="w-full bg-yellow-600 p-2 rounded font-bold">Withdraw 10.000 Poin</button>
+    <button id="wdBtn" class="w-full bg-yellow-600 hover:bg-yellow-500 p-2 rounded font-bold">Withdraw 10.000 Poin</button>
   </div>
 
-  <!-- PANEL ADMIN -->
+  <!-- 3. ADMIN BOX -->
   <div id="adminBox" class="hidden space-y-3">
     <h2 class="text-xl font-bold text-red-400">Panel Admin</h2>
-    <button id="backBtn" class="w-full bg-slate-600 p-2 rounded">Kembali</button>
-    <div id="adminList" class="space-y-2 max-h-96 overflow-y-auto"></div>
+    <button id="backBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-2 rounded">Kembali ke Dashboard</button>
+    <div id="adminList" class="space-y-2 max-h-96 overflow-y-auto pr-2"></div>
   </div>
 </div>
 
-<!-- MODAL YT -->
+<!-- 4. MODAL YT -->
 <div id="ytModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
   <div class="bg-slate-800 rounded-lg p-3 w-full max-w-lg space-y-2">
     <p class="text-center font-bold">Tonton 15 Detik Ya Bos. Jangan di Close</p>
@@ -71,7 +71,7 @@
   </div>
 </div>
 
-<!-- MODAL BIASA -->
+<!-- 5. MODAL BIASA -->
 <div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-40">
   <div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3">
     <h3 id="modalTitle" class="text-lg font-bold"></h3>
@@ -87,21 +87,22 @@
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
+  // ===== 1. GANTI 5 INI DULU BOS =====
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
   const BASE_URL = 'https://pulsaraja.vercel.app';
   const REK_BCA = '1234567890 a.n NAMA LU';
-  const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // GANTI LINK YT LU. PAKE EMBED
+  const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // GANTI INI
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
   let userId = null;
   const authMsg = document.getElementById('authMsg');
   const appMsg = document.getElementById('appMsg');
-  const ADMIN_EMAIL = 'admin@gaskeun.com';
+  const ADMIN_EMAIL = 'admin@gaskeun.com'; // DAFTAR PAKE EMAIL INI BIAR JADI ADMIN
 
   function getRefCode() { const url = window.location.href; const match = url.match(/[?&]ref=([^&]+)/i); return match? match[1].trim() : null; }
 
-  // ===== MODAL =====
+  // ===== MODAL HELPER =====
   const modal = document.getElementById('modal');
   const modalTitle = document.getElementById('modalTitle');
   const modalText = document.getElementById('modalText');
@@ -119,7 +120,7 @@
   modalOk.onclick = () => { if(modalCallback) modalCallback(modalInput.value); hideModal(); }
   modalCancel.onclick = hideModal;
 
-  // ===== AUTH =====
+  // ===== AUTH LOGIC =====
   document.getElementById('signupBtn').onclick = async () => {
     authMsg.innerText = 'Daftar...';
     const currentRef = getRefCode();
@@ -127,6 +128,7 @@
     if(currentRef){
       const { data: refProfile } = await supabase.from('profiles').select('id').eq('referral_code', currentRef).single();
       if(refProfile) { referrerId = refProfile.id; authMsg.innerText = `Daftar pakai kode ref: ${currentRef} ✅`; }
+      else { authMsg.innerText = `Kode ref SALAH.`; }
     }
     const { error } = await supabase.auth.signUp({
       email: document.getElementById('email').value,
@@ -134,7 +136,7 @@
       options: { data: { referred_by: referrerId } }
     });
     if(error) { authMsg.innerText = 'ERROR: ' + error.message; }
-    else { authMsg.innerText = authMsg.innerText || 'Daftar berhasil!'; await new Promise(r => setTimeout(r, 3000)); }
+    else { authMsg.innerText = authMsg.innerText || 'Daftar berhasil! Cek email buat verifikasi.'; await new Promise(r => setTimeout(r, 3000)); }
   }
   document.getElementById('loginBtn').onclick = async () => {
     authMsg.innerText = 'Login...';
@@ -167,12 +169,12 @@
       const statusEl = document.getElementById('premiumStatus');
       const btnEl = document.getElementById('upgradeBtn');
       if(data.upgrade_status === 'approved'){ statusEl.innerText = 'Status: PREMIUM 🔥'; btnEl.classList.add('hidden'); }
-      else if(data.upgrade_status === 'pending'){ statusEl.innerText = 'Status: MENUNGGU APPROVAL...'; btnEl.disabled = true; btnEl.classList.add('bg-slate-500'); }
-      else { statusEl.innerText = 'Status: FREE'; }
+      else if(data.upgrade_status === 'pending'){ statusEl.innerText = 'Status: MENUNGGU APPROVAL...'; btnEl.innerText = 'Tunggu Approval'; btnEl.disabled = true; btnEl.classList.remove('bg-purple-600'); btnEl.classList.add('bg-slate-500'); }
+      else { statusEl.innerText = 'Status: FREE'; btnEl.disabled = false; btnEl.innerText = 'Upgrade PREMIUM 10rb'; btnEl.classList.remove('bg-slate-500'); btnEl.classList.add('bg-purple-600'); }
     }
   }
 
-  // ===== MISI YT 15 DETIK =====
+  // ===== MISI YT 15 DETIK ANTI SPAM =====
   const ytModal = document.getElementById('ytModal');
   const ytFrame = document.getElementById('ytFrame');
   const ytTimer = document.getElementById('ytTimer');
@@ -180,13 +182,14 @@
   let ytInterval = null;
 
   document.getElementById('ytBtn').onclick = async () => {
+    appMsg.innerText = 'Cek limit...';
     const today = new Date().toISOString().split('T')[0];
     const { data: p } = await supabase.from('profiles').select('points, upgrade_status, ad_clicks_today, last_ad_date').eq('id', userId).single();
     if(p.last_ad_date!== today){ await supabase.from('profiles').update({ ad_clicks_today: 0, last_ad_date: today }).eq('id', userId); p.ad_clicks_today = 0; }
     const maxClicks = p.upgrade_status === 'approved'? 20 : 5;
-    if(p.ad_clicks_today >= maxClicks){ return showModal({title:'Limit Habis', text:`Kamu udah ${maxClicks}x hari ini`, callback:()=>{}}); }
+    if(p.ad_clicks_today >= maxClicks){ return showModal({title:'Limit Habis', text:`Kamu udah ${maxClicks}x hari ini. Upgrade PREMIUM buat 20x`, callback:()=>{}}); }
 
-    ytFrame.src = YOUTUBE_LINK + "?autoplay=1&mute=1&controls=0";
+    ytFrame.src = YOUTUBE_LINK + "?autoplay=1&mute=1&controls=0&rel=0";
     ytModal.classList.remove('hidden');
     let timeLeft = 15;
     ytTimer.innerText = timeLeft;
@@ -211,48 +214,87 @@
   }
   ytCloseBtn.onclick = () => {
     ytModal.classList.add('hidden');
-    ytFrame.src = '';
+    ytFrame.src = ''; // Matikan video biar gak play di belakang
     clearInterval(ytInterval);
   }
 
-  // ===== PANEL ADMIN =====
+  // ===== PANEL ADMIN 1 KLIK =====
   document.getElementById('adminBtn').onclick = () => { document.getElementById('appBox').classList.add('hidden'); document.getElementById('adminBox').classList.remove('hidden'); loadAdminData(); }
   document.getElementById('backBtn').onclick = () => { document.getElementById('adminBox').classList.add('hidden'); document.getElementById('appBox').classList.remove('hidden'); }
 
   async function loadAdminData() {
     const list = document.getElementById('adminList');
-    list.innerHTML = 'Loading...';
+    list.innerHTML = 'Loading data...';
     const { data: pendingUpgrades } = await supabase.from('profiles').select('id, email, upgrade_proof_url').eq('upgrade_status', 'pending');
     const { data: pendingWd } = await supabase.from('withdrawals').select('id, user_id, amount, method, account').eq('status', 'pending');
 
-    let html = '<h3 class="font-bold text-purple-400">Upgrade Pending</h3>';
-    if(pendingUpgrades.length === 0) html += '<p class="text-sm">Kosong</p>';
+    let html = '<h3 class="font-bold text-purple-400 border-b border-slate-600 pb-1">Upgrade Pending</h3>';
+    if(pendingUpgrades.length === 0) html += '<p class="text-sm text-slate-400">Kosong</p>';
     pendingUpgrades.forEach(u => {
-      html += `<div class="bg-slate-700 p-2 rounded text-xs"><p>${u.email}</p><a href="${u.upgrade_proof_url}" target="_blank" class="text-cyan-400">Lihat Bukti</a><button data-id="${u.id}" class="approveUp bg-green-600 w-full mt-1 p-1 rounded">Approve</button></div>`;
+      html += `<div class="bg-slate-700 p-2 rounded text-xs space-y-1"><p><b>Email:</b> ${u.email}</p><a href="${u.upgrade_proof_url}" target="_blank" class="text-cyan-400 underline">Lihat Bukti</a><button data-id="${u.id}" class="approveUp bg-green-600 w-full mt-1 p-1 rounded hover:bg-green-500 font-bold">Approve PREMIUM</button></div>`;
     });
 
-    html += '<h3 class="font-bold text-yellow-400 mt-3">WD Pending</h3>';
-    if(pendingWd.length === 0) html += '<p class="text-sm">Kosong</p>';
+    html += '<h3 class="font-bold text-yellow-400 mt-3 border-b border-slate-600 pb-1">WD Pending</h3>';
+    if(pendingWd.length === 0) html += '<p class="text-sm text-slate-400">Kosong</p>';
     pendingWd.forEach(w => {
-      html += `<div class="bg-slate-700 p-2 rounded text-xs"><p>${w.amount} Poin via ${w.method}</p><p>No: ${w.account}</p><button data-id="${w.id}" class="approveWd bg-green-600 w-full mt-1 p-1 rounded">Sudah Transfer</button></div>`;
+      html += `<div class="bg-slate-700 p-2 rounded text-xs space-y-1"><p><b>Jumlah:</b> ${w.amount} Poin via ${w.method}</p><p><b>No:</b> ${w.account}</p><button data-id="${w.id}" class="approveWd bg-green-600 w-full mt-1 p-1 rounded hover:bg-green-500 font-bold">Tandai Sudah Transfer</button></div>`;
     });
     list.innerHTML = html;
 
     document.querySelectorAll('.approveUp').forEach(b => b.onclick = async (e) => {
       await supabase.from('profiles').update({ upgrade_status: 'approved' }).eq('id', e.target.dataset.id);
-      loadAdminData();
+      loadAdminData(); // Refresh list
     });
     document.querySelectorAll('.approveWd').forEach(b => b.onclick = async (e) => {
       await supabase.from('withdrawals').update({ status: 'done' }).eq('id', e.target.dataset.id);
-      loadAdminData();
+      loadAdminData(); // Refresh list
     });
   }
 
-  // ===== LAINNYA =====
-  document.getElementById('copyBtn').onclick = () => { navigator.clipboard.writeText(document.getElementById('myRefCode').value); }
-  document.getElementById('wdBtn').onclick = async () => { /* sama kaya V9 */ }
-  document.getElementById('upgradeBtn').onclick = async () => { /* sama kaya V9 */ }
-  //... kode WD + Upgrade sama kaya V9, gue singkat biar gak kepanjangan
+  // ===== FITUR LAINNYA =====
+  document.getElementById('copyBtn').onclick = () => {
+    navigator.clipboard.writeText(document.getElementById('myRefCode').value);
+    document.getElementById('copyMsg').innerText = 'Link berhasil disalin!';
+    setTimeout(()=> document.getElementById('copyMsg').innerText='', 2000);
+  }
+
+  document.getElementById('wdBtn').onclick = async () => {
+    const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
+    if(p.points < 10000) return showModal({title:'Gagal', text:'Minimal WD 10.000 Poin = 10rb Pulsa/DANA', callback:()=>{}});
+    showModal({
+      title: 'Withdraw Poin', text: 'WD 10.000 Poin ke: Pulsa/DANA', input: true,
+      callback: async (method) => {
+        if(!method || (method.toLowerCase()!== 'pulsa' && method.toLowerCase()!== 'dana')) return showModal({title:'Gagal', text:'Ketik: pulsa atau dana', callback:()=>{}});
+        showModal({
+          title: 'Nomor Tujuan', text: `Masukkan No ${method}:`, input: true,
+          callback: async (account) => {
+            if(!account) return;
+            await supabase.from('withdrawals').insert({ user_id: userId, amount: 10000, method, account });
+            await supabase.from('profiles').update({ points: p.points - 10000 }).eq('id', userId);
+            showModal({title:'Sukses', text:'WD 10.000 Poin diajukan. Tunggu admin transfer 1x24 jam', callback:()=>{}});
+            loadProfile();
+          }
+        });
+      }
+    });
+  }
+
+  document.getElementById('upgradeBtn').onclick = async () => {
+    const { data: p } = await supabase.from('profiles').select('upgrade_status').eq('id', userId).single();
+    if(p.upgrade_status === 'approved') return showModal({title:'Udah PREMIUM', text:'Akun kamu udah PREMIUM bos', callback:()=>{}});
+    if(p.upgrade_status === 'pending') return showModal({title:'Tunggu Dulu', text:'Bukti transfer kamu lagi dicek admin', callback:()=>{}});
+    showModal({
+      title: 'Transfer ke BCA',
+      text: `Transfer Rp10.000 ke:\n${REK_BCA}\n\nLalu upload bukti ke imgur.com dan paste linknya di bawah.`,
+      input: true,
+      callback: async (proofUrl) => {
+        if(!proofUrl ||!proofUrl.startsWith('http')) return showModal({title:'Gagal', text:'Masukkan link foto valid dari imgur.com', callback:()=>{}});
+        await supabase.from('profiles').update({ upgrade_status: 'pending', upgrade_proof_url: proofUrl }).eq('id', userId);
+        showModal({title:'Sukses', text:'Bukti diterima. Tunggu admin approve 1x24 jam', callback:()=>{}});
+        loadProfile();
+      }
+    });
+  }
 </script>
 </body>
 </html>
