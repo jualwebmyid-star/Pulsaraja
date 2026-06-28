@@ -3,345 +3,265 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Pulsa Raja - Nonton Dapet Pulsa</title>
+<title>PULSA RAJA V11.3</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<style>body{font-family:'Inter',sans-serif} iframe{pointer-events:none;}</style>
+<script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+<style>
+  body{font-family: 'Poppins', sans-serif; background: linear-gradient(135deg, #0f172a, #1e293b);}
+  .card{background: rgba(30,41,59,0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1);}
+  .btn{transition: all .2s;}
+  .btn:active{scale: 0.95;}
+  .hidden{display: none;}
+</style>
 </head>
-<body class="bg-slate-900 text-slate-200 flex items-center justify-center min-h-screen p-4">
+<body class="min-h-screen text-white flex items-center justify-center p-4">
 
-<div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-lg p-6 space-y-4">
+<div class="w-full max-w-md">
 
-  <!-- AUTH / LANDING PAGE PULSA RAJA -->
-  <div id="authBox" class="space-y-4">
-    <div class="text-center space-y-2">
-      <h1 class="text-4xl font-black text-yellow-400">👑 Pulsa Raja</h1>
-      <p class="text-sm text-slate-300">Kerajaan Cuan Dari HP. Nonton 15 Detik, Cair ke DANA.</p>
+  <!-- BOX LOGIN / DAFTAR -->
+  <div id="authBox" class="card p-6 rounded-2xl shadow-2xl">
+    <h1 class="text-3xl font-bold text-center mb-2">PULSA RAJA</h1>
+    <p class="text-center text-slate-400 mb-6">Kerjain Misi, Dapet Saldo</p>
+    
+    <div class="space-y-3">
+      <input id="email" type="email" placeholder="Email" class="w-full p-3 rounded-lg bg-slate-800 border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+      <input id="password" type="password" placeholder="Password" class="w-full p-3 rounded-lg bg-slate-800 border-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500">
     </div>
-    <div class="bg-green-900/40 border-green-700 p-2 rounded-lg text-center text-xs font-bold text-green-300">
-      ✅ SUDAH BAYAR 1.247 MEMBER BULAN INI
+
+    <div class="grid grid-cols-2 gap-3 mt-4">
+      <button id="loginBtn" class="btn w-full bg-indigo-600 hover:bg-indigo-700 p-3 rounded-lg font-bold">Login</button>
+      <button id="signupBtn" class="btn w-full bg-slate-600 hover:bg-slate-700 p-3 rounded-lg font-bold">Daftar</button>
     </div>
-    <div class="bg-slate-700/50 p-3 rounded-lg space-y-2 text-sm">
-      <div class="flex items-center gap-3"><span class="text-xl">⚡</span> <p><b>Misi Cepet:</b> Nonton YT 15 detik = <b>+100 Poin</b></p></div>
-      <div class="flex items-center gap-3"><span class="text-xl">🔔</span> <p><b>Misi Sub:</b> Subscribe Chanel = <b>+200 Poin</b></p></div>
-      <div class="flex items-center gap-3"><span class="text-xl">🎁</span> <p><b>Login Harian:</b> Claim gratis <b>+50 Poin</b></p></div>
-      <div class="flex items-center gap-3"><span class="text-xl">💸</span> <p><b>WD 10.000:</b> Minimal kecil, langsung transfer DANA/BCA</p></div>
-    </div>
-    <div class="space-y-3 pt-2">
-      <input id="email" type="email" placeholder="Email Aktif Kamu" class="w-full p-3 rounded bg-slate-700 text-sm focus:ring-2 focus:ring-yellow-400 outline-none">
-      <input id="pass" type="password" placeholder="Buat Password" class="w-full p-3 rounded bg-slate-700 text-sm focus:ring-2 focus:ring-yellow-400 outline-none">
-      <div class="flex gap-2">
-        <button id="signupBtn" class="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 p-3 rounded-lg font-black text-lg shadow-lg shadow-yellow-500/30">DAFTAR JADI RAJA</button>
-        <button id="loginBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-3 rounded-lg font-bold">Login</button>
-      </div>
-      <p class="text-center text- text-slate-400">Gratis 100% Daftar. Gak ada biaya tersembunyi.</p>
-      <p id="authMsg" class="text-center text-sm h-5 text-yellow-400"></p>
-    </div>
+    <p id="refInfo" class="text-xs text-center text-green-400 mt-3"></p>
   </div>
 
-  <!-- APP USER -->
+  <!-- BOX APLIKASI UTAMA -->
   <div id="appBox" class="hidden space-y-4">
-    <div class="flex justify-between items-center">
-      <h2 class="text-xl font-bold">Dashboard 👑</h2>
-      <div class="flex gap-2">
-        <button id="adminBtn" class="hidden text-xs bg-red-700 px-3 py-1 rounded font-bold">ADMIN</button>
-        <button id="logoutBtn" class="text-xs bg-red-600 px-3 py-1 rounded">Logout</button>
+    
+    <!-- HEADER PROFIL -->
+    <div class="card p-4 rounded-2xl flex justify-between items-center">
+      <div>
+        <p class="text-slate-400 text-sm">Saldo Kamu</p>
+        <p id="points" class="text-3xl font-bold text-yellow-400">0</p>
+      </div>
+      <div class="text-right">
+        <p class="text-slate-400 text-sm">Status</p>
+        <p id="status" class="font-bold text-green-400">Free</p>
+        <button id="adminBtn" class="hidden btn mt-2 text-xs bg-red-600 px-3 py-1 rounded-lg">ADMIN</button>
       </div>
     </div>
-    <div class="bg-slate-700 p-4 rounded-lg text-center border-2 border-yellow-500/30">
-      <p class="text-sm text-slate-400">Saldo Poin Kamu</p>
-      <p id="points" class="text-4xl font-black text-yellow-400">0</p>
+
+    <!-- MISI HARIAN -->
+    <div class="card p-4 rounded-2xl space-y-3">
+      <h2 class="font-bold text-lg">🎯 Misi Harian</h2>
+      
+      <button id="dailyBtn" class="btn w-full bg-yellow-500 hover:bg-yellow-600 p-3 rounded-lg font-bold flex justify-between items-center">
+        <span>🎁 Daily Login</span> <span>+50</span>
+      </button>
+
+      <button id="ytBtn" class="btn w-full bg-red-500 hover:bg-red-600 p-3 rounded-lg font-bold flex justify-between items-center">
+        <span>⚡ Tonton Iklan YT 15s</span> <span>+100</span>
+      </button>
+      <p id="ytCount" class="text-xs text-slate-400 text-center">Sisa: 5/5</p>
+
+      <button id="subBtn" class="btn w-full bg-blue-500 hover:bg-blue-600 p-3 rounded-lg font-bold flex justify-between items-center">
+        <span>🔔 Subscribe Chanel</span> <span>+200</span>
+      </button>
     </div>
 
-    <!-- MENU MISI -->
-    <div class="space-y-2">
-      <button id="dailyBtn" class="w-full bg-blue-600 hover:bg-blue-500 p-3 rounded-lg font-bold text-lg">🎁 Daily Login +50</button>
-      <button id="ytBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">⚡ Misi Nonton YT +100</button>
-      <button id="subBtn" class="w-full bg-red-600 hover:bg-red-500 p-3 rounded-lg font-bold text-lg">🔔 Misi Subscribe +200</button>
+    <!-- UPGRADE -->
+    <div class="card p-4 rounded-2xl space-y-3">
+      <h2 class="font-bold text-lg">🚀 Upgrade Pro</h2>
+      <input id="proofUrl" type="text" placeholder="Tempel Link Bukti TF" class="w-full p-3 rounded-lg bg-slate-800 border-slate-700">
+      <button id="upgradeBtn" class="btn w-full bg-green-600 hover:bg-green-700 p-3 rounded-lg font-bold">Kirim Bukti</button>
     </div>
 
-    <p id="appMsg" class="text-center text-sm h-5"></p>
-    <div class="bg-slate-700 p-3 rounded-lg space-y-2">
-      <p class="font-bold">Link Referral Kerajaan Kamu</p>
-      <div class="flex gap-2">
-        <input id="myRefCode" readonly class="w-full p-2 rounded bg-slate-900 text-xs">
-        <button id="copyBtn" class="bg-yellow-500 text-slate-900 px-3 rounded font-bold">Salin</button>
+    <!-- WD -->
+    <div class="card p-4 rounded-2xl space-y-3">
+      <h2 class="font-bold text-lg">💸 Withdraw</h2>
+      <input id="wdAmount" type="number" placeholder="Jumlah Poin" class="w-full p-3 rounded-lg bg-slate-800 border-slate-700">
+      <input id="wdAccount" type="text" placeholder="DANA/OVO/GOPAY No HP" class="w-full p-3 rounded-lg bg-slate-800 border-slate-700">
+      <button id="wdBtn" class="btn w-full bg-pink-600 hover:bg-pink-700 p-3 rounded-lg font-bold">Ajukan WD</button>
+    </div>
+
+    <!-- REFERRAL -->
+    <div class="card p-4 rounded-2xl space-y-3">
+      <h2 class="font-bold text-lg">👑 Referral</h2>
+      <p class="text-sm text-slate-400">Share link ini. Kamu +1000, Teman +1000</p>
+      <input id="refLink" type="text" readonly class="w-full p-3 rounded-lg bg-slate-800 border-slate-700 text-xs">
+      <button id="copyRef" class="btn w-full bg-slate-600 hover:bg-slate-700 p-3 rounded-lg font-bold">Copy Link</button>
+    </div>
+    
+    <button id="logoutBtn" class="btn w-full bg-slate-700 p-3 rounded-lg font-bold">Logout</button>
+  </div>
+
+  <!-- BOX ADMIN -->
+  <div id="adminBox" class="hidden space-y-4">
+    <div class="card p-4 rounded-2xl">
+      <div class="flex justify-between items-center mb-4">
+        <h2 class="font-bold text-lg">🛡️ Panel Admin</h2>
+        <button id="backBtn" class="btn text-sm bg-slate-600 px-3 py-1 rounded-lg">Kembali</button>
       </div>
-    </div>
-    <div class="bg-slate-700 p-3 rounded-lg space-y-2">
-      <p class="font-bold">Upgrade Jadi Raja 👑</p>
-      <p id="premiumStatus" class="text-sm">Status: RAKYAT FREE</p>
-      <button id="upgradeBtn" class="w-full bg-purple-600 p-2 rounded font-bold">Upgrade RAJA 10rb</button>
-    </div>
-    <button id="wdBtn" class="w-full bg-yellow-600 hover:bg-yellow-500 p-2 rounded font-bold text-slate-900">💸 Withdraw 10.000 Poin</button>
-  </div>
-
-  <!-- PANEL ADMIN -->
-  <div id="adminBox" class="hidden space-y-3">
-    <h2 class="text-xl font-bold text-red-400">Panel Admin</h2>
-    <button id="backBtn" class="w-full bg-slate-600 p-2 rounded">Kembali</button>
-    <div id="adminList" class="space-y-2 max-h-96 overflow-y-auto"></div>
-  </div>
-</div>
-
-<!-- MODAL YT -->
-<div id="ytModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
-  <div class="bg-slate-800 rounded-lg p-3 w-full max-w-lg space-y-2">
-    <p class="text-center font-bold">Tonton 15 Detik Ya Bos. Jangan di Close</p>
-    <div class="aspect-video"><iframe id="ytFrame" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-    <p id="ytTimer" class="text-center text-2xl font-bold text-yellow-400">15</p>
-    <button id="ytCloseBtn" disabled class="w-full bg-slate-600 p-2 rounded font-bold">Tunggu...</button>
-  </div>
-</div>
-
-<!-- MODAL SUB CHANEL -->
-<div id="subModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
-  <div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3 text-center">
-    <h3 class="text-lg font-bold text-red-400">🔔 Misi Subscribe</h3>
-    <p class="text-sm">1. Klik tombol di bawah buat buka Chanel<br>2. Klik `Subscribe` + `Lonceng`<br>3. Balik sini klik `Sudah Subscribe`</p>
-    <a id="subLinkBtn" href="#" target="_blank" class="block w-full bg-red-600 hover:bg-red-500 p-3 rounded-lg font-bold text-lg">BUKA CHANEL SEKARANG</a>
-    <button id="subClaimBtn" class="w-full bg-green-600 p-2 rounded font-bold">Sudah Subscribe, Klaim +200</button>
-    <button id="subCancelBtn" class="w-full bg-slate-600 p-2 rounded text-sm">Batal</button>
-  </div>
-</div>
-
-<!-- MODAL BIASA -->
-<div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-40">
-  <div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3">
-    <h3 id="modalTitle" class="text-lg font-bold"></h3>
-    <p id="modalText" class="text-sm whitespace-pre-wrap"></p>
-    <div id="modalInputBox" class="hidden"><input id="modalInput" class="w-full p-2 rounded bg-slate-700"></div>
-    <div class="flex gap-2 justify-end">
-      <button id="modalCancel" class="px-4 py-2 bg-slate-600 rounded">Batal</button>
-      <button id="modalOk" class="px-4 py-2 bg-yellow-500 text-slate-900 rounded font-bold">OK</button>
+      <div id="adminList" class="space-y-2 max-h-96 overflow-y-auto">Loading...</div>
     </div>
   </div>
+
 </div>
 
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+<script>
+const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
+const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
+const ADMIN_EMAIL = 'admin@gaskeun.com'; //  GANTI INI
+const CHANNEL_LINK = 'https://youtube.com/@NAMA_CHANELMU'; //  GANTI INI
+const YT_AD_LIMIT = 5;
+const YT_AD_POINTS = 100;
 
-  const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
-  const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
-  const BASE_URL = 'https://pulsaraja.vercel.app';
-  const REK_BCA = '1234567890 a.n NAMA LU';
-  const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
-  const CHANNEL_LINK = 'https://www.youtube.com/@NAMA_CHANNEL_LU?sub_confirmation=1'; // <-- LINK SUB CHANEL LU BOS
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let userId = null;
+let userProfile = null;
 
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
-  let userId = null;
-  const authMsg = document.getElementById('authMsg');
-  const appMsg = document.getElementById('appMsg');
-  const ADMIN_EMAIL = 'admin@gaskeun.com';
+//  CEK ADA KODE REF DI URL GAK
+const refCodeFromURL = new URLSearchParams(window.location.search).get('ref');
+if(refCodeFromURL){
+  document.getElementById('refInfo').textContent = `Kamu daftar pake kode ref: ${refCodeFromURL}`;
+}
 
-  function getRefCode() { const url = window.location.href; const match = url.match(/[?&]ref=([^&]+)/i); return match? match[1].trim() : null; }
-  function getToday() { return new Date().toISOString().split('T')[0]; }
-
-  // ===== MODAL =====
-  const modal = document.getElementById('modal');
-  const modalTitle = document.getElementById('modalTitle');
-  const modalText = document.getElementById('modalText');
-  const modalInputBox = document.getElementById('modalInputBox');
-  const modalInput = document.getElementById('modalInput');
-  const modalOk = document.getElementById('modalOk');
-  const modalCancel = document.getElementById('modalCancel');
-  let modalCallback = null;
-  function showModal({title, text, input=false, callback}) {
-    modalTitle.innerText = title; modalText.innerText = text;
-    modalInputBox.classList.toggle('hidden',!input); modalInput.value = '';
-    modal.classList.remove('hidden'); modalCallback = callback;
-  }
-  function hideModal() { modal.classList.add('hidden'); modalCallback = null; }
-  modalOk.onclick = () => { if(modalCallback) modalCallback(modalInput.value); hideModal(); }
-  modalCancel.onclick = hideModal;
-
-  // ===== AUTH =====
-  document.getElementById('signupBtn').onclick = async () => {
-    authMsg.innerText = 'Daftar...';
-    const currentRef = getRefCode();
-    let referrerId = null;
-    if(currentRef){
-      const { data: refProfile } = await supabase.from('profiles').select('id').eq('referral_code', currentRef).single();
-      if(refProfile) { referrerId = refProfile.id; authMsg.innerText = `Daftar pakai kode ref: ${currentRef} ✅`; }
-    }
-    const { error } = await supabase.auth.signUp({
-      email: document.getElementById('email').value,
-      password: document.getElementById('pass').value,
-      options: { data: { referred_by: referrerId } }
-    });
-    if(error) { authMsg.innerText = 'ERROR: ' + error.message; }
-    else { authMsg.innerText = authMsg.innerText || 'Daftar berhasil!'; await new Promise(r => setTimeout(r, 3000)); }
-  }
-  document.getElementById('loginBtn').onclick = async () => {
-    authMsg.innerText = 'Login...';
-    const { error } = await supabase.auth.signInWithPassword({ email: document.getElementById('email').value, password: document.getElementById('pass').value });
-    authMsg.innerText = error? 'ERROR: ' + error.message : '';
-  }
-  document.getElementById('logoutBtn').onclick = async () => await supabase.auth.signOut();
-
-  supabase.auth.onAuthStateChange(async (event, session) => {
-    if(session && event === 'SIGNED_IN') {
-      userId = session.user.id;
-      document.getElementById('authBox').classList.add('hidden');
-      document.getElementById('appBox').classList.remove('hidden');
-      document.getElementById('adminBox').classList.add('hidden');
-      if(session.user.email === ADMIN_EMAIL) document.getElementById('adminBtn').classList.remove('hidden');
-      loadProfile();
-    } else if(event === 'SIGNED_OUT') {
-      userId = null;
-      document.getElementById('authBox').classList.remove('hidden');
-      document.getElementById('appBox').classList.add('hidden');
-      document.getElementById('adminBox').classList.add('hidden');
-    }
+// AUTH
+loginBtn.onclick = async () => {
+  const { error } = await supabase.auth.signInWithPassword({ email: email.value, password: password.value });
+  if(error) alert(error.message);
+}
+signupBtn.onclick = async () => {
+  if(!email.value || !password.value) return alert('Email + Pass wajib');
+  const { error } = await supabase.auth.signUp({ 
+    email: email.value, 
+    password: password.value,
+    options: { data: { ref_code: refCodeFromURL } //  KIRIM REF KE DB
   });
+  if(error) alert(error.message);
+  else alert('Daftar sukses! Cek email buat verifikasi.');
+}
+logoutBtn.onclick = () => supabase.auth.signOut();
 
-  async function loadProfile() {
-    const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
-    if(data){
-      document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
-      document.getElementById('myRefCode').value = `${BASE_URL}?ref=${data.referral_code}`;
-      const statusEl = document.getElementById('premiumStatus');
-      const btnEl = document.getElementById('upgradeBtn');
-      if(data.upgrade_status === 'approved'){ statusEl.innerText = 'Status: RAJA 👑'; btnEl.classList.add('hidden'); }
-      else if(data.upgrade_status === 'pending'){ statusEl.innerText = 'Status: MENUNGGU APPROVAL...'; btnEl.disabled = true; btnEl.classList.add('bg-slate-500'); }
-      else { statusEl.innerText = 'Status: RAKYAT FREE'; }
+// STATE CHANGE
+supabase.auth.onAuthStateChange(async (event, session) => {
+  if(session && event === 'SIGNED_IN') {
+    userId = session.user.id;
+    //  AUTO FIX: BIKIN PROFIL KALO HANTU
+    const { data: p } = await supabase.from('profiles').select('*').eq('id', userId).single();
+    if(!p){
+      await supabase.from('profiles').insert({ id: userId, email: session.user.email, referral_code: Math.random().toString(36).substring(2, 9), points: 0 });
     }
-  }
-
-  // ===== MISI 1: DAILY LOGIN =====
-  document.getElementById('dailyBtn').onclick = async () => {
-    const today = getToday();
-    const { data: p } = await supabase.from('profiles').select('points, last_login_date').eq('id', userId).single();
-    if(p.last_login_date === today) return showModal({title:'Gagal', text:'Kamu udah claim daily hari ini', callback:()=>{}});
-    const newPoints = p.points + 50;
-    await supabase.from('profiles').update({ points: newPoints, last_login_date: today }).eq('id', userId);
-    appMsg.innerText = `+50 Poin Daily masuk! 🔥`;
+    authBox.classList.add('hidden');
+    appBox.classList.remove('hidden');
+    if(session.user.email === ADMIN_EMAIL) adminBtn.classList.remove('hidden');
     loadProfile();
+  } else if(event === 'SIGNED_OUT') {
+    userId = null;
+    appBox.classList.add('hidden');
+    adminBox.classList.add('hidden');
+    authBox.classList.remove('hidden');
   }
+});
 
-  // ===== MISI 2: YT 15 DETIK =====
-  const ytModal = document.getElementById('ytModal');
-  const ytFrame = document.getElementById('ytFrame');
-  const ytTimer = document.getElementById('ytTimer');
-  const ytCloseBtn = document.getElementById('ytCloseBtn');
-  let ytInterval = null;
+async function loadProfile(){
+  const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
+  userProfile = data;
+  points.textContent = data.points.toLocaleString('id-ID');
+  status.textContent = data.upgrade_status.toUpperCase();
+  refLink.value = `${window.location.origin}?ref=${data.referral_code}`;
+  
+  // Update tombol misi
+  const today = new Date().toISOString().slice(0,10);
+  dailyBtn.disabled = data.last_login_date === today;
+  dailyBtn.textContent = data.last_login_date === today ? '🎁 Daily Sudah Diambil' : '🎁 Daily Login +50';
+  
+  subBtn.disabled = data.last_sub_date === today;
+  subBtn.textContent = data.last_sub_date === today ? '🔔 Sudah Sub Hari Ini' : '🔔 Subscribe Chanel +200';
 
-  document.getElementById('ytBtn').onclick = async () => {
-    const today = getToday();
-    const { data: p } = await supabase.from('profiles').select('points, upgrade_status, ad_clicks_today, last_ad_date').eq('id', userId).single();
-    if(p.last_ad_date!== today){ await supabase.from('profiles').update({ ad_clicks_today: 0, last_ad_date: today }).eq('id', userId); p.ad_clicks_today = 0; }
-    const maxClicks = p.upgrade_status === 'approved'? 20 : 5;
-    if(p.ad_clicks_today >= maxClicks){ return showModal({title:'Limit Habis', text:`Kamu udah ${maxClicks}x hari ini`, callback:()=>{}}); }
+  const adLeft = (data.last_ad_date === today) ? (YT_AD_LIMIT - data.ad_clicks_today) : YT_AD_LIMIT;
+  ytCount.textContent = `Sisa: ${adLeft}/${YT_AD_LIMIT}`;
+  ytBtn.disabled = adLeft <= 0;
+  ytBtn.textContent = adLeft <= 0 ? '⚡ Limit Iklan Habis' : `⚡ Tonton Iklan YT 15s +${YT_AD_POINTS}`;
+}
 
-    ytFrame.src = YOUTUBE_LINK + "?autoplay=1&mute=1&controls=0";
-    ytModal.classList.remove('hidden');
-    let timeLeft = 15;
-    ytTimer.innerText = timeLeft;
-    ytCloseBtn.disabled = true;
-    ytCloseBtn.innerText = `Tunggu ${timeLeft}s...`;
+// MISI
+dailyBtn.onclick = async () => {
+  const today = new Date().toISOString().slice(0,10);
+  const { error } = await supabase.from('profiles').update({ points: userProfile.points + 50, last_login_date: today }).eq('id', userId);
+  if(!error) { alert('+50 Poin Daily Masuk!'); loadProfile(); }
+}
 
-    ytInterval = setInterval(async () => {
-      timeLeft--;
-      ytTimer.innerText = timeLeft;
-      ytCloseBtn.innerText = `Tunggu ${timeLeft}s...`;
-      if(timeLeft <= 0){
-        clearInterval(ytInterval);
-        ytCloseBtn.disabled = false;
-        ytCloseBtn.innerText = 'Klaim +100 Poin';
-        const newPoints = p.points + 100;
-        const newClicks = p.ad_clicks_today + 1;
-        await supabase.from('profiles').update({ points: newPoints, ad_clicks_today: newClicks }).eq('id', userId);
-        appMsg.innerText = `+100 Poin masuk! [${newClicks}/${maxClicks}] 🔥`;
-        loadProfile();
-      }
-    }, 1000);
-  }
-  ytCloseBtn.onclick = () => {
-    ytModal.classList.add('hidden');
-    ytFrame.src = '';
-    clearInterval(ytInterval);
-  }
+ytBtn.onclick = () => {
+  const today = new Date().toISOString().slice(0,10);
+  const adLeft = (userProfile.last_ad_date === today) ? (YT_AD_LIMIT - userProfile.ad_clicks_today) : YT_AD_LIMIT;
+  if(adLeft <= 0) return alert('Limit habis');
 
-  // ===== MISI 3: SUBSCRIBE CHANEL =====
-  const subModal = document.getElementById('subModal');
-  document.getElementById('subLinkBtn').href = CHANNEL_LINK;
-
-  document.getElementById('subBtn').onclick = async () => {
-    const today = getToday();
-    const { data: p } = await supabase.from('profiles').select('points, last_sub_date').eq('id', userId).single();
-    if(p.last_sub_date === today) return showModal({title:'Gagal', text:'Misi Subscribe cuma bisa 1x sehari', callback:()=>{}});
-    subModal.classList.remove('hidden');
-  }
-  document.getElementById('subClaimBtn').onclick = async () => {
-    const today = getToday();
-    const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
-    const newPoints = p.points + 200;
-    await supabase.from('profiles').update({ points: newPoints, last_sub_date: today }).eq('id', userId);
-    subModal.classList.add('hidden');
-    appMsg.innerText = `+200 Poin Subscribe masuk! 🔥`;
+  // Buka YT di tab baru
+  window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank'); //  GANTI LINK YT LU
+  
+  setTimeout(async () => {
+    const newClicks = (userProfile.last_ad_date === today) ? userProfile.ad_clicks_today + 1 : 1;
+    await supabase.from('profiles').update({ points: userProfile.points + YT_AD_POINTS, ad_clicks_today: newClicks, last_ad_date: today }).eq('id', userId);
+    alert(`+${YT_AD_POINTS} Poin Masuk!`);
     loadProfile();
-  }
-  document.getElementById('subCancelBtn').onclick = () => subModal.classList.add('hidden');
+  }, 15000); // 15 detik
+}
 
-  // ===== PANEL ADMIN =====
-  document.getElementById('adminBtn').onclick = () => { document.getElementById('appBox').classList.add('hidden'); document.getElementById('adminBox').classList.remove('hidden'); loadAdminData(); }
-  document.getElementById('backBtn').onclick = () => { document.getElementById('adminBox').classList.add('hidden'); document.getElementById('appBox').classList.remove('hidden'); }
+subBtn.onclick = async () => {
+  window.open(CHANNEL_LINK, '_blank');
+  const today = new Date().toISOString().slice(0,10);
+  await supabase.from('profiles').update({ points: userProfile.points + 200, last_sub_date: today }).eq('id', userId);
+  alert('+200 Poin Sub Masuk!');
+  loadProfile();
+}
 
-  async function loadAdminData() {
-    const list = document.getElementById('adminList');
-    list.innerHTML = 'Loading...';
-    const { data: pendingUpgrades } = await supabase.from('profiles').select('id, email, upgrade_proof_url').eq('upgrade_status', 'pending');
-    const { data: pendingWd } = await supabase.from('withdrawals').select('id, user_id, amount, method, account').eq('status', 'pending');
+upgradeBtn.onclick = async () => {
+  if(!proofUrl.value) return alert('Isi link bukti dulu');
+  await supabase.from('profiles').update({ upgrade_status: 'pending', upgrade_proof_url: proofUrl.value }).eq('id', userId);
+  alert('Bukti terkirim. Tunggu admin approve.');
+  loadProfile();
+}
 
-    let html = '<h3 class="font-bold text-purple-400">Upgrade Pending</h3>';
-    if(pendingUpgrades.length === 0) html += '<p class="text-sm">Kosong</p>';
-    pendingUpgrades.forEach(u => {
-      html += `<div class="bg-slate-700 p-2 rounded text-xs"><p>${u.email}</p><a href="${u.upgrade_proof_url}" target="_blank" class="text-cyan-400">Lihat Bukti</a><button data-id="${u.id}" class="approveUp bg-green-600 w-full mt-1 p-1 rounded">Approve</button></div>`;
-    });
+wdBtn.onclick = async () => {
+  const amount = parseInt(wdAmount.value);
+  if(!amount || amount > userProfile.points) return alert('Poin tidak cukup');
+  if(!wdAccount.value) return alert('Isi nomor akun');
+  await supabase.from('withdrawals').insert({ user_id: userId, amount, account: wdAccount.value });
+  await supabase.from('profiles').update({ points: userProfile.points - amount }).eq('id', userId);
+  alert('WD diajukan!');
+  loadProfile();
+}
 
-    html += '<h3 class="font-bold text-yellow-400 mt-3">WD Pending</h3>';
-    if(pendingWd.length === 0) html += '<p class="text-sm">Kosong</p>';
-    pendingWd.forEach(w => {
-      html += `<div class="bg-slate-700 p-2 rounded text-xs"><p>${w.amount} Poin via ${w.method}</p><p>No: ${w.account}</p><button data-id="${w.id}" class="approveWd bg-green-600 w-full mt-1 p-1 rounded">Sudah Transfer</button></div>`;
-    });
-    list.innerHTML = html;
+copyRef.onclick = () => {
+  navigator.clipboard.writeText(refLink.value);
+  alert('Link Copied!');
+}
 
-    document.querySelectorAll('.approveUp').forEach(b => b.onclick = async (e) => {
-      await supabase.from('profiles').update({ upgrade_status: 'approved' }).eq('id', e.target.dataset.id);
-      loadAdminData();
-    });
-    document.querySelectorAll('.approveWd').forEach(b => b.onclick = async (e) => {
-      await supabase.from('withdrawals').update({ status: 'done' }).eq('id', e.target.dataset.id);
-      loadAdminData();
-    });
-  }
-
-  // ===== LAINNYA =====
-  document.getElementById('copyBtn').onclick = () => { navigator.clipboard.writeText(document.getElementById('myRefCode').value); }
-  document.getElementById('wdBtn').onclick = async () => {
-    const { data: p, error } = await supabase.from('profiles').select('points').eq('id', userId).single();
-    if(error || p.points < 10000) return showModal({title:'Gagal', text:'Poin kamu kurang dari 10.000', callback:()=>{}});
-    showModal({
-      title:'Withdraw 10.000 Poin',
-      text:`Transfer ke:\n${REK_BCA}\n\nMasukkan No. Rek/Dana lu:`,
-      input:true,
-      callback: async (acc) => {
-        if(!acc) return;
-        const { error: wdError } = await supabase.from('withdrawals').insert({user_id:userId, amount:10000, method:'Bank/Dana', account:acc, status:'pending'});
-        if(wdError) return showModal({title:'Error DB', text: wdError.message, callback:()=>{}});
-        await supabase.from('profiles').update({points: p.points - 10000}).eq('id', userId);
-        appMsg.innerText = 'WD 10.000 poin diajukan. Tunggu admin bos.';
-        loadProfile();
-      }
-    });
-  }
-  document.getElementById('upgradeBtn').onclick = async () => {
-    showModal({title:'Upgrade 10rb', text:`Transfer ke:\n${REK_BCA}\n\nUpload bukti di sini:`, input:true, callback: async (url) => {
-      if(!url) return;
-      await supabase.from('profiles').update({upgrade_status:'pending', upgrade_proof_url:url}).eq('id', userId);
-      appMsg.innerText = 'Bukti terkirim. Tunggu approval admin.';
-      loadProfile();
-    }});
-  }
+// ADMIN
+adminBtn.onclick = async () => {
+  appBox.classList.add('hidden');
+  adminBox.classList.remove('hidden');
+  const { data } = await supabase.from('profiles').select('*').eq('upgrade_status', 'pending');
+  adminList.innerHTML = data.map(u => `
+    <div class="bg-slate-800 p-3 rounded-lg flex justify-between items-center">
+      <div>
+        <p class="font-bold text-sm">${u.email}</p>
+        <a href="${u.upgrade_proof_url}" target="_blank" class="text-xs text-blue-400">Lihat Bukti</a>
+      </div>
+      <button onclick="approve('${u.id}')" class="btn bg-green-600 text-xs px-3 py-1 rounded-lg">Approve</button>
+    </div>
+  `).join('') || 'Tidak ada pengajuan';
+}
+backBtn.onclick = () => {
+  adminBox.classList.add('hidden');
+  appBox.classList.remove('hidden');
+}
+window.approve = async (id) => {
+  await supabase.from('profiles').update({ upgrade_status: 'approved' }).eq('id', id);
+  alert('Approved!');
+  adminBtn.click(); // refresh
+}
 </script>
 </body>
 </html>
