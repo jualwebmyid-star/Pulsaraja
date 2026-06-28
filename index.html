@@ -13,26 +13,19 @@
 
   <!-- AUTH / LANDING PAGE PULSA RAJA -->
   <div id="authBox" class="space-y-4">
-    <!-- HEADER JUALAN -->
     <div class="text-center space-y-2">
       <h1 class="text-4xl font-black text-yellow-400">👑 Pulsa Raja</h1>
       <p class="text-sm text-slate-300">Kerajaan Cuan Dari HP. Nonton 15 Detik, Cair ke DANA.</p>
     </div>
-
-    <!-- BUKTI TRANSFER / TRUST -->
     <div class="bg-green-900/40 border-green-700 p-2 rounded-lg text-center text-xs font-bold text-green-300">
       ✅ SUDAH BAYAR 1.247 MEMBER BULAN INI
     </div>
-
-    <!-- BENEFIT / KENAPA HARUS GABUNG -->
     <div class="bg-slate-700/50 p-3 rounded-lg space-y-2 text-sm">
       <div class="flex items-center gap-3"><span class="text-xl">⚡</span> <p><b>Misi Cepet:</b> Nonton YT 15 detik = <b>+100 Poin</b></p></div>
+      <div class="flex items-center gap-3"><span class="text-xl">🔔</span> <p><b>Misi Sub:</b> Subscribe Chanel = <b>+200 Poin</b></p></div>
+      <div class="flex items-center gap-3"><span class="text-xl">🎁</span> <p><b>Login Harian:</b> Claim gratis <b>+50 Poin</b></p></div>
       <div class="flex items-center gap-3"><span class="text-xl">💸</span> <p><b>WD 10.000:</b> Minimal kecil, langsung transfer DANA/BCA</p></div>
-      <div class="flex items-center gap-3"><span class="text-xl">👑</span> <p><b>Akun Raja:</b> Bayar 10rb sekali, misi 20x/hari</p></div>
-      <div class="flex items-center gap-3"><span class="text-xl">🤝</span> <p><b>Referral OP:</b> Ajak 1 temen, bonus seumur hidup</p></div>
     </div>
-
-    <!-- FORM LOGIN/DAFTAR -->
     <div class="space-y-3 pt-2">
       <input id="email" type="email" placeholder="Email Aktif Kamu" class="w-full p-3 rounded bg-slate-700 text-sm focus:ring-2 focus:ring-yellow-400 outline-none">
       <input id="pass" type="password" placeholder="Buat Password" class="w-full p-3 rounded bg-slate-700 text-sm focus:ring-2 focus:ring-yellow-400 outline-none">
@@ -40,12 +33,12 @@
         <button id="signupBtn" class="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 p-3 rounded-lg font-black text-lg shadow-lg shadow-yellow-500/30">DAFTAR JADI RAJA</button>
         <button id="loginBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-3 rounded-lg font-bold">Login</button>
       </div>
-      <p class="text-center text-[11px] text-slate-400">Gratis 100% Daftar. Gak ada biaya tersembunyi.</p>
+      <p class="text-center text- text-slate-400">Gratis 100% Daftar. Gak ada biaya tersembunyi.</p>
       <p id="authMsg" class="text-center text-sm h-5 text-yellow-400"></p>
     </div>
   </div>
 
-  <!-- APP USER - SAMA PERSIS -->
+  <!-- APP USER -->
   <div id="appBox" class="hidden space-y-4">
     <div class="flex justify-between items-center">
       <h2 class="text-xl font-bold">Dashboard 👑</h2>
@@ -58,7 +51,14 @@
       <p class="text-sm text-slate-400">Saldo Poin Kamu</p>
       <p id="points" class="text-4xl font-black text-yellow-400">0</p>
     </div>
-    <button id="ytBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">⚡ Misi Nonton YT +100</button>
+
+    <!-- MENU MISI -->
+    <div class="space-y-2">
+      <button id="dailyBtn" class="w-full bg-blue-600 hover:bg-blue-500 p-3 rounded-lg font-bold text-lg">🎁 Daily Login +50</button>
+      <button id="ytBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">⚡ Misi Nonton YT +100</button>
+      <button id="subBtn" class="w-full bg-red-600 hover:bg-red-500 p-3 rounded-lg font-bold text-lg">🔔 Misi Subscribe +200</button>
+    </div>
+
     <p id="appMsg" class="text-center text-sm h-5"></p>
     <div class="bg-slate-700 p-3 rounded-lg space-y-2">
       <p class="font-bold">Link Referral Kerajaan Kamu</p>
@@ -75,7 +75,7 @@
     <button id="wdBtn" class="w-full bg-yellow-600 hover:bg-yellow-500 p-2 rounded font-bold text-slate-900">💸 Withdraw 10.000 Poin</button>
   </div>
 
-  <!-- PANEL ADMIN - SAMA PERSIS -->
+  <!-- PANEL ADMIN -->
   <div id="adminBox" class="hidden space-y-3">
     <h2 class="text-xl font-bold text-red-400">Panel Admin</h2>
     <button id="backBtn" class="w-full bg-slate-600 p-2 rounded">Kembali</button>
@@ -83,7 +83,7 @@
   </div>
 </div>
 
-<!-- MODAL YT - SAMA PERSIS -->
+<!-- MODAL YT -->
 <div id="ytModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
   <div class="bg-slate-800 rounded-lg p-3 w-full max-w-lg space-y-2">
     <p class="text-center font-bold">Tonton 15 Detik Ya Bos. Jangan di Close</p>
@@ -93,7 +93,18 @@
   </div>
 </div>
 
-<!-- MODAL BIASA - SAMA PERSIS -->
+<!-- MODAL SUB CHANEL -->
+<div id="subModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
+  <div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3 text-center">
+    <h3 class="text-lg font-bold text-red-400">🔔 Misi Subscribe</h3>
+    <p class="text-sm">1. Klik tombol di bawah buat buka Chanel<br>2. Klik `Subscribe` + `Lonceng`<br>3. Balik sini klik `Sudah Subscribe`</p>
+    <a id="subLinkBtn" href="#" target="_blank" class="block w-full bg-red-600 hover:bg-red-500 p-3 rounded-lg font-bold text-lg">BUKA CHANEL SEKARANG</a>
+    <button id="subClaimBtn" class="w-full bg-green-600 p-2 rounded font-bold">Sudah Subscribe, Klaim +200</button>
+    <button id="subCancelBtn" class="w-full bg-slate-600 p-2 rounded text-sm">Batal</button>
+  </div>
+</div>
+
+<!-- MODAL BIASA -->
 <div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-40">
   <div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3">
     <h3 id="modalTitle" class="text-lg font-bold"></h3>
@@ -111,9 +122,10 @@
 
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
-  const BASE_URL = 'https://pulsaraja.vercel.app'; // <-- GANTI DOMAIN LU BOS
-  const REK_BCA = '1234567890 a.n NAMA LU'; // <-- GANTI REKENING LU BOS
-  const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // <-- GANTI LINK YT LU
+  const BASE_URL = 'https://pulsaraja.vercel.app';
+  const REK_BCA = '1234567890 a.n NAMA LU';
+  const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
+  const CHANNEL_LINK = 'https://www.youtube.com/@NAMA_CHANNEL_LU?sub_confirmation=1'; // <-- LINK SUB CHANEL LU BOS
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
   let userId = null;
@@ -122,6 +134,7 @@
   const ADMIN_EMAIL = 'admin@gaskeun.com';
 
   function getRefCode() { const url = window.location.href; const match = url.match(/[?&]ref=([^&]+)/i); return match? match[1].trim() : null; }
+  function getToday() { return new Date().toISOString().split('T')[0]; }
 
   // ===== MODAL =====
   const modal = document.getElementById('modal');
@@ -194,7 +207,18 @@
     }
   }
 
-  // ===== MISI YT 15 DETIK =====
+  // ===== MISI 1: DAILY LOGIN =====
+  document.getElementById('dailyBtn').onclick = async () => {
+    const today = getToday();
+    const { data: p } = await supabase.from('profiles').select('points, last_login_date').eq('id', userId).single();
+    if(p.last_login_date === today) return showModal({title:'Gagal', text:'Kamu udah claim daily hari ini', callback:()=>{}});
+    const newPoints = p.points + 50;
+    await supabase.from('profiles').update({ points: newPoints, last_login_date: today }).eq('id', userId);
+    appMsg.innerText = `+50 Poin Daily masuk! 🔥`;
+    loadProfile();
+  }
+
+  // ===== MISI 2: YT 15 DETIK =====
   const ytModal = document.getElementById('ytModal');
   const ytFrame = document.getElementById('ytFrame');
   const ytTimer = document.getElementById('ytTimer');
@@ -202,7 +226,7 @@
   let ytInterval = null;
 
   document.getElementById('ytBtn').onclick = async () => {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getToday();
     const { data: p } = await supabase.from('profiles').select('points, upgrade_status, ad_clicks_today, last_ad_date').eq('id', userId).single();
     if(p.last_ad_date!== today){ await supabase.from('profiles').update({ ad_clicks_today: 0, last_ad_date: today }).eq('id', userId); p.ad_clicks_today = 0; }
     const maxClicks = p.upgrade_status === 'approved'? 20 : 5;
@@ -236,6 +260,27 @@
     ytFrame.src = '';
     clearInterval(ytInterval);
   }
+
+  // ===== MISI 3: SUBSCRIBE CHANEL =====
+  const subModal = document.getElementById('subModal');
+  document.getElementById('subLinkBtn').href = CHANNEL_LINK;
+
+  document.getElementById('subBtn').onclick = async () => {
+    const today = getToday();
+    const { data: p } = await supabase.from('profiles').select('points, last_sub_date').eq('id', userId).single();
+    if(p.last_sub_date === today) return showModal({title:'Gagal', text:'Misi Subscribe cuma bisa 1x sehari', callback:()=>{}});
+    subModal.classList.remove('hidden');
+  }
+  document.getElementById('subClaimBtn').onclick = async () => {
+    const today = getToday();
+    const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
+    const newPoints = p.points + 200;
+    await supabase.from('profiles').update({ points: newPoints, last_sub_date: today }).eq('id', userId);
+    subModal.classList.add('hidden');
+    appMsg.innerText = `+200 Poin Subscribe masuk! 🔥`;
+    loadProfile();
+  }
+  document.getElementById('subCancelBtn').onclick = () => subModal.classList.add('hidden');
 
   // ===== PANEL ADMIN =====
   document.getElementById('adminBtn').onclick = () => { document.getElementById('appBox').classList.add('hidden'); document.getElementById('adminBox').classList.remove('hidden'); loadAdminData(); }
