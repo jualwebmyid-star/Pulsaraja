@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gaskeun Poin V10 FULL</title>
+<title>Gaskeun Poin V10.2</title>
 <script src="https://cdn.tailwindcss.com"></script>
-<style>body{font-family:'Inter',sans-serif} iframe{pointer-events:none;}</style>
+<style>body{font-family:'Inter',sans-serif} button:disabled{opacity:0.5;cursor:not-allowed;}</style>
 </head>
 <body class="bg-slate-900 text-slate-200 flex items-center justify-center min-h-screen p-4">
 
 <div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-lg p-6 space-y-4">
   <!-- 1. AUTH BOX -->
   <div id="authBox" class="space-y-3">
-    <h1 class="text-2xl font-bold text-center text-cyan-400">Gaskeun Poin V10</h1>
+    <h1 class="text-2xl font-bold text-center text-cyan-400">Gaskeun Poin V10.2</h1>
     <input id="email" type="email" placeholder="Email" class="w-full p-2 rounded bg-slate-700">
     <input id="pass" type="password" placeholder="Password" class="w-full p-2 rounded bg-slate-700">
     <div class="flex gap-2">
@@ -35,7 +35,13 @@
       <p class="text-sm text-slate-400">Poin Kamu</p>
       <p id="points" class="text-4xl font-bold text-yellow-400">0</p>
     </div>
-    <button id="ytBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">Misi Nonton YT +100</button>
+
+    <!-- INI MISI LOGIN HARIAN BOS -->
+    <button id="dailyBtn" class="w-full bg-blue-600 hover:bg-blue-500 p-3 rounded-lg font-bold text-lg">Claim Login Harian +500</button>
+
+    <!-- INI MISI KLIK IKLAN DAILY -->
+    <button id="adBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">Misi Klik Iklan +100</button>
+
     <p id="appMsg" class="text-center text-sm h-5"></p>
     <div class="bg-slate-700 p-3 rounded-lg space-y-2">
       <p class="font-bold">Link Referral Kamu</p>
@@ -61,18 +67,8 @@
   </div>
 </div>
 
-<!-- 4. MODAL YT -->
-<div id="ytModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
-  <div class="bg-slate-800 rounded-lg p-3 w-full max-w-lg space-y-2">
-    <p class="text-center font-bold">Tonton 15 Detik Ya Bos. Jangan di Close</p>
-    <div class="aspect-video"><iframe id="ytFrame" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>
-    <p id="ytTimer" class="text-center text-2xl font-bold text-yellow-400">15</p>
-    <button id="ytCloseBtn" disabled class="w-full bg-slate-600 p-2 rounded font-bold">Tunggu...</button>
-  </div>
-</div>
-
-<!-- 5. MODAL BIASA -->
-<div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-40">
+<!-- 4. MODAL BIASA -->
+<div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
   <div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3">
     <h3 id="modalTitle" class="text-lg font-bold"></h3>
     <p id="modalText" class="text-sm whitespace-pre-wrap"></p>
@@ -92,13 +88,14 @@
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
   const BASE_URL = 'https://pulsaraja.vercel.app';
   const REK_BCA = '1234567890 a.n NAMA LU';
-  const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ'; // GANTI INI
+  const MONETAG_ZONE_ID = 'PASTE_ZONE_ID_LU';
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
   let userId = null;
   const authMsg = document.getElementById('authMsg');
   const appMsg = document.getElementById('appMsg');
-  const ADMIN_EMAIL = 'admin@gaskeun.com'; // DAFTAR PAKE EMAIL INI BIAR JADI ADMIN
+  const ADMIN_EMAIL = 'admin@gaskeun.com';
+  const dailyBtn = document.getElementById('dailyBtn');
 
   function getRefCode() { const url = window.location.href; const match = url.match(/[?&]ref=([^&]+)/i); return match? match[1].trim() : null; }
 
@@ -128,7 +125,6 @@
     if(currentRef){
       const { data: refProfile } = await supabase.from('profiles').select('id').eq('referral_code', currentRef).single();
       if(refProfile) { referrerId = refProfile.id; authMsg.innerText = `Daftar pakai kode ref: ${currentRef} ✅`; }
-      else { authMsg.innerText = `Kode ref SALAH.`; }
     }
     const { error } = await supabase.auth.signUp({
       email: document.getElementById('email').value,
@@ -171,51 +167,60 @@
       if(data.upgrade_status === 'approved'){ statusEl.innerText = 'Status: PREMIUM 🔥'; btnEl.classList.add('hidden'); }
       else if(data.upgrade_status === 'pending'){ statusEl.innerText = 'Status: MENUNGGU APPROVAL...'; btnEl.innerText = 'Tunggu Approval'; btnEl.disabled = true; btnEl.classList.remove('bg-purple-600'); btnEl.classList.add('bg-slate-500'); }
       else { statusEl.innerText = 'Status: FREE'; btnEl.disabled = false; btnEl.innerText = 'Upgrade PREMIUM 10rb'; btnEl.classList.remove('bg-slate-500'); btnEl.classList.add('bg-purple-600'); }
+
+      // CEK APA UDAH CLAIM HARI INI
+      const today = new Date().toISOString().split('T')[0];
+      if(data.last_login_date === today){
+        dailyBtn.innerText = 'Udah Claim Hari Ini ✅';
+        dailyBtn.disabled = true;
+      } else {
+        dailyBtn.innerText = 'Claim Login Harian +500';
+        dailyBtn.disabled = false;
+      }
     }
   }
 
-  // ===== MISI YT 15 DETIK ANTI SPAM =====
-  const ytModal = document.getElementById('ytModal');
-  const ytFrame = document.getElementById('ytFrame');
-  const ytTimer = document.getElementById('ytTimer');
-  const ytCloseBtn = document.getElementById('ytCloseBtn');
-  let ytInterval = null;
+  // ===== MISI LOGIN HARIAN +500 =====
+  dailyBtn.onclick = async () => {
+    const today = new Date().toISOString().split('T')[0];
+    const { data: p } = await supabase.from('profiles').select('points, last_login_date').eq('id', userId).single();
 
-  document.getElementById('ytBtn').onclick = async () => {
+    if(p.last_login_date === today){
+      return showModal({title:'Gagal', text:'Kamu udah claim hari ini bos. Besok lagi ya', callback:()=>{}});
+    }
+
+    const newPoints = p.points + 500;
+    await supabase.from('profiles').update({ points: newPoints, last_login_date: today }).eq('id', userId);
+    appMsg.innerText = `+500 Poin Login Harian masuk! 🔥`;
+    loadProfile();
+  }
+
+  // ===== MISI KLIK IKLAN DAILY LOGIC =====
+  document.getElementById('adBtn').onclick = async () => {
     appMsg.innerText = 'Cek limit...';
     const today = new Date().toISOString().split('T')[0];
     const { data: p } = await supabase.from('profiles').select('points, upgrade_status, ad_clicks_today, last_ad_date').eq('id', userId).single();
-    if(p.last_ad_date!== today){ await supabase.from('profiles').update({ ad_clicks_today: 0, last_ad_date: today }).eq('id', userId); p.ad_clicks_today = 0; }
+
+    if(p.last_ad_date!== today){
+      await supabase.from('profiles').update({ ad_clicks_today: 0, last_ad_date: today }).eq('id', userId);
+      p.ad_clicks_today = 0;
+    }
+
     const maxClicks = p.upgrade_status === 'approved'? 20 : 5;
-    if(p.ad_clicks_today >= maxClicks){ return showModal({title:'Limit Habis', text:`Kamu udah ${maxClicks}x hari ini. Upgrade PREMIUM buat 20x`, callback:()=>{}}); }
+    if(p.ad_clicks_today >= maxClicks){
+      return showModal({title:'Limit Habis', text:`Kamu udah ${maxClicks}x hari ini. Upgrade PREMIUM buat 20x`, callback:()=>{}});
+    }
 
-    ytFrame.src = YOUTUBE_LINK + "?autoplay=1&mute=1&controls=0&rel=0";
-    ytModal.classList.remove('hidden');
-    let timeLeft = 15;
-    ytTimer.innerText = timeLeft;
-    ytCloseBtn.disabled = true;
-    ytCloseBtn.innerText = `Tunggu ${timeLeft}s...`;
-
-    ytInterval = setInterval(async () => {
-      timeLeft--;
-      ytTimer.innerText = timeLeft;
-      ytCloseBtn.innerText = `Tunggu ${timeLeft}s...`;
-      if(timeLeft <= 0){
-        clearInterval(ytInterval);
-        ytCloseBtn.disabled = false;
-        ytCloseBtn.innerText = 'Klaim +100 Poin';
-        const newPoints = p.points + 100;
-        const newClicks = p.ad_clicks_today + 1;
-        await supabase.from('profiles').update({ points: newPoints, ad_clicks_today: newClicks }).eq('id', userId);
-        appMsg.innerText = `+100 Poin masuk! [${newClicks}/${maxClicks}] 🔥`;
-        loadProfile();
-      }
-    }, 1000);
-  }
-  ytCloseBtn.onclick = () => {
-    ytModal.classList.add('hidden');
-    ytFrame.src = ''; // Matikan video biar gak play di belakang
-    clearInterval(ytInterval);
+    try {
+      await window.show_9360229(); // GANTI ID SESUAI ZONE ID LU
+      const newPoints = p.points + 100;
+      const newClicks = p.ad_clicks_today + 1;
+      await supabase.from('profiles').update({ points: newPoints, ad_clicks_today: newClicks }).eq('id', userId);
+      appMsg.innerText = `+100 Poin masuk! [${newClicks}/${maxClicks}] 🔥`;
+      loadProfile();
+    } catch (e) {
+      appMsg.innerText = 'Gagal load iklan. Matikan AdBlock ya bos.';
+    }
   }
 
   // ===== PANEL ADMIN 1 KLIK =====
@@ -243,11 +248,11 @@
 
     document.querySelectorAll('.approveUp').forEach(b => b.onclick = async (e) => {
       await supabase.from('profiles').update({ upgrade_status: 'approved' }).eq('id', e.target.dataset.id);
-      loadAdminData(); // Refresh list
+      loadAdminData();
     });
     document.querySelectorAll('.approveWd').forEach(b => b.onclick = async (e) => {
       await supabase.from('withdrawals').update({ status: 'done' }).eq('id', e.target.dataset.id);
-      loadAdminData(); // Refresh list
+      loadAdminData();
     });
   }
 
@@ -296,5 +301,9 @@
     });
   }
 </script>
+
+<!-- SCRIPT MONETAG WAJIB PALING BAWAH -->
+<script src='//libtl.com/sa/?s=9360229'></script> <!-- GANTI ID SESUAI ZONE ID LU -->
+
 </body>
 </html>
