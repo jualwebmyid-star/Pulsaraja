@@ -155,7 +155,7 @@
   modalCancel.onclick = hideModal;
 
   // ===== AUTH =====
-  document.getElementById('signupBtn').onclick = async () => {
+document.getElementById('signupBtn').onclick = async () => {
     authMsg.innerText = 'Daftar...';
     const currentRef = getRefCode();
     let referrerId = null;
@@ -166,7 +166,7 @@
     const { error } = await supabase.auth.signUp({
       email: document.getElementById('email').value,
       password: document.getElementById('pass').value,
-      options: { data: { referred_by: referrerId } }
+      options: { data: { referred_by: referrerId } //  INI UDAH BENER, JANGAN DIUBAH
     });
     if(error) { authMsg.innerText = 'ERROR: ' + error.message; }
     else { authMsg.innerText = authMsg.innerText || 'Daftar berhasil!'; await new Promise(r => setTimeout(r, 3000)); }
