@@ -15,24 +15,21 @@
 <body class="bg-slate-900 text-slate-200 font-sans">
 
   <div class="p-4 max-w-md mx-auto">
-    <!-- BOX LOGIN / DAFTAR -->
     <div id="authBox" class="bg-slate-800 p-6 rounded-2xl shadow-lg mt-10">
       <h1 class="text-3xl font-bold text-yellow-400 text-center mb-4">PulsaRaja 🔥</h1>
       <input id="email" type="email" placeholder="Email" class="w-full bg-slate-700 p-3 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-yellow-400">
       <input id="pass" type="password" placeholder="Password min 6" class="w-full bg-slate-700 p-3 rounded-lg mb-3 focus:outline-none focus:ring-2 focus:ring-yellow-400">
       <button id="loginBtn" class="w-full bg-blue-600 hover:bg-blue-700 font-bold py-3 rounded-lg mb-2 transition">Login</button>
       <button id="signupBtn" class="w-full bg-slate-600 hover:bg-slate-700 font-bold py-3 rounded-lg transition">Daftar Gratis</button>
-      <p id="authMsg" class="text-red-400 text-sm text-center mt-2 h-5"></p>
+      <p id="authMsg" class="text-green-400 text-sm text-center mt-2 h-5"></p>
     </div>
 
-    <!-- BOX APP SETELAH LOGIN -->
     <div id="appBox" class="hidden">
       <div class="bg-slate-800 p-6 rounded-2xl text-center mb-4 shadow-lg">
         <p class="text-slate-400">Poin Kamu</p>
         <p id="points" class="text-5xl font-bold text-yellow-400">0</p>
       </div>
 
-      <!-- KODE REFERRAL + TOMBOL COPY -->
       <div class="bg-slate-800 p-4 rounded-2xl mb-4 shadow-lg">
         <p class="text-sm text-slate-400 mb-1">Link Referral Kamu</p>
         <div class="flex gap-2">
@@ -42,11 +39,9 @@
         <p id="copyMsg" class="text-xs text-center mt-1 h-4 text-green-400"></p>
       </div>
 
-      <!-- TOMBOL AKSI -->
       <button id="adBtn" class="w-full bg-green-600 hover:bg-green-700 font-bold py-4 rounded-xl mb-3 shadow-lg transition">Nonton Iklan</button>
       <button id="wdBtn" class="w-full bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 rounded-xl mb-3 shadow-lg transition">Withdraw Poin</button>
       
-      <!-- BOX UPGRADE BCA -->
       <div id="premiumBox" class="bg-slate-800 p-4 rounded-2xl mb-3 shadow-lg">
         <p id="premiumStatus" class="font-bold text-center mb-2">Status: FREE</p>
         <button id="upgradeBtn" class="w-full bg-purple-600 hover:bg-purple-700 font-bold py-3 rounded-xl shadow-lg transition">Upgrade PREMIUM Rp10.000 via BCA</button>
@@ -57,7 +52,6 @@
     </div>
   </div>
 
-  <!-- MODAL POPUP CANTIK -->
   <div id="modal" class="hidden fixed inset-0 bg-black/60 modal-bg flex items-center justify-center p-4 z-50">
     <div class="bg-slate-800 w-full max-w-sm rounded-2xl p-6 shadow-2xl">
       <p id="modalTitle" class="font-bold text-lg mb-2 text-yellow-400"></p>
@@ -79,10 +73,17 @@
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY)
   const REK_BCA = '1234567890 a.n NAMA LU'; // GANTI REK BCA LU
+  
+  // GANTI INI JADI DOMAIN VERCEL LU YANG BENERAN
+  const BASE_URL = 'https://NAMA-VERCEL-LU.vercel.app'; 
 
   let userId = null;
   const authMsg = document.getElementById('authMsg');
   const appMsg = document.getElementById('appMsg');
+
+  // ===== AUTO AMBIL KODE REF DARI URL ?ref=ABC123 =====
+  const urlParams = new URLSearchParams(window.location.search);
+  const refFromUrl = urlParams.get('ref');
 
   // ===== SISTEM MODAL =====
   const modal = document.getElementById('modal');
@@ -93,14 +94,10 @@
   const modalOk = document.getElementById('modalOk');
   const modalCancel = document.getElementById('modalCancel');
   let modalCallback = null;
-
   function showModal({title, text, input=false, callback}) {
-    modalTitle.innerText = title;
-    modalText.innerText = text;
-    modalInputBox.classList.toggle('hidden',!input);
-    modalInput.value = '';
-    modal.classList.remove('hidden');
-    modalCallback = callback;
+    modalTitle.innerText = title; modalText.innerText = text;
+    modalInputBox.classList.toggle('hidden',!input); modalInput.value = '';
+    modal.classList.remove('hidden'); modalCallback = callback;
   }
   function hideModal() { modal.classList.add('hidden'); modalCallback = null; }
   modalOk.onclick = () => { if(modalCallback) modalCallback(modalInput.value); hideModal(); }
@@ -109,21 +106,24 @@
   // ===== AUTH =====
   document.getElementById('signupBtn').onclick = async () => {
     authMsg.innerText = 'Daftar...';
-    showModal({
-      title: 'Kode Referral', text: 'Masukkan kode. Kosongkan jika tidak ada.', input: true,
-      callback: async (refCode) => {
-        let referrerId = null;
-        if(refCode && refCode.trim()!== ''){
-          const res = await supabase.from('profiles').select('id').eq('referral_code', refCode).single();
-          if(res.data) referrerId = res.data.id; else {authMsg.innerText='Kode ref salah'; return;}
-        }
-        const { error } = await supabase.auth.signUp({
-          email: document.getElementById('email').value, password: document.getElementById('pass').value,
-          options: { data: { referred_by: referrerId } }
-        });
-        authMsg.innerText = error? 'ERROR: ' + error.message : 'Daftar berhasil! Login bos.';
+    
+    let referrerId = null;
+    if(refFromUrl && refFromUrl.trim() !== ''){
+      const res = await supabase.from('profiles').select('id').eq('referral_code', refFromUrl.trim()).single();
+      if(res.data) {
+        referrerId = res.data.id; 
+        authMsg.innerText = `Daftar pakai kode ref: ${refFromUrl} ✅`;
+      } else {
+        authMsg.innerText = 'Kode ref salah, daftar tanpa ref';
       }
+    }
+
+    const { error } = await supabase.auth.signUp({
+      email: document.getElementById('email').value, 
+      password: document.getElementById('pass').value,
+      options: { data: { referred_by: referrerId } }
     });
+    authMsg.innerText = error ? 'ERROR: ' + error.message : 'Daftar berhasil! Login bos.';
   }
   document.getElementById('loginBtn').onclick = async () => {
     authMsg.innerText = 'Login...';
@@ -151,7 +151,7 @@
     const { data } = await supabase.from('profiles').select('*').eq('id', userId).single();
     if(data){
       document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
-      document.getElementById('myRefCode').value = `https://pulsaraja.vercel.app?ref=${data.referral_code}`;
+      document.getElementById('myRefCode').value = `${BASE_URL}?ref=${data.referral_code}`; // PAKE BASE_URL
       
       const statusEl = document.getElementById('premiumStatus');
       const btnEl = document.getElementById('upgradeBtn');
@@ -170,14 +170,12 @@
     }
   }
 
-  // ===== COPY REFERRAL =====
   document.getElementById('copyBtn').onclick = () => {
     navigator.clipboard.writeText(document.getElementById('myRefCode').value);
     document.getElementById('copyMsg').innerText = 'Link berhasil disalin!';
     setTimeout(()=> document.getElementById('copyMsg').innerText='', 2000);
   }
 
-  // ===== IKLAN +100 POIN + LIMIT 5/20 =====
   document.getElementById('adBtn').onclick = async () => {
     appMsg.innerText = 'Cek limit...';
     const today = new Date().toISOString().split('T')[0];
@@ -188,11 +186,11 @@
       p.ad_clicks_today = 0;
     }
 
-    const maxClicks = p.upgrade_status === 'approved' ? 20 : 5; // PREMIUM 20x, FREE 5x
+    const maxClicks = p.upgrade_status === 'approved' ? 20 : 5;
     if(p.ad_clicks_today >= maxClicks){
       return showModal({title:'Limit Habis', text:`Kamu udah ${maxClicks}x hari ini. Upgrade PREMIUM buat 20x`, callback:()=>{}});
     }
-    if(typeof show_254068 !== 'function'){ // GANTI ZONE ID
+    if(typeof show_254068 !== 'function'){
       appMsg.innerText = 'ERROR: Zone ID salah atau AdBlock aktif';
       return;
     }
@@ -209,7 +207,6 @@
     }, 1500);
   }
 
-  // ===== WD POIN =====
   document.getElementById('wdBtn').onclick = async () => {
     const { data: p } = await supabase.from('profiles').select('points').eq('id', userId).single();
     if(p.points < 10000) return showModal({title:'Gagal', text:'Minimal WD 10.000 Poin = 10rb Pulsa/DANA', callback:()=>{}});
@@ -231,7 +228,6 @@
     });
   }
 
-  // ===== UPGRADE PREMIUM BCA 10.000 =====
   document.getElementById('upgradeBtn').onclick = async () => {
     const { data: p } = await supabase.from('profiles').select('upgrade_status').eq('id', userId).single();
     if(p.upgrade_status === 'approved') return showModal({title:'Udah PREMIUM', text:'Akun kamu udah PREMIUM bos', callback:()=>{}});
