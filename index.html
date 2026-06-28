@@ -120,8 +120,8 @@
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-  const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co' 
-  const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY' 
+  const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co'
+  const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY'
   const BASE_URL = 'https://pulsaraja.vercel.app';
   const REK_BCA = '1234567890 a.n NAMA LU';
   const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
@@ -155,7 +155,7 @@
   modalCancel.onclick = hideModal;
 
   // ===== AUTH =====
-document.getElementById('signupBtn').onclick = async () => {
+  document.getElementById('signupBtn').onclick = async () => {
     authMsg.innerText = 'Daftar...';
     const currentRef = getRefCode();
     let referrerId = null;
@@ -166,7 +166,7 @@ document.getElementById('signupBtn').onclick = async () => {
     const { error } = await supabase.auth.signUp({
       email: document.getElementById('email').value,
       password: document.getElementById('pass').value,
-      options: { data: { referred_by: referrerId } //  INI UDAH BENER, JANGAN DIUBAH
+      options: { data: { referred_by: referrerId } // KIRIM ID PENGANJAK KE SQL
     });
     if(error) { authMsg.innerText = 'ERROR: ' + error.message; }
     else { authMsg.innerText = authMsg.innerText || 'Daftar berhasil!'; await new Promise(r => setTimeout(r, 3000)); }
