@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Pulsa Raja - WA OTP V12.9</title>
+<title>Pulsa Raja - WA OTP V13.1</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
@@ -156,31 +156,27 @@ button:disabled{opacity:0.5;cursor:not-allowed;pointer-events:none}
     authMsg.innerText = 'Verifikasi...';
     const fakeEmail = phone + '@pulsaraja.fake';
 
-    let { data, error } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
+    // TRIK BARU: COBA LOGIN DULU
+    let { data: loginData, error: loginErr } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
 
-    if(error){
-      if(error.message === 'Invalid login credentials'){
-        authMsg.innerText = 'Akun lama, reset pass...';
-        // TRIK: Signin pake pass random biar dapet session, baru ganti pass
-        const { data: tempSession } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: 'reset123'});
+    if(loginErr){
+      // KALO GAGAL = DAFTAR DULU TANPA PEDULIIN SESSION
+      authMsg.innerText = 'Daftar akun baru...';
+      const ref = getRefCode(); let referred_by = null;
+      if(ref){ const {data:rf} = await supabaseClient.from('profiles').select('id').eq('referral_code',ref).single(); if(rf) referred_by = rf.id; }
+      await supabaseClient.auth.signUp({email: fakeEmail, password: token, options:{data:{phone, referred_by}, emailRedirectTo: undefined}});
 
-        if(tempSession?.user){
-          await supabaseClient.auth.updateUser({password: token});
-          data = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
-        } else {
-          // Akun baru
-          const ref = getRefCode(); let referred_by = null;
-          if(ref){ const {data:rf} = await supabaseClient.from('profiles').select('id').eq('referral_code',ref).single(); if(rf) referred_by = rf.id; }
-          await supabaseClient.auth.signUp({email: fakeEmail, password: token, options:{data:{phone, referred_by}}});
-          data = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
-        }
-      } else {
-        throw error;
-      }
+      // TUNGGU 1 DETIK BIAR SUPABASE NYIMPEN
+      await new Promise(r => setTimeout(r, 1000));
+
+      // LOGIN LAGI PAKSA
+      let { data: loginData2, error: loginErr2 } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
+      if(loginErr2) throw loginErr2;
+      loginData = loginData2;
     }
 
-    if(!data.session) throw new Error('Session gagal. PASTIKAN Email Confirm OFF di Supabase');
-    await enterApp(data.user);
+    if(!loginData?.session) throw new Error('Session gagal. Cek: 1.Email ON 2.Confirm OFF 3.Save');
+    await enterApp(loginData.user);
     btn.disabled = false;
   }
 
