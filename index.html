@@ -23,7 +23,7 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
 
 <div class="w-full max-w-md mx-auto bg-slate-800 min-h-screen">
 
-  <!-- AUTH BOX V11.6 SAMA PERSIS -->
+  <!-- AUTH BOX V11.6 -->
   <div id="authBox" class="p-6 space-y-4">
     <div class="text-center space-y-2 pt-4">
       <h1 class="text-4xl font-black text-yellow-400">👑 Pulsa Raja</h1>
@@ -50,9 +50,8 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
     </div>
   </div>
 
-  <!-- APP BOX V11.6 DIBEDAH JADI 3 PAGE -->
+  <!-- APP BOX -->
   <div id="appBox" class="hidden">
-
     <!-- PAGE 1: DASHBOARD -->
     <div id="page-dashboard" class="page active p-6 space-y-4">
       <div class="flex justify-between items-center">
@@ -100,7 +99,7 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
     </div>
   </div>
 
-  <!-- ADMIN BOX V11.6 SAMA PERSIS -->
+  <!-- ADMIN BOX -->
   <div id="adminBox" class="hidden p-6 space-y-3">
     <h2 class="text-xl font-bold text-red-400">Panel Admin</h2>
     <button id="backBtn" class="w-full bg-slate-600 p-2 rounded">Kembali</button>
@@ -108,7 +107,7 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
   </div>
 </div>
 
-<!-- BOTTOM NAV BARU -->
+<!-- BOTTOM NAV -->
 <nav class="bottomNav max-w-md mx-auto">
   <button class="navBtn active" onclick="showPage('page-dashboard')">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
@@ -124,7 +123,7 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
   </button>
 </nav>
 
-<!-- MODAL V11.6 SAMA PERSIS -->
+<!-- MODAL -->
 <div id="ytModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
   <div class="bg-slate-800 rounded-lg p-3 w-full max-w-lg space-y-2">
     <p class="text-center font-bold">Tonton 15 Detik Ya Bos. Jangan di Close</p>
@@ -174,7 +173,6 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
   function getRefCode() { const url = window.location.href; const match = url.match(/[?&]ref=([^&]+)/i); return match? match[1].trim() : null; }
   function getToday() { return new Date().toISOString().split('T')[0]; }
 
-  // NAV BARU
   function showPage(id){
     document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
     document.getElementById(id).classList.add('active');
@@ -199,6 +197,7 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
   modalOk.onclick = () => { if(modalCallback) modalCallback(modalInput.value); hideModal(); }
   modalCancel.onclick = hideModal;
 
+  // FIX: UDAH GUE TUTUP KURUNGNYA DI SINI BOS
   document.getElementById('signupBtn').onclick = async () => {
     authMsg.innerText = 'Daftar...';
     const currentRef = getRefCode();
@@ -211,10 +210,12 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
     const { error } = await supabaseClient.auth.signUp({
       email: document.getElementById('email').value,
       password: document.getElementById('pass').value,
-      options: { data: { referred_by: referrerId } });
+      options: { data: { referred_by: referrerId } }
+    });
     if(error) { authMsg.innerText = 'ERROR: ' + error.message; }
     else { authMsg.innerText = authMsg.innerText || 'Daftar berhasil! Cek email'; }
   }
+
   document.getElementById('loginBtn').onclick = async () => {
     authMsg.innerText = 'Login...';
     const { error } = await supabaseClient.auth.signInWithPassword({ email: document.getElementById('email').value, password: document.getElementById('pass').value });
@@ -230,7 +231,7 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
       document.getElementById('adminBox').classList.add('hidden');
       document.getElementById('emailAkun').innerText = session.user.email;
       if(session.user.email === ADMIN_EMAIL) document.getElementById('adminBtn').classList.remove('hidden');
-      showPage('page-dashboard'); // default ke dashboard
+      showPage('page-dashboard');
       loadProfile();
     } else if(event === 'SIGNED_OUT') {
       userId = null;
