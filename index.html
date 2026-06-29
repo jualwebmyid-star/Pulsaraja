@@ -2,18 +2,30 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Pulsa Raja - Nonton Dapet Pulsa</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
-<style>body{font-family:'Inter',sans-serif} iframe{pointer-events:none;}</style>
+<style>
+body{font-family:'Inter',sans-serif}
+iframe{pointer-events:none;}
+/* MOBILE FIRST */
+.page{display:none; padding-bottom:80px}
+.page.active{display:block}
+.bottomNav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;justify-content:space-around;align-items:center;
+background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rgb(51 65 85);height:64px;padding-bottom:env(safe-area-bottom)}
+.navBtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:600;color:rgb(148 163 184);flex:1;background:transparent;border:none;height:100%}
+.navBtn svg{width:24px;height:24px}
+.navBtn.active{color:rgb(251 191 36)} /* yellow-400 */
+</style>
 </head>
-<body class="bg-slate-900 text-slate-200 flex items-center justify-center min-h-screen p-4">
+<body class="bg-slate-900 text-slate-200">
 
-<div class="w-full max-w-md bg-slate-800 rounded-2xl shadow-lg p-6 space-y-4">
+<div class="w-full max-w-md mx-auto bg-slate-800 min-h-screen">
 
-  <div id="authBox" class="space-y-4">
-    <div class="text-center space-y-2">
+  <!-- AUTH BOX V11.6 SAMA PERSIS -->
+  <div id="authBox" class="p-6 space-y-4">
+    <div class="text-center space-y-2 pt-4">
       <h1 class="text-4xl font-black text-yellow-400">👑 Pulsa Raja</h1>
       <p class="text-sm text-slate-300">Kerajaan Cuan Dari HP. Nonton 15 Detik, Cair ke DANA.</p>
     </div>
@@ -33,53 +45,86 @@
         <button id="signupBtn" class="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 p-3 rounded-lg font-black text-lg shadow-lg shadow-yellow-500/30">DAFTAR JADI RAJA</button>
         <button id="loginBtn" class="w-full bg-slate-600 hover:bg-slate-500 p-3 rounded-lg font-bold">Login</button>
       </div>
-      <p class="text-center text- text-slate-400">Gratis 100% Daftar. Gak ada biaya tersembunyi.</p>
+      <p class="text-center text-xs text-slate-400">Gratis 100% Daftar. Gak ada biaya tersembunyi.</p>
       <p id="authMsg" class="text-center text-sm h-5 text-yellow-400"></p>
     </div>
   </div>
 
-  <div id="appBox" class="hidden space-y-4">
-    <div class="flex justify-between items-center">
-      <h2 class="text-xl font-bold">Dashboard 👑</h2>
-      <div class="flex gap-2">
-        <button id="adminBtn" class="hidden text-xs bg-red-700 px-3 py-1 rounded font-bold">ADMIN</button>
+  <!-- APP BOX V11.6 DIBEDAH JADI 3 PAGE -->
+  <div id="appBox" class="hidden">
+
+    <!-- PAGE 1: DASHBOARD -->
+    <div id="page-dashboard" class="page active p-6 space-y-4">
+      <div class="flex justify-between items-center">
+        <h2 class="text-xl font-bold">Dashboard 👑</h2>
         <button id="logoutBtn" class="text-xs bg-red-600 px-3 py-1 rounded">Logout</button>
       </div>
-    </div>
-    <div class="bg-slate-700 p-4 rounded-lg text-center border-2 border-yellow-500/30">
-      <p class="text-sm text-slate-400">Saldo Poin Kamu</p>
-      <p id="points" class="text-4xl font-black text-yellow-400">0</p>
-    </div>
-
-    <div class="space-y-2">
-      <button id="dailyBtn" class="w-full bg-blue-600 hover:bg-blue-500 p-3 rounded-lg font-bold text-lg">🎁 Daily Login +50</button>
-      <button id="ytBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">⚡ Misi Nonton YT +100</button>
-      <button id="subBtn" class="w-full bg-red-600 hover:bg-red-500 p-3 rounded-lg font-bold text-lg">🔔 Misi Subscribe +200</button>
-    </div>
-
-    <p id="appMsg" class="text-center text-sm h-5"></p>
-    <div class="bg-slate-700 p-3 rounded-lg space-y-2">
-      <p class="font-bold">Link Referral Kerajaan Kamu</p>
-      <div class="flex gap-2">
-        <input id="myRefCode" readonly class="w-full p-2 rounded bg-slate-900 text-xs">
-        <button id="copyBtn" class="bg-yellow-500 text-slate-900 px-3 rounded font-bold">Salin</button>
+      <div class="bg-slate-700 p-4 rounded-lg text-center border-2 border-yellow-500/30">
+        <p class="text-sm text-slate-400">Saldo Poin Kamu</p>
+        <p id="points" class="text-4xl font-black text-yellow-400">0</p>
+      </div>
+      <div class="space-y-2">
+        <button id="dailyBtn" class="w-full bg-blue-600 hover:bg-blue-500 p-3 rounded-lg font-bold text-lg">🎁 Daily Login +50</button>
+        <button id="ytBtn" class="w-full bg-green-600 hover:bg-green-500 p-3 rounded-lg font-bold text-lg">⚡ Misi Nonton YT +100</button>
+        <button id="subBtn" class="w-full bg-red-600 hover:bg-red-500 p-3 rounded-lg font-bold text-lg">🔔 Misi Subscribe +200</button>
+      </div>
+      <p id="appMsg" class="text-center text-sm h-5"></p>
+      <div class="bg-slate-700 p-3 rounded-lg space-y-2">
+        <p class="font-bold">Link Referral Kerajaan Kamu</p>
+        <div class="flex gap-2">
+          <input id="myRefCode" readonly class="w-full p-2 rounded bg-slate-900 text-xs">
+          <button id="copyBtn" class="bg-yellow-500 text-slate-900 px-3 rounded font-bold">Salin</button>
+        </div>
       </div>
     </div>
-    <div class="bg-slate-700 p-3 rounded-lg space-y-2">
-      <p class="font-bold">Upgrade Jadi Raja 👑</p>
-      <p id="premiumStatus" class="text-sm">Status: RAKYAT FREE</p>
-      <button id="upgradeBtn" class="w-full bg-purple-600 p-2 rounded font-bold">Upgrade RAJA 10rb</button>
+
+    <!-- PAGE 2: MISI -->
+    <div id="page-misi" class="page p-6 space-y-4">
+      <h2 class="text-xl font-bold">Misi Harian 🔥</h2>
+      <div class="bg-slate-700 p-3 rounded-lg space-y-2">
+        <p class="font-bold">Upgrade Jadi Raja 👑</p>
+        <p id="premiumStatus" class="text-sm">Status: RAKYAT FREE</p>
+        <button id="upgradeBtn" class="w-full bg-purple-600 p-2 rounded font-bold">Upgrade RAJA 10rb</button>
+      </div>
+      <button id="wdBtn" class="w-full bg-yellow-600 hover:bg-yellow-500 p-2 rounded font-bold text-slate-900">💸 Withdraw 10.000 Poin</button>
     </div>
-    <button id="wdBtn" class="w-full bg-yellow-600 hover:bg-yellow-500 p-2 rounded font-bold text-slate-900">💸 Withdraw 10.000 Poin</button>
+
+    <!-- PAGE 3: AKUN -->
+    <div id="page-akun" class="page p-6 space-y-4">
+      <h2 class="text-xl font-bold">Akun Saya</h2>
+      <div class="bg-slate-700 p-3 rounded-lg">
+        <p class="text-sm text-slate-400">Email Login</p>
+        <p id="emailAkun" class="font-bold break-all"></p>
+      </div>
+      <button id="adminBtn" class="hidden w-full text-sm bg-red-700 p-3 rounded font-bold">ADMIN PANEL</button>
+    </div>
   </div>
 
-  <div id="adminBox" class="hidden space-y-3">
+  <!-- ADMIN BOX V11.6 SAMA PERSIS -->
+  <div id="adminBox" class="hidden p-6 space-y-3">
     <h2 class="text-xl font-bold text-red-400">Panel Admin</h2>
     <button id="backBtn" class="w-full bg-slate-600 p-2 rounded">Kembali</button>
     <div id="adminList" class="space-y-2 max-h-96 overflow-y-auto"></div>
   </div>
 </div>
 
+<!-- BOTTOM NAV BARU -->
+<nav class="bottomNav max-w-md mx-auto">
+  <button class="navBtn active" onclick="showPage('page-dashboard')">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+    Dashboard
+  </button>
+  <button class="navBtn" onclick="showPage('page-misi')">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+    Misi
+  </button>
+  <button class="navBtn" onclick="showPage('page-akun')">
+    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+    Akun
+  </button>
+</nav>
+
+<!-- MODAL V11.6 SAMA PERSIS -->
 <div id="ytModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50">
   <div class="bg-slate-800 rounded-lg p-3 w-full max-w-lg space-y-2">
     <p class="text-center font-bold">Tonton 15 Detik Ya Bos. Jangan di Close</p>
@@ -129,6 +174,14 @@
   function getRefCode() { const url = window.location.href; const match = url.match(/[?&]ref=([^&]+)/i); return match? match[1].trim() : null; }
   function getToday() { return new Date().toISOString().split('T')[0]; }
 
+  // NAV BARU
+  function showPage(id){
+    document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    document.querySelectorAll('.navBtn').forEach(b=>b.classList.remove('active'));
+    document.querySelector(`.navBtn[onclick="showPage('${id}')"]`).classList.add('active');
+  }
+
   const modal = document.getElementById('modal');
   const modalTitle = document.getElementById('modalTitle');
   const modalText = document.getElementById('modalText');
@@ -158,8 +211,7 @@
     const { error } = await supabaseClient.auth.signUp({
       email: document.getElementById('email').value,
       password: document.getElementById('pass').value,
-      options: { data: { referred_by: referrerId } // KIRIM UUID PENGANJAK
-    });
+      options: { data: { referred_by: referrerId } });
     if(error) { authMsg.innerText = 'ERROR: ' + error.message; }
     else { authMsg.innerText = authMsg.innerText || 'Daftar berhasil! Cek email'; }
   }
@@ -176,7 +228,9 @@
       document.getElementById('authBox').classList.add('hidden');
       document.getElementById('appBox').classList.remove('hidden');
       document.getElementById('adminBox').classList.add('hidden');
+      document.getElementById('emailAkun').innerText = session.user.email;
       if(session.user.email === ADMIN_EMAIL) document.getElementById('adminBtn').classList.remove('hidden');
+      showPage('page-dashboard'); // default ke dashboard
       loadProfile();
     } else if(event === 'SIGNED_OUT') {
       userId = null;
@@ -272,7 +326,7 @@
   document.getElementById('subCancelBtn').onclick = () => subModal.classList.add('hidden');
 
   document.getElementById('adminBtn').onclick = () => { document.getElementById('appBox').classList.add('hidden'); document.getElementById('adminBox').classList.remove('hidden'); loadAdminData(); }
-  document.getElementById('backBtn').onclick = () => { document.getElementById('adminBox').classList.add('hidden'); document.getElementById('appBox').classList.remove('hidden'); }
+  document.getElementById('backBtn').onclick = () => { document.getElementById('adminBox').classList.add('hidden'); document.getElementById('appBox').classList.remove('hidden'); showPage('page-akun'); }
 
   async function loadAdminData() {
     const list = document.getElementById('adminList');
