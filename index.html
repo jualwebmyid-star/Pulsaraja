@@ -2,39 +2,41 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Pulsa Raja V11.9</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Pulsa Raja V11.6 Mobile</title>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
 :root{--bg:#0a0a0b;--card:#111214;--border:#222326;--text:#e8e8e8;--muted:#8b8f98;--brand:#f59e0b;--ok:#10b981;--bad:#ef4444}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif}
-.wrap{max-width:480px;margin:0 auto;padding:16px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;overscroll-behavior-y:none}
+.wrap{max-width:100%;margin:0 auto;padding:16px;padding-bottom:88px} /* padding bawah buat nav */
 .card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:16px;margin-bottom:12px}
-.input,button{width:100%;padding:12px;border-radius:12px;border:1px solid var(--border);background:#0f1012;color:var(--text);font-size:15px}
-.btn{font-weight:700;cursor:pointer;transition:.2s}.btn:active{transform:scale(.98)}
+.input,button{width:100%;padding:14px;border-radius:12px;border:1px solid var(--border);background:#0f1012;color:var(--text);font-size:16px}
+.btn{font-weight:700;cursor:pointer;transition:.15s}.btn:active{transform:scale(.97)}
 .btn-primary{background:linear-gradient(135deg,var(--brand),#fb923c);border:none;color:#1a1a1a}
 .btn-ghost{background:transparent}
 .hidden{display:none}
 .row{display:flex;gap:8px}
-h2{margin:0 0 12px;font-size:20px}
+h2{margin:0 0 12px;font-size:22px}
 .muted{color:var(--muted);font-size:13px}
 .toast{position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#1f2937;padding:10px 14px;border-radius:10px;font-size:14px;opacity:0;transition:.3s;z-index:99}
 .toast.show{opacity:1}
 
-/* BOTTOM NAV */
-.page{display:none;padding-bottom:80px} 
+/* MOBILE FIRST: PAGE SYSTEM */
+.page{display:none} 
 .page.active{display:block}
 .bottomNav{position:fixed;bottom:0;left:0;right:0;z-index:50;display:flex;justify-content:space-around;align-items:center;
-background:rgba(12,12,12,.9);backdrop-filter:blur(10px);border-top:1px solid var(--border);height:64px;padding-bottom:env(safe-area-bottom)}
-.navBtn{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:11px;font-weight:600;color:var(--muted);transition:.2s;flex:1;background:transparent;border:none;color:var(--muted)}
+background:rgba(12,12,12,.92);backdrop-filter:blur(12px);border-top:1px solid var(--border);height:64px;padding-bottom:env(safe-area-bottom)}
+.navBtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:600;color:var(--muted);flex:1;background:transparent;border:none;height:100%}
 .navBtn svg{width:24px;height:24px}
 .navBtn.active{color:var(--brand)}
+#adminBox{padding-bottom:16px} /* admin gak pake nav */
 </style>
 </head>
 <body>
 <div class="wrap">
 
-  <!-- AUTH -->
+  <!-- AUTH V11.6 SAMA PERSIS -->
   <div id="authBox" class="card">
     <h2>Login / Daftar</h2>
     <input id="email" class="input" placeholder="Email" type="email"/>
@@ -45,7 +47,7 @@ background:rgba(12,12,12,.9);backdrop-filter:blur(10px);border-top:1px solid var
     </div>
   </div>
 
-  <!-- APP -->
+  <!-- APP V11.6 SAMA PERSIS, CUMA DIBUNGKUS PAGE -->
   <div id="appBox" class="hidden">
     
     <!-- PAGE 1: DASHBOARD -->
@@ -53,10 +55,10 @@ background:rgba(12,12,12,.9);backdrop-filter:blur(10px);border-top:1px solid var
       <h2>Dashboard</h2>
       <div class="card">
         <div class="muted">Saldo Anda</div>
-        <div style="font-size:28px;font-weight:800">Rp<span id="saldoDash">0</span></div>
+        <div style="font-size:32px;font-weight:800">Rp<span id="saldoDash">0</span></div>
       </div>
       <div class="card">
-        <div class="muted">WD</div>
+        <div class="muted">Withdraw</div>
         <input id="wdNominal" class="input" type="number" placeholder="Min 10000"/>
         <input id="wdRek" class="input" placeholder="DANA/OVO/Rek" style="margin-top:8px"/>
         <button class="btn btn-primary" style="margin-top:8px" onclick="ajukanWD()">Ajukan WD</button>
@@ -65,13 +67,13 @@ background:rgba(12,12,12,.9);backdrop-filter:blur(10px);border-top:1px solid var
 
     <!-- PAGE 2: MISI -->
     <div id="page-misi" class="page">
-      <h2>Misi Harian</h2>
-      <div class="card">Kerjain misi buat nambah koin 💰 <br><span class="muted">Fitur misi bisa lu isi sendiri nanti</span></div>
+      <h2>Misi</h2>
+      <div class="card">Tempat misi harian nanti bos 🔥 <br><span class="muted">Tinggal isi konten misi di sini</span></div>
     </div>
 
     <!-- PAGE 3: AKUN -->
     <div id="page-akun" class="page">
-      <h2>Akun Saya</h2>
+      <h2>Akun</h2>
       <div class="card">
         <div class="muted">Email</div>
         <div id="emailAkun">-</div>
@@ -84,16 +86,18 @@ background:rgba(12,12,12,.9);backdrop-filter:blur(10px);border-top:1px solid var
 
   </div>
 
-  <!-- ADMIN -->
-  <div id="adminBox" class="hidden wrap">
-    <h2>Admin Panel</h2>
-    <button class="btn btn-ghost" onclick="backToApp()">← Kembali</button>
-    <div id="wdList" class="card">Loading...</div>
+  <!-- ADMIN V11.6 SAMA PERSIS -->
+  <div id="adminBox" class="hidden">
+    <div class="wrap" style="padding-bottom:16px">
+      <h2>Admin Panel</h2>
+      <button class="btn btn-ghost" onclick="backToApp()">← Kembali</button>
+      <div id="wdList" class="card" style="margin-top:12px">Loading...</div>
+    </div>
   </div>
 
 </div>
 
-<!-- BOTTOM NAV -->
+<!-- BOTTOM NAV BARU -->
 <nav class="bottomNav">
   <button class="navBtn active" onclick="showPage('page-dashboard')">
     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
@@ -119,7 +123,7 @@ let userId=null;
 
 const toast=(m)=>{const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2000)};
 
-// NAV
+// NAV BARU DOANG
 function showPage(id){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById(id).classList.add('active');
@@ -127,7 +131,7 @@ function showPage(id){
   document.querySelector(`.navBtn[onclick="showPage('${id}')"]`).classList.add('active');
 }
 
-// AUTH
+// LOGIC V11.6 SAMA PERSIS DARI SINI
 async function daftar(){
   const email=document.getElementById('email').value,pass=document.getElementById('pass').value;
   const {data,error}=await supabaseClient.auth.signUp({email,password:pass});
@@ -142,7 +146,6 @@ async function login(){
 }
 async function logout(){await supabaseClient.auth.signOut()}
 
-// APP LOGIC
 supabaseClient.auth.onAuthStateChange(async (event,session)=>{
   if(session&&event==='SIGNED_IN'){
     userId=session.user.id;
@@ -183,7 +186,6 @@ async function ajukanWD(){
   toast('WD diajukan');loadProfile();
 }
 
-// ADMIN
 function openAdmin(){document.getElementById('appBox').classList.add('hidden');document.getElementById('adminBox').classList.remove('hidden');loadWD();}
 function backToApp(){document.getElementById('adminBox').classList.add('hidden');document.getElementById('appBox').classList.remove('hidden');}
 
