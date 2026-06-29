@@ -22,11 +22,11 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
 
 <div class="w-full max-w-md mx-auto bg-slate-800 min-h-screen">
 
-  <!-- AUTH BOX V11.7 WA DUMMY -->
+  <!-- AUTH BOX WA DUMMY -->
   <div id="authBox" class="p-6 space-y-4">
     <div class="text-center space-y-2 pt-4">
       <h1 class="text-4xl font-black text-yellow-400">👑 Pulsa Raja</h1>
-      <p class="text-sm text-slate-300">Kerajaan Cuan Dari HP. Mode Test OTP</p>
+      <p class="text-sm text-slate-300">Login Pake No WA. Mode Test</p>
     </div>
     <div class="bg-green-900/40 border-green-700 p-2 rounded-lg text-center text-xs font-bold text-green-300">
       ✅ SUDAH BAYAR 1.247 MEMBER BULAN INI
@@ -38,27 +38,25 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
       <div class="flex items-center gap-3"><span class="text-xl">💸</span> <p><b>WD 10.000:</b> Minimal kecil, langsung transfer DANA/BCA</p></div>
     </div>
 
-    <!-- BOX WA + OTP -->
     <div id="waLoginBox" class="space-y-3 pt-2">
       <input id="wa" type="tel" placeholder="No WA Aktif: 62812xxxxxxx" class="w-full p-3 rounded bg-slate-700 text-sm focus:ring-2 focus:ring-yellow-400 outline-none">
       <button id="kirimOtpBtn" class="w-full bg-green-600 hover:bg-green-500 text-white p-3 rounded-lg font-black text-lg">KIRIM KODE OTP</button>
     </div>
 
     <div id="otpBox" class="hidden space-y-3 pt-2">
-      <div class="bg-yellow-500/20 p-3 rounded-lg text-center">
-        <p class="text-sm text-slate-300">OTP Lu [MODE DUMMY]:</p>
+      <div class="bg-yellow-500/20 p-3 rounded-lg text-center border-yellow-500">
+        <p class="text-sm text-slate-300">OTP TEST LU:</p>
         <p id="otpDummy" class="text-4xl font-black text-yellow-400 tracking-[.2em]">000</p>
-        <p class="text-xs text-slate-400">Copy ini. Nanti diganti API Fonnte</p>
+        <p class="text-xs text-slate-400">Copy > Tempel di bawah. Ini mode dummy</p>
       </div>
       <input id="otp" type="number" placeholder="Masukkan 6 digit OTP" class="w-full p-3 rounded bg-slate-700 text-sm text-center tracking-[.5em] focus:ring-2 focus:ring-yellow-400 outline-none">
       <button id="verifOtpBtn" class="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 p-3 rounded-lg font-black text-lg">VERIFIKASI & MASUK</button>
       <button id="gantiWaBtn" class="w-full bg-slate-600 p-2 rounded text-sm">Ganti No WA</button>
     </div>
-    <p class="text-center text-xs text-slate-400">Gratis 100% Daftar. Gak ada password.</p>
     <p id="authMsg" class="text-center text-sm h-5 text-yellow-400"></p>
   </div>
 
-  <!-- APP BOX SAMA PERSIS V11.6 LU -->
+  <!-- APP BOX -->
   <div id="appBox" class="hidden">
     <div id="page-dashboard" class="page active p-6 space-y-4">
       <div class="flex justify-between items-center">
@@ -104,6 +102,7 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
     </div>
   </div>
 
+  <!-- ADMIN BOX -->
   <div id="adminBox" class="hidden p-6 space-y-3">
     <h2 class="text-xl font-bold text-red-400">Panel Admin</h2>
     <button id="backBtn" class="w-full bg-slate-600 p-2 rounded">Kembali</button>
@@ -111,14 +110,14 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
   </div>
 </div>
 
-<!-- BOTTOM NAV SAMA PERSIS -->
+<!-- BOTTOM NAV -->
 <nav class="bottomNav max-w-md mx-auto">
   <button class="navBtn active" onclick="showPage('page-dashboard')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Dashboard</button>
   <button class="navBtn" onclick="showPage('page-misi')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>Misi</button>
   <button class="navBtn" onclick="showPage('page-akun')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Akun</button>
 </nav>
 
-<!-- MODAL SAMA PERSIS -->
+<!-- MODAL -->
 <div id="ytModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50"><div class="bg-slate-800 rounded-lg p-3 w-full max-w-lg space-y-2"><p class="text-center font-bold">Tonton 15 Detik Ya Bos. Jangan di Close</p><div class="aspect-video"><iframe id="ytFrame" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p id="ytTimer" class="text-center text-2xl font-bold text-yellow-400">15</p><button id="ytCloseBtn" disabled class="w-full bg-slate-600 p-2 rounded font-bold">Tunggu...</button></div></div>
 <div id="subModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50"><div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3 text-center"><h3 class="text-lg font-bold text-red-400">🔔 Misi Subscribe</h3><p class="text-sm">1. Klik tombol di bawah buat buka Chanel<br>2. Klik `Subscribe` + `Lonceng`<br>3. Balik sini klik `Sudah Subscribe`</p><a id="subLinkBtn" href="#" target="_blank" class="block w-full bg-red-600 hover:bg-red-500 p-3 rounded-lg font-bold text-lg">BUKA CHANEL SEKARANG</a><button id="subClaimBtn" class="w-full bg-green-600 p-2 rounded font-bold">Sudah Subscribe, Klaim +200</button><button id="subCancelBtn" class="w-full bg-slate-600 p-2 rounded text-sm">Batal</button></div></div>
 <div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-40"><div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3"><h3 id="modalTitle" class="text-lg font-bold"></h3><p id="modalText" class="text-sm whitespace-pre-wrap"></p><div id="modalInputBox" class="hidden"><input id="modalInput" class="w-full p-2 rounded bg-slate-700"></div><div class="flex gap-2 justify-end"><button id="modalCancel" class="px-4 py-2 bg-slate-600 rounded">Batal</button><button id="modalOk" class="px-4 py-2 bg-yellow-500 text-slate-900 rounded font-bold">OK</button></div></div></div>
@@ -127,15 +126,15 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
   const { createClient } = supabase;
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co'
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY'
-  const FONNTE_TOKEN = 'ISI_TOKEN_FONNTE_LU_NANTI'; // <-- GANTI KALO UDAH MAU LIVE
+  const FONNTE_TOKEN = 'ISI_TOKEN_FONNTE_LU_DISINI_NANTI';
   const BASE_URL = 'https://pulsaraja.vercel.app';
   const REK_BCA = '1234567890 a.n NAMA LU';
   const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
   const CHANNEL_LINK = 'https://www.youtube.com/@NAMA_CHANNEL_LU?sub_confirmation=1';
-  const ADMIN_PHONE = '6281234567890'; // NO ADMIN FORMAT 628
+  const ADMIN_PHONE = '6281234567890'; // FORMAT 628 TANPA +
 
   const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY)
-  let userId = null; let currentPhone = ''; let currentOtp = 0;
+  let userId = null; let currentPhone = '';
   const authMsg = document.getElementById('authMsg');
   const appMsg = document.getElementById('appMsg');
 
@@ -149,53 +148,57 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
   modalOk.onclick = () => { if(modalCallback) modalCallback(modalInput.value); hideModal(); }
   modalCancel.onclick = hideModal;
 
-  // LOGIC WA OTP DUMMY + SLOT FONNTE
+  // LOGIC OTP DUMMY FIX: PAKE LOCALSTORAGE
   document.getElementById('kirimOtpBtn').onclick = async () => {
     let phone = document.getElementById('wa').value.trim();
     if(!phone.startsWith('628')) return authMsg.innerText = 'Format WA: 62812xxxxxx ya bos';
     currentPhone = phone;
-    currentOtp = Math.floor(100000 + Math.random() * 900000); // OTP RANDOM
-    authMsg.innerText = 'Kirim OTP...';
+    const otpCode = Math.floor(100000 + Math.random() * 900000);
 
-    // 1. SIMPAN OTP KE DB DULU BIAR AMAN
-    const { error: upsertErr } = await supabaseClient.from('profiles').upsert({phone: currentPhone, otp_code: currentOtp, otp_exp: new Date(Date.now() + 5*60000).toISOString()},{onConflict:'phone'});
-    if(upsertErr) return authMsg.innerText = 'DB Error: ' + upsertErr.message;
+    // SIMPAN OTP KE LOCALSTORAGE 5 MENIT
+    localStorage.setItem('otp_' + phone, JSON.stringify({code: otpCode, exp: Date.now() + 5*60000}));
+    authMsg.innerText = 'Kode OTP dibuat...';
 
-    // 2. SLOT API FONNTE - MATIIN DULU BUAT DUMMY
-    // UNCOMMENT INI KALO UDAH MAU LIVE
-    /*
+    /* KALO UDAH MAU LIVE FONNTE, UNCOMMENT INI
     const res = await fetch('https://api.fonnte.com/send',{
-      method:'POST',
-      headers:{'Authorization': FONNTE_TOKEN},
-      body: new URLSearchParams({target: phone, message: `Kode OTP Pulsa Raja kamu: *${currentOtp}*\nBerlaku 5 menit.`})
+      method:'POST', headers:{'Authorization': FONNTE_TOKEN},
+      body: new URLSearchParams({target: phone, message: `Kode OTP Pulsa Raja: *${otpCode}* Berlaku 5 menit.`})
     });
-    const json = await res.json();
-    if(json.status!== true) return authMsg.innerText = 'Gagal kirim WA: ' + json.reason;
     */
 
-    // 3. MODE DUMMY: MUNCULIN DI LAYAR
-    document.getElementById('otpDummy').innerText = currentOtp;
+    document.getElementById('otpDummy').innerText = otpCode;
     document.getElementById('waLoginBox').classList.add('hidden');
     document.getElementById('otpBox').classList.remove('hidden');
-    authMsg.innerText = 'OTP DUMMY dibuat ✅';
+    authMsg.innerText = 'OTP DUMMY siap ✅';
   }
 
   document.getElementById('verifOtpBtn').onclick = async () => {
     const token = document.getElementById('otp').value.trim();
     authMsg.innerText = 'Verifikasi...';
-    const { data: profile, error } = await supabaseClient.from('profiles').select('*').eq('phone', currentPhone).single();
-    if(error ||!profile) return authMsg.innerText = 'No WA belum daftar';
-    if(profile.otp_code!= token) return authMsg.innerText = 'OTP salah bos';
-    if(new Date(profile.otp_exp) < new Date()) return authMsg.innerText = 'OTP kadaluarsa';
+
+    const otpData = JSON.parse(localStorage.getItem('otp_' + currentPhone) || 'null');
+    if(!otpData) return authMsg.innerText = 'OTP kadaluarsa. Kirim ulang';
+    if(otpData.code!= parseInt(token)) return authMsg.innerText = 'OTP salah bos';
+    if(Date.now() > otpData.exp) return authMsg.innerText = 'OTP kadaluarsa';
+    localStorage.removeItem('otp_' + currentPhone);
 
     const fakeEmail = currentPhone + '@pulsaraja.fake';
-    const { data: authData, error: loginErr } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
+    const fakePass = token; // Password = OTP biar gampang
+
+    // COBA LOGIN DULU
+    let { data: authData, error: loginErr } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: fakePass});
+
     if(loginErr){
+      // KALO BELUM ADA, DAFTAR BARU
       const ref = getRefCode(); let referred_by = null;
       if(ref){ const {data:rf} = await supabaseClient.from('profiles').select('id').eq('referral_code',ref).single(); if(rf) referred_by = rf.id; }
-      await supabaseClient.auth.signUp({email: fakeEmail, password: token, options:{data:{phone:currentPhone, referred_by}}});
+
+      const { error: signErr } = await supabaseClient.auth.signUp({
+        email: fakeEmail, password: fakePass,
+        options:{data:{phone:currentPhone, referred_by}} // phone masuk metadata
+      });
+      if(signErr) return authMsg.innerText = 'ERROR DAFTAR: ' + signErr.message;
     }
-    await supabaseClient.from('profiles').update({otp_code:null}).eq('phone', currentPhone);
   }
   document.getElementById('gantiWaBtn').onclick = () => {document.getElementById('otpBox').classList.add('hidden');document.getElementById('waLoginBox').classList.remove('hidden');authMsg.innerText='';}
   document.getElementById('logoutBtn').onclick = async () => await supabaseClient.auth.signOut();
@@ -208,9 +211,10 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
       document.getElementById('adminBox').classList.add('hidden');
       document.getElementById('waAkun').innerText = session.user_metadata.phone;
       if(session.user_metadata.phone === ADMIN_PHONE) document.getElementById('adminBtn').classList.remove('hidden');
-      showPage('page-dashboard'); loadProfile();
+      showPage('page-dashboard');
+      loadProfile();
     } else if(event === 'SIGNED_OUT') {
-      userId = null; currentPhone = ''; currentOtp = 0;
+      userId = null; currentPhone = '';
       document.getElementById('authBox').classList.remove('hidden');
       document.getElementById('appBox').classList.add('hidden');
       document.getElementById('adminBox').classList.add('hidden');
@@ -219,8 +223,21 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
     }
   });
 
-  // SEMUA LOGIC MISI SAMA PERSIS V11.6 LU
-  async function loadProfile() {const { data } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();if(data){document.getElementById('points').innerText = data.points.toLocaleString('id-ID');document.getElementById('myRefCode').value = `${BASE_URL}?ref=${data.referral_code}`;const statusEl = document.getElementById('premiumStatus');const btnEl = document.getElementById('upgradeBtn');if(data.upgrade_status === 'approved'){ statusEl.innerText = 'Status: RAJA 👑'; btnEl.classList.add('hidden'); }else if(data.upgrade_status === 'pending'){ statusEl.innerText = 'Status: MENUNGGU APPROVAL...'; btnEl.disabled = true; btnEl.classList.add('bg-slate-500'); }else { statusEl.innerText = 'Status: RAKYAT FREE'; }}}
+  async function loadProfile() {
+    const { data, error } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
+    if(error && error.code === 'PGRST116'){ // Belum ada profile, tunggu trigger
+      setTimeout(loadProfile, 1000); return;
+    }
+    if(data){
+      document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
+      document.getElementById('myRefCode').value = `${BASE_URL}?ref=${data.referral_code}`;
+      const statusEl = document.getElementById('premiumStatus'); const btnEl = document.getElementById('upgradeBtn');
+      if(data.upgrade_status === 'approved'){ statusEl.innerText = 'Status: RAJA 👑'; btnEl.classList.add('hidden'); }
+      else if(data.upgrade_status === 'pending'){ statusEl.innerText = 'Status: MENUNGGU APPROVAL...'; btnEl.disabled = true; btnEl.classList.add('bg-slate-500'); }
+      else { statusEl.innerText = 'Status: RAKYAT FREE'; }
+    }
+  }
+
   document.getElementById('dailyBtn').onclick = async () => {const today = getToday();const { data: p } = await supabaseClient.from('profiles').select('points, last_login_date').eq('id', userId).single();if(p.last_login_date === today) return showModal({title:'Gagal', text:'Kamu udah claim daily hari ini', callback:()=>{}});const newPoints = p.points + 50;await supabaseClient.from('profiles').update({ points: newPoints, last_login_date: today }).eq('id', userId);appMsg.innerText = `+50 Poin Daily masuk! 🔥`;loadProfile();}
   const ytModal = document.getElementById('ytModal');const ytFrame = document.getElementById('ytFrame');const ytTimer = document.getElementById('ytTimer');const ytCloseBtn = document.getElementById('ytCloseBtn');let ytInterval = null;
   document.getElementById('ytBtn').onclick = async () => {const today = getToday();const { data: p } = await supabaseClient.from('profiles').select('points, upgrade_status, ad_clicks_today, last_ad_date').eq('id', userId).single();if(p.last_ad_date!== today){ await supabaseClient.from('profiles').update({ ad_clicks_today: 0, last_ad_date: today }).eq('id', userId); p.ad_clicks_today = 0; }const maxClicks = p.upgrade_status === 'approved'? 20 : 5;if(p.ad_clicks_today >= maxClicks){ return showModal({title:'Limit Habis', text:`Kamu udah ${maxClicks}x hari ini`, callback:()=>{}}); }ytFrame.src = YOUTUBE_LINK + "?autoplay=1&mute=1&controls=0";ytModal.classList.remove('hidden');let timeLeft = 15;ytTimer.innerText = timeLeft;ytCloseBtn.disabled = true;ytCloseBtn.innerText = `Tunggu ${timeLeft}s...`;ytInterval = setInterval(async () => {timeLeft--;ytTimer.innerText = timeLeft;ytCloseBtn.innerText = `Tunggu ${timeLeft}s...`;if(timeLeft <= 0){clearInterval(ytInterval);ytCloseBtn.disabled = false;ytCloseBtn.innerText = 'Klaim +100 Poin';const newPoints = p.points + 100;const newClicks = p.ad_clicks_today + 1;await supabaseClient.from('profiles').update({ points: newPoints, ad_clicks_today: newClicks }).eq('id', userId);appMsg.innerText = `+100 Poin masuk! [${newClicks}/${maxClicks}] 🔥`;loadProfile();}}, 1000);}
