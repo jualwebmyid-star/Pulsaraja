@@ -47,7 +47,7 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
       <div class="bg-yellow-500/20 p-3 rounded-lg text-center border-yellow-500">
         <p class="text-sm text-slate-300">OTP TEST LU:</p>
         <p id="otpDummy" class="text-4xl font-black text-yellow-400 tracking-[.2em]">000</p>
-        <p class="text-xs text-slate-400">Copy > Tempel di bawah</p>
+        <p class="text-xs text-slate-400">Copy > Tempel di bawah. Ini mode dummy</p>
       </div>
       <input id="otp" type="number" placeholder="Masukkan 6 digit OTP" class="w-full p-3 rounded bg-slate-700 text-sm text-center tracking-[.5em] focus:ring-2 focus:ring-yellow-400 outline-none">
       <button id="verifOtpBtn" class="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 p-3 rounded-lg font-black text-lg">VERIFIKASI & MASUK</button>
@@ -131,7 +131,7 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
   const REK_BCA = '1234567890 a.n NAMA LU';
   const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
   const CHANNEL_LINK = 'https://www.youtube.com/@NAMA_CHANNEL_LU?sub_confirmation=1';
-  const ADMIN_PHONE = '6281234567890';
+  const ADMIN_PHONE = '6281234567890'; // FORMAT 628 TANPA +
 
   const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY)
   let userId = null; let currentPhone = '';
@@ -148,18 +148,19 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
   modalOk.onclick = () => { if(modalCallback) modalCallback(modalInput.value); hideModal(); }
   modalCancel.onclick = hideModal;
 
-  // LOGIC OTP DUMMY: SIMPEN DI LOCALSTORAGE
+  // LOGIC OTP DUMMY FIX: PAKE LOCALSTORAGE
   document.getElementById('kirimOtpBtn').onclick = async () => {
     let phone = document.getElementById('wa').value.trim();
-    if(!phone.startsWith('628') || phone.length < 11) return authMsg.innerText = 'Format WA: 62812xxxxxx ya bos';
+    if(!phone.startsWith('628')) return authMsg.innerText = 'Format WA: 62812xxxxxx ya bos';
     currentPhone = phone;
     const otpCode = Math.floor(100000 + Math.random() * 900000);
 
+    // SIMPAN OTP KE LOCALSTORAGE 5 MENIT
     localStorage.setItem('otp_' + phone, JSON.stringify({code: otpCode, exp: Date.now() + 5*60000}));
     authMsg.innerText = 'Kode OTP dibuat...';
 
-    /* UNCOMMENT KALO UDAH MAU LIVE FONNTE
-    await fetch('https://api.fonnte.com/send',{
+    /* KALO UDAH MAU LIVE FONNTE, UNCOMMENT INI
+    const res = await fetch('https://api.fonnte.com/send',{
       method:'POST', headers:{'Authorization': FONNTE_TOKEN},
       body: new URLSearchParams({target: phone, message: `Kode OTP Pulsa Raja: *${otpCode}* Berlaku 5 menit.`})
     });
@@ -173,7 +174,6 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
 
   document.getElementById('verifOtpBtn').onclick = async () => {
     const token = document.getElementById('otp').value.trim();
-    if(token.length!== 6) return authMsg.innerText = 'OTP 6 digit bos';
     authMsg.innerText = 'Verifikasi...';
 
     const otpData = JSON.parse(localStorage.getItem('otp_' + currentPhone) || 'null');
@@ -183,16 +183,19 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
     localStorage.removeItem('otp_' + currentPhone);
 
     const fakeEmail = currentPhone + '@pulsaraja.fake';
-    const fakePass = token;
+    const fakePass = token; // Password = OTP biar gampang
 
+    // COBA LOGIN DULU
     let { data: authData, error: loginErr } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: fakePass});
 
     if(loginErr){
+      // KALO BELUM ADA, DAFTAR BARU
       const ref = getRefCode(); let referred_by = null;
       if(ref){ const {data:rf} = await supabaseClient.from('profiles').select('id').eq('referral_code',ref).single(); if(rf) referred_by = rf.id; }
+
       const { error: signErr } = await supabaseClient.auth.signUp({
         email: fakeEmail, password: fakePass,
-        options:{data:{phone:currentPhone, referred_by}}
+        options:{data:{phone:currentPhone, referred_by}} // phone masuk metadata
       });
       if(signErr) return authMsg.innerText = 'ERROR DAFTAR: ' + signErr.message;
     }
@@ -222,7 +225,9 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
 
   async function loadProfile() {
     const { data, error } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
-    if(error && error.code === 'PGRST116'){ setTimeout(loadProfile, 800); return; } // Tunggu trigger
+    if(error && error.code === 'PGRST116'){ // Belum ada profile, tunggu trigger
+      setTimeout(loadProfile, 1000); return;
+    }
     if(data){
       document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
       document.getElementById('myRefCode').value = `${BASE_URL}?ref=${data.referral_code}`;
