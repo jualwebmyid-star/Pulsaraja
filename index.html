@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Pulsa Raja - WA OTP V12.8</title>
+<title>Pulsa Raja - WA OTP V12.9</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
@@ -113,8 +113,8 @@ button:disabled{opacity:0.5;cursor:not-allowed;pointer-events:none}
   const CHANNEL_LINK = 'https://www.youtube.com/@NAMA_CHANNEL_LU?sub_confirmation=1';
   const ADMIN_PHONE = '6281234567890';
 
-  const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{persistSession:true, autoRefreshToken:true}})
-  let userId = null; let currentPhone = ''; let loadingProfile = false;
+  const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY)
+  let userId = null; let currentPhone = '';
   const authMsg = document.getElementById('authMsg');
   const appMsg = document.getElementById('appMsg');
 
@@ -150,41 +150,37 @@ button:disabled{opacity:0.5;cursor:not-allowed;pointer-events:none}
     loadProfile();
   }
 
-  // FIX UTAMA: KALO GAGAL LOGIN > RESET PASSWORD > LOGIN LAGI
   async function handleLogin(phone, token){
     const btn = document.getElementById('verifOtpBtn');
     btn.disabled = true;
     authMsg.innerText = 'Verifikasi...';
     const fakeEmail = phone + '@pulsaraja.fake';
 
-    let { data: loginData, error: loginErr } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
+    let { data, error } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
 
-    if(loginErr){
-      if(loginErr.message.includes('Invalid login credentials')){
-        authMsg.innerText = 'Reset password akun lama...';
-        // 1. SIGNIN DULU PAKE TOKEN LAMA APA AJA BIAR DAPET SESSION
-        const { data: resetSession } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: '123456'});
+    if(error){
+      if(error.message === 'Invalid login credentials'){
+        authMsg.innerText = 'Akun lama, reset pass...';
+        // TRIK: Signin pake pass random biar dapet session, baru ganti pass
+        const { data: tempSession } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: 'reset123'});
 
-        if(resetSession.user){
-          // 2. UPDATE PASSWORD JADI OTP BARU
-          const { error: updateErr } = await supabaseClient.auth.updateUser({password: token});
-          if(updateErr) throw updateErr;
-          // 3. LOGIN LAGI PAKE OTP BARU
-          loginData = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
+        if(tempSession?.user){
+          await supabaseClient.auth.updateUser({password: token});
+          data = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
         } else {
-          // KALO GAK ADA AKUN SAMA SEKALI = DAFTAR BARU
+          // Akun baru
           const ref = getRefCode(); let referred_by = null;
           if(ref){ const {data:rf} = await supabaseClient.from('profiles').select('id').eq('referral_code',ref).single(); if(rf) referred_by = rf.id; }
           await supabaseClient.auth.signUp({email: fakeEmail, password: token, options:{data:{phone, referred_by}}});
-          loginData = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
+          data = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
         }
       } else {
-        throw loginErr;
+        throw error;
       }
     }
 
-    if(!loginData.session) throw new Error('Session gagal. Cek Email Confirm OFF');
-    await enterApp(loginData.user);
+    if(!data.session) throw new Error('Session gagal. PASTIKAN Email Confirm OFF di Supabase');
+    await enterApp(data.user);
     btn.disabled = false;
   }
 
@@ -206,25 +202,20 @@ button:disabled{opacity:0.5;cursor:not-allowed;pointer-events:none}
   document.getElementById('logoutBtn').onclick = async () => { await supabaseClient.auth.signOut(); location.reload(); }
 
   async function loadProfile() {
-    if(loadingProfile) return;
-    loadingProfile = true;
-    try{
-      const { data, error } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
-      if(error && error.code === 'PGRST116'){
-        await supabaseClient.from('profiles').insert({id: userId, phone: currentPhone});
-        setTimeout(()=>{loadingProfile=false; loadProfile();}, 800);
-        return;
-      }
-      if(data){
-        document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
-        document.getElementById('myRefCode').value = data.referral_code? `${BASE_URL}?ref=${data.referral_code}` : 'Loading...';
-        const statusEl = document.getElementById('premiumStatus'); const btnEl = document.getElementById('upgradeBtn');
-        if(data.upgrade_status === 'approved'){ statusEl.innerText = 'Status: RAJA 👑'; btnEl.classList.add('hidden'); }
-        else if(data.upgrade_status === 'pending'){ statusEl.innerText = 'Status: MENUNGGU APPROVAL...'; btnEl.disabled = true; }
-        else { statusEl.innerText = 'Status: RAKYAT FREE'; btnEl.disabled = false; }
-      }
-    }catch(e){ console.error(e); }
-    loadingProfile = false;
+    const { data, error } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
+    if(error && error.code === 'PGRST116'){
+      await supabaseClient.from('profiles').insert({id: userId, phone: currentPhone});
+      setTimeout(loadProfile, 800);
+      return;
+    }
+    if(data){
+      document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
+      document.getElementById('myRefCode').value = data.referral_code? `${BASE_URL}?ref=${data.referral_code}` : 'Loading...';
+      const statusEl = document.getElementById('premiumStatus'); const btnEl = document.getElementById('upgradeBtn');
+      if(data.upgrade_status === 'approved'){ statusEl.innerText = 'Status: RAJA 👑'; btnEl.classList.add('hidden'); }
+      else if(data.upgrade_status === 'pending'){ statusEl.innerText = 'Status: MENUNGGU APPROVAL...'; btnEl.disabled = true; }
+      else { statusEl.innerText = 'Status: RAKYAT FREE'; btnEl.disabled = false; }
+    }
   }
 
   document.getElementById('dailyBtn').onclick = async () => {const today = getToday();const { data: p } = await supabaseClient.from('profiles').select('points, last_login_date').eq('id', userId).single();if(p.last_login_date === today) return showModal({title:'Gagal', text:'Udah claim hari ini', callback:()=>{}});await supabaseClient.from('profiles').update({ points: p.points + 50, last_login_date: today }).eq('id', userId);appMsg.innerText = `+50 Poin Daily masuk! 🔥`;loadProfile();}
