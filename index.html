@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Pulsa Raja - WA OTP DUMMY</title>
+<title>Pulsa Raja - WA OTP DUMMY V12</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
@@ -16,38 +16,27 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
 .navBtn{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;font-size:11px;font-weight:600;color:rgb(148 163 184);flex:1;background:transparent;border:none;height:100%}
 .navBtn svg{width:24px;height:24px}
 .navBtn.active{color:rgb(251 191 36)}
+button:disabled{opacity:0.5;cursor:not-allowed}
 </style>
 </head>
 <body class="bg-slate-900 text-slate-200">
 
 <div class="w-full max-w-md mx-auto bg-slate-800 min-h-screen">
 
-  <!-- AUTH BOX WA DUMMY -->
+  <!-- AUTH BOX -->
   <div id="authBox" class="p-6 space-y-4">
     <div class="text-center space-y-2 pt-4">
       <h1 class="text-4xl font-black text-yellow-400">👑 Pulsa Raja</h1>
-      <p class="text-sm text-slate-300">Login Pake No WA. Mode Test</p>
+      <p class="text-sm text-slate-300">Login Pake No WA</p>
     </div>
-    <div class="bg-green-900/40 border-green-700 p-2 rounded-lg text-center text-xs font-bold text-green-300">
-      ✅ SUDAH BAYAR 1.247 MEMBER BULAN INI
-    </div>
-    <div class="bg-slate-700/50 p-3 rounded-lg space-y-2 text-sm">
-      <div class="flex items-center gap-3"><span class="text-xl">⚡</span> <p><b>Misi Cepet:</b> Nonton YT 15 detik = <b>+100 Poin</b></p></div>
-      <div class="flex items-center gap-3"><span class="text-xl">🔔</span> <p><b>Misi Sub:</b> Subscribe Chanel = <b>+200 Poin</b></p></div>
-      <div class="flex items-center gap-3"><span class="text-xl">🎁</span> <p><b>Login Harian:</b> Claim gratis <b>+50 Poin</b></p></div>
-      <div class="flex items-center gap-3"><span class="text-xl">💸</span> <p><b>WD 10.000:</b> Minimal kecil, langsung transfer DANA/BCA</p></div>
-    </div>
-
     <div id="waLoginBox" class="space-y-3 pt-2">
       <input id="wa" type="tel" placeholder="No WA Aktif: 62812xxxxxxx" class="w-full p-3 rounded bg-slate-700 text-sm focus:ring-2 focus:ring-yellow-400 outline-none">
       <button id="kirimOtpBtn" class="w-full bg-green-600 hover:bg-green-500 text-white p-3 rounded-lg font-black text-lg">KIRIM KODE OTP</button>
     </div>
-
     <div id="otpBox" class="hidden space-y-3 pt-2">
-      <div class="bg-yellow-500/20 p-3 rounded-lg text-center border-yellow-500">
-        <p class="text-sm text-slate-300">OTP TEST LU:</p>
+      <div class="bg-yellow-500/20 p-3 rounded-lg text-center">
+        <p class="text-sm text-slate-300">OTP TEST:</p>
         <p id="otpDummy" class="text-4xl font-black text-yellow-400 tracking-[.2em]">000</p>
-        <p class="text-xs text-slate-400">Copy > Tempel di bawah. Ini mode dummy</p>
       </div>
       <input id="otp" type="number" placeholder="Masukkan 6 digit OTP" class="w-full p-3 rounded bg-slate-700 text-sm text-center tracking-[.5em] focus:ring-2 focus:ring-yellow-400 outline-none">
       <button id="verifOtpBtn" class="w-full bg-yellow-500 hover:bg-yellow-400 text-slate-900 p-3 rounded-lg font-black text-lg">VERIFIKASI & MASUK</button>
@@ -63,7 +52,7 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
         <h2 class="text-xl font-bold">Dashboard 👑</h2>
         <button id="logoutBtn" class="text-xs bg-red-600 px-3 py-1 rounded">Logout</button>
       </div>
-      <div class="bg-slate-700 p-4 rounded-lg text-center border-2 border-yellow-500/30">
+      <div class="bg-slate-700 p-4 rounded-lg text-center">
         <p class="text-sm text-slate-400">Saldo Poin Kamu</p>
         <p id="points" class="text-4xl font-black text-yellow-400">0</p>
       </div>
@@ -74,14 +63,13 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
       </div>
       <p id="appMsg" class="text-center text-sm h-5"></p>
       <div class="bg-slate-700 p-3 rounded-lg space-y-2">
-        <p class="font-bold">Link Referral Kerajaan Kamu</p>
+        <p class="font-bold">Link Referral</p>
         <div class="flex gap-2">
           <input id="myRefCode" readonly class="w-full p-2 rounded bg-slate-900 text-xs">
           <button id="copyBtn" class="bg-yellow-500 text-slate-900 px-3 rounded font-bold">Salin</button>
         </div>
       </div>
     </div>
-
     <div id="page-misi" class="page p-6 space-y-4">
       <h2 class="text-xl font-bold">Misi Harian 🔥</h2>
       <div class="bg-slate-700 p-3 rounded-lg space-y-2">
@@ -91,7 +79,6 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
       </div>
       <button id="wdBtn" class="w-full bg-yellow-600 hover:bg-yellow-500 p-2 rounded font-bold text-slate-900">💸 Withdraw 10.000 Poin</button>
     </div>
-
     <div id="page-akun" class="page p-6 space-y-4">
       <h2 class="text-xl font-bold">Akun Saya</h2>
       <div class="bg-slate-700 p-3 rounded-lg">
@@ -102,7 +89,6 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
     </div>
   </div>
 
-  <!-- ADMIN BOX -->
   <div id="adminBox" class="hidden p-6 space-y-3">
     <h2 class="text-xl font-bold text-red-400">Panel Admin</h2>
     <button id="backBtn" class="w-full bg-slate-600 p-2 rounded">Kembali</button>
@@ -110,31 +96,28 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
   </div>
 </div>
 
-<!-- BOTTOM NAV -->
 <nav class="bottomNav max-w-md mx-auto">
   <button class="navBtn active" onclick="showPage('page-dashboard')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>Dashboard</button>
   <button class="navBtn" onclick="showPage('page-misi')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>Misi</button>
   <button class="navBtn" onclick="showPage('page-akun')"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>Akun</button>
 </nav>
 
-<!-- MODAL -->
-<div id="ytModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50"><div class="bg-slate-800 rounded-lg p-3 w-full max-w-lg space-y-2"><p class="text-center font-bold">Tonton 15 Detik Ya Bos. Jangan di Close</p><div class="aspect-video"><iframe id="ytFrame" width="100%" height="100%" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div><p id="ytTimer" class="text-center text-2xl font-bold text-yellow-400">15</p><button id="ytCloseBtn" disabled class="w-full bg-slate-600 p-2 rounded font-bold">Tunggu...</button></div></div>
-<div id="subModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50"><div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3 text-center"><h3 class="text-lg font-bold text-red-400">🔔 Misi Subscribe</h3><p class="text-sm">1. Klik tombol di bawah buat buka Chanel<br>2. Klik `Subscribe` + `Lonceng`<br>3. Balik sini klik `Sudah Subscribe`</p><a id="subLinkBtn" href="#" target="_blank" class="block w-full bg-red-600 hover:bg-red-500 p-3 rounded-lg font-bold text-lg">BUKA CHANEL SEKARANG</a><button id="subClaimBtn" class="w-full bg-green-600 p-2 rounded font-bold">Sudah Subscribe, Klaim +200</button><button id="subCancelBtn" class="w-full bg-slate-600 p-2 rounded text-sm">Batal</button></div></div>
+<div id="ytModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50"><div class="bg-slate-800 rounded-lg p-3 w-full max-w-lg space-y-2"><p class="text-center font-bold">Tonton 15 Detik</p><div class="aspect-video"><iframe id="ytFrame" width="100%" height="100%" src="" frameborder="0" allowfullscreen></iframe></div><p id="ytTimer" class="text-center text-2xl font-bold text-yellow-400">15</p><button id="ytCloseBtn" disabled class="w-full bg-slate-600 p-2 rounded font-bold">Tunggu...</button></div></div>
+<div id="subModal" class="hidden fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50"><div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3 text-center"><h3 class="text-lg font-bold text-red-400">🔔 Misi Subscribe</h3><a id="subLinkBtn" href="#" target="_blank" class="block w-full bg-red-600 p-3 rounded-lg font-bold">BUKA CHANEL</a><button id="subClaimBtn" class="w-full bg-green-600 p-2 rounded font-bold">Sudah Subscribe, Klaim +200</button><button id="subCancelBtn" class="w-full bg-slate-600 p-2 rounded text-sm">Batal</button></div></div>
 <div id="modal" class="hidden fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-40"><div class="bg-slate-800 rounded-lg p-5 w-full max-w-sm space-y-3"><h3 id="modalTitle" class="text-lg font-bold"></h3><p id="modalText" class="text-sm whitespace-pre-wrap"></p><div id="modalInputBox" class="hidden"><input id="modalInput" class="w-full p-2 rounded bg-slate-700"></div><div class="flex gap-2 justify-end"><button id="modalCancel" class="px-4 py-2 bg-slate-600 rounded">Batal</button><button id="modalOk" class="px-4 py-2 bg-yellow-500 text-slate-900 rounded font-bold">OK</button></div></div></div>
 
 <script>
   const { createClient } = supabase;
   const SUPABASE_URL = 'https://ikhyrkhsqrfispyvdtlk.supabase.co'
   const SUPABASE_KEY = 'sb_publishable_z_1Ackgm_8GbmzUVJ5KRoQ_RMivj_CY'
-  const FONNTE_TOKEN = 'ISI_TOKEN_FONNTE_LU_DISINI_NANTI';
   const BASE_URL = 'https://pulsaraja.vercel.app';
   const REK_BCA = '1234567890 a.n NAMA LU';
   const YOUTUBE_LINK = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
   const CHANNEL_LINK = 'https://www.youtube.com/@NAMA_CHANNEL_LU?sub_confirmation=1';
-  const ADMIN_PHONE = '6281234567890'; // FORMAT 628 TANPA +
+  const ADMIN_PHONE = '6281234567890';
 
   const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY)
-  let userId = null; let currentPhone = '';
+  let userId = null; let currentPhone = ''; let loadingProfile = false; // FIX: KUNCI BIAR GAK LOOP
   const authMsg = document.getElementById('authMsg');
   const appMsg = document.getElementById('appMsg');
 
@@ -148,55 +131,31 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
   modalOk.onclick = () => { if(modalCallback) modalCallback(modalInput.value); hideModal(); }
   modalCancel.onclick = hideModal;
 
-  // LOGIC OTP DUMMY FIX: PAKE LOCALSTORAGE
   document.getElementById('kirimOtpBtn').onclick = async () => {
     let phone = document.getElementById('wa').value.trim();
-    if(!phone.startsWith('628')) return authMsg.innerText = 'Format WA: 62812xxxxxx ya bos';
+    if(!phone.startsWith('628') || phone.length < 11) return authMsg.innerText = 'Format WA: 62812xxxxxx';
     currentPhone = phone;
     const otpCode = Math.floor(100000 + Math.random() * 900000);
-
-    // SIMPAN OTP KE LOCALSTORAGE 5 MENIT
     localStorage.setItem('otp_' + phone, JSON.stringify({code: otpCode, exp: Date.now() + 5*60000}));
-    authMsg.innerText = 'Kode OTP dibuat...';
-
-    /* KALO UDAH MAU LIVE FONNTE, UNCOMMENT INI
-    const res = await fetch('https://api.fonnte.com/send',{
-      method:'POST', headers:{'Authorization': FONNTE_TOKEN},
-      body: new URLSearchParams({target: phone, message: `Kode OTP Pulsa Raja: *${otpCode}* Berlaku 5 menit.`})
-    });
-    */
-
     document.getElementById('otpDummy').innerText = otpCode;
     document.getElementById('waLoginBox').classList.add('hidden');
     document.getElementById('otpBox').classList.remove('hidden');
-    authMsg.innerText = 'OTP DUMMY siap ✅';
   }
 
   document.getElementById('verifOtpBtn').onclick = async () => {
     const token = document.getElementById('otp').value.trim();
+    if(token.length!== 6) return authMsg.innerText = 'OTP 6 digit bos';
     authMsg.innerText = 'Verifikasi...';
-
     const otpData = JSON.parse(localStorage.getItem('otp_' + currentPhone) || 'null');
-    if(!otpData) return authMsg.innerText = 'OTP kadaluarsa. Kirim ulang';
-    if(otpData.code!= parseInt(token)) return authMsg.innerText = 'OTP salah bos';
-    if(Date.now() > otpData.exp) return authMsg.innerText = 'OTP kadaluarsa';
+    if(!otpData || otpData.code!= parseInt(token) || Date.now() > otpData.exp) return authMsg.innerText = 'OTP salah/kadaluarsa';
     localStorage.removeItem('otp_' + currentPhone);
 
     const fakeEmail = currentPhone + '@pulsaraja.fake';
-    const fakePass = token; // Password = OTP biar gampang
-
-    // COBA LOGIN DULU
-    let { data: authData, error: loginErr } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: fakePass});
-
+    let { error: loginErr } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
     if(loginErr){
-      // KALO BELUM ADA, DAFTAR BARU
       const ref = getRefCode(); let referred_by = null;
       if(ref){ const {data:rf} = await supabaseClient.from('profiles').select('id').eq('referral_code',ref).single(); if(rf) referred_by = rf.id; }
-
-      const { error: signErr } = await supabaseClient.auth.signUp({
-        email: fakeEmail, password: fakePass,
-        options:{data:{phone:currentPhone, referred_by}} // phone masuk metadata
-      });
+      const { error: signErr } = await supabaseClient.auth.signUp({email: fakeEmail, password: token, options:{data:{phone:currentPhone, referred_by}}});
       if(signErr) return authMsg.innerText = 'ERROR DAFTAR: ' + signErr.message;
     }
   }
@@ -208,50 +167,56 @@ background:rgba(15,23,42,.95);backdrop-filter:blur(12px);border-top:1px solid rg
       userId = session.user.id;
       document.getElementById('authBox').classList.add('hidden');
       document.getElementById('appBox').classList.remove('hidden');
-      document.getElementById('adminBox').classList.add('hidden');
       document.getElementById('waAkun').innerText = session.user_metadata.phone;
       if(session.user_metadata.phone === ADMIN_PHONE) document.getElementById('adminBtn').classList.remove('hidden');
       showPage('page-dashboard');
       loadProfile();
     } else if(event === 'SIGNED_OUT') {
-      userId = null; currentPhone = '';
+      userId = null; currentPhone = ''; loadingProfile = false;
       document.getElementById('authBox').classList.remove('hidden');
       document.getElementById('appBox').classList.add('hidden');
-      document.getElementById('adminBox').classList.add('hidden');
       document.getElementById('otpBox').classList.add('hidden');
       document.getElementById('waLoginBox').classList.remove('hidden');
     }
   });
 
+  // FIX: ANTI LOOP + ANTI MAMPET
   async function loadProfile() {
+    if(loadingProfile) return; // KUNCI BIAR GAK DIPENCET 2X
+    loadingProfile = true;
     const { data, error } = await supabaseClient.from('profiles').select('*').eq('id', userId).single();
-    if(error && error.code === 'PGRST116'){ // Belum ada profile, tunggu trigger
-      setTimeout(loadProfile, 1000); return;
+
+    if(error && error.code === 'PGRST116'){
+      // KALO PROFILE BELUM ADA, BIKIN MANUAL 1X AJA
+      await supabaseClient.from('profiles').insert({id: userId, phone: currentPhone});
+      setTimeout(()=>{loadingProfile=false; loadProfile();}, 800);
+      return;
     }
     if(data){
       document.getElementById('points').innerText = data.points.toLocaleString('id-ID');
-      document.getElementById('myRefCode').value = `${BASE_URL}?ref=${data.referral_code}`;
+      document.getElementById('myRefCode').value = data.referral_code? `${BASE_URL}?ref=${data.referral_code}` : 'Loading...';
       const statusEl = document.getElementById('premiumStatus'); const btnEl = document.getElementById('upgradeBtn');
       if(data.upgrade_status === 'approved'){ statusEl.innerText = 'Status: RAJA 👑'; btnEl.classList.add('hidden'); }
-      else if(data.upgrade_status === 'pending'){ statusEl.innerText = 'Status: MENUNGGU APPROVAL...'; btnEl.disabled = true; btnEl.classList.add('bg-slate-500'); }
-      else { statusEl.innerText = 'Status: RAKYAT FREE'; }
+      else if(data.upgrade_status === 'pending'){ statusEl.innerText = 'Status: MENUNGGU APPROVAL...'; btnEl.disabled = true; }
+      else { statusEl.innerText = 'Status: RAKYAT FREE'; btnEl.disabled = false; }
     }
+    loadingProfile = false;
   }
 
-  document.getElementById('dailyBtn').onclick = async () => {const today = getToday();const { data: p } = await supabaseClient.from('profiles').select('points, last_login_date').eq('id', userId).single();if(p.last_login_date === today) return showModal({title:'Gagal', text:'Kamu udah claim daily hari ini', callback:()=>{}});const newPoints = p.points + 50;await supabaseClient.from('profiles').update({ points: newPoints, last_login_date: today }).eq('id', userId);appMsg.innerText = `+50 Poin Daily masuk! 🔥`;loadProfile();}
+  document.getElementById('dailyBtn').onclick = async () => {const today = getToday();const { data: p } = await supabaseClient.from('profiles').select('points, last_login_date').eq('id', userId).single();if(p.last_login_date === today) return showModal({title:'Gagal', text:'Udah claim hari ini', callback:()=>{}});await supabaseClient.from('profiles').update({ points: p.points + 50, last_login_date: today }).eq('id', userId);appMsg.innerText = `+50 Poin Daily masuk! 🔥`;loadProfile();}
   const ytModal = document.getElementById('ytModal');const ytFrame = document.getElementById('ytFrame');const ytTimer = document.getElementById('ytTimer');const ytCloseBtn = document.getElementById('ytCloseBtn');let ytInterval = null;
-  document.getElementById('ytBtn').onclick = async () => {const today = getToday();const { data: p } = await supabaseClient.from('profiles').select('points, upgrade_status, ad_clicks_today, last_ad_date').eq('id', userId).single();if(p.last_ad_date!== today){ await supabaseClient.from('profiles').update({ ad_clicks_today: 0, last_ad_date: today }).eq('id', userId); p.ad_clicks_today = 0; }const maxClicks = p.upgrade_status === 'approved'? 20 : 5;if(p.ad_clicks_today >= maxClicks){ return showModal({title:'Limit Habis', text:`Kamu udah ${maxClicks}x hari ini`, callback:()=>{}}); }ytFrame.src = YOUTUBE_LINK + "?autoplay=1&mute=1&controls=0";ytModal.classList.remove('hidden');let timeLeft = 15;ytTimer.innerText = timeLeft;ytCloseBtn.disabled = true;ytCloseBtn.innerText = `Tunggu ${timeLeft}s...`;ytInterval = setInterval(async () => {timeLeft--;ytTimer.innerText = timeLeft;ytCloseBtn.innerText = `Tunggu ${timeLeft}s...`;if(timeLeft <= 0){clearInterval(ytInterval);ytCloseBtn.disabled = false;ytCloseBtn.innerText = 'Klaim +100 Poin';const newPoints = p.points + 100;const newClicks = p.ad_clicks_today + 1;await supabaseClient.from('profiles').update({ points: newPoints, ad_clicks_today: newClicks }).eq('id', userId);appMsg.innerText = `+100 Poin masuk! [${newClicks}/${maxClicks}] 🔥`;loadProfile();}}, 1000);}
+  document.getElementById('ytBtn').onclick = async () => {const today = getToday();const { data: p } = await supabaseClient.from('profiles').select('points, upgrade_status, ad_clicks_today, last_ad_date').eq('id', userId).single();if(p.last_ad_date!== today){ await supabaseClient.from('profiles').update({ ad_clicks_today: 0, last_ad_date: today }).eq('id', userId); p.ad_clicks_today = 0; }const maxClicks = p.upgrade_status === 'approved'? 20 : 5;if(p.ad_clicks_today >= maxClicks){ return showModal({title:'Limit Habis', text:`${maxClicks}x hari ini`, callback:()=>{}}); }ytFrame.src = YOUTUBE_LINK + "?autoplay=1&mute=1";ytModal.classList.remove('hidden');let timeLeft = 15;ytTimer.innerText = timeLeft;ytCloseBtn.disabled = true;ytInterval = setInterval(async () => {timeLeft--;ytTimer.innerText = timeLeft;if(timeLeft <= 0){clearInterval(ytInterval);ytCloseBtn.disabled = false;ytCloseBtn.innerText = 'Klaim +100';await supabaseClient.from('profiles').update({ points: p.points + 100, ad_clicks_today: p.ad_clicks_today + 1 }).eq('id', userId);appMsg.innerText = `+100 Poin masuk! [${p.ad_clicks_today+1}/${maxClicks}] 🔥`;loadProfile();}}, 1000);}
   ytCloseBtn.onclick = () => {ytModal.classList.add('hidden');ytFrame.src = '';clearInterval(ytInterval);}
   const subModal = document.getElementById('subModal');document.getElementById('subLinkBtn').href = CHANNEL_LINK;
-  document.getElementById('subBtn').onclick = async () => {const today = getToday();const { data: p } = await supabaseClient.from('profiles').select('points, last_sub_date').eq('id', userId).single();if(p.last_sub_date === today) return showModal({title:'Gagal', text:'Misi Subscribe cuma bisa 1x sehari', callback:()=>{}});subModal.classList.remove('hidden');}
-  document.getElementById('subClaimBtn').onclick = async () => {const today = getToday();const { data: p } = await supabaseClient.from('profiles').select('points').eq('id', userId).single();const newPoints = p.points + 200;await supabaseClient.from('profiles').update({ points: newPoints, last_sub_date: today }).eq('id', userId);subModal.classList.add('hidden');appMsg.innerText = `+200 Poin Subscribe masuk! 🔥`;loadProfile();}
+  document.getElementById('subBtn').onclick = async () => {const today = getToday();const { data: p } = await supabaseClient.from('profiles').select('last_sub_date').eq('id', userId).single();if(p.last_sub_date === today) return showModal({title:'Gagal', text:'1x sehari', callback:()=>{}});subModal.classList.remove('hidden');}
+  document.getElementById('subClaimBtn').onclick = async () => {const today = getToday();const { data: p } = await supabaseClient.from('profiles').select('points').eq('id', userId).single();await supabaseClient.from('profiles').update({ points: p.points + 200, last_sub_date: today }).eq('id', userId);subModal.classList.add('hidden');appMsg.innerText = `+200 Poin masuk! 🔥`;loadProfile();}
   document.getElementById('subCancelBtn').onclick = () => subModal.classList.add('hidden');
   document.getElementById('adminBtn').onclick = () => { document.getElementById('appBox').classList.add('hidden'); document.getElementById('adminBox').classList.remove('hidden'); loadAdminData(); }
   document.getElementById('backBtn').onclick = () => { document.getElementById('adminBox').classList.add('hidden'); document.getElementById('appBox').classList.remove('hidden'); showPage('page-akun'); }
-  async function loadAdminData() {const list = document.getElementById('adminList');list.innerHTML = 'Loading...';const { data: pendingUpgrades } = await supabaseClient.from('profiles').select('id, phone, upgrade_proof_url').eq('upgrade_status', 'pending');const { data: pendingWd } = await supabaseClient.from('withdrawals').select('id, user_id, amount, method, account').eq('status', 'pending');let html = '<h3 class="font-bold text-purple-400">Upgrade Pending</h3>';if(pendingUpgrades.length === 0) html += '<p class="text-sm">Kosong</p>';pendingUpgrades.forEach(u => {html += `<div class="bg-slate-700 p-2 rounded text-xs"><p>${u.phone}</p><a href="${u.upgrade_proof_url}" target="_blank" class="text-cyan-400">Lihat Bukti</a><button data-id="${u.id}" class="approveUp bg-green-600 w-full mt-1 p-1 rounded">Approve</button></div>`;});html += '<h3 class="font-bold text-yellow-400 mt-3">WD Pending</h3>';if(pendingWd.length === 0) html += '<p class="text-sm">Kosong</p>';pendingWd.forEach(w => {html += `<div class="bg-slate-700 p-2 rounded text-xs"><p>${w.amount} Poin via ${w.method}</p><p>No: ${w.account}</p><button data-id="${w.id}" class="approveWd bg-green-600 w-full mt-1 p-1 rounded">Sudah Transfer</button></div>`;});list.innerHTML = html;document.querySelectorAll('.approveUp').forEach(b => b.onclick = async (e) => {await supabaseClient.from('profiles').update({ upgrade_status: 'approved' }).eq('id', e.target.dataset.id);loadAdminData();});document.querySelectorAll('.approveWd').forEach(b => b.onclick = async (e) => {await supabaseClient.from('withdrawals').update({ status: 'done' }).eq('id', e.target.dataset.id);loadAdminData();});}
+  async function loadAdminData() {const list = document.getElementById('adminList');list.innerHTML = 'Loading...';const { data: pendingUpgrades } = await supabaseClient.from('profiles').select('id, phone, upgrade_proof_url').eq('upgrade_status', 'pending');const { data: pendingWd } = await supabaseClient.from('withdrawals').select('id, amount, method, account').eq('status', 'pending');let html = '<h3 class="font-bold text-purple-400">Upgrade Pending</h3>';if(pendingUpgrades.length === 0) html += '<p class="text-sm">Kosong</p>';pendingUpgrades.forEach(u => {html += `<div class="bg-slate-700 p-2 rounded text-xs"><p>${u.phone}</p><a href="${u.upgrade_proof_url}" target="_blank" class="text-cyan-400">Bukti</a><button data-id="${u.id}" class="approveUp bg-green-600 w-full mt-1 p-1 rounded">Approve</button></div>`;});html += '<h3 class="font-bold text-yellow-400 mt-3">WD Pending</h3>';if(pendingWd.length === 0) html += '<p class="text-sm">Kosong</p>';pendingWd.forEach(w => {html += `<div class="bg-slate-700 p-2 rounded text-xs"><p>${w.amount} Poin via ${w.method}</p><p>No: ${w.account}</p><button data-id="${w.id}" class="approveWd bg-green-600 w-full mt-1 p-1 rounded">Sudah Transfer</button></div>`;});list.innerHTML = html;document.querySelectorAll('.approveUp').forEach(b => b.onclick = async (e) => {await supabaseClient.from('profiles').update({ upgrade_status: 'approved' }).eq('id', e.target.dataset.id);loadAdminData();});document.querySelectorAll('.approveWd').forEach(b => b.onclick = async (e) => {await supabaseClient.from('withdrawals').update({ status: 'done' }).eq('id', e.target.dataset.id);loadAdminData();});}
   document.getElementById('copyBtn').onclick = () => { navigator.clipboard.writeText(document.getElementById('myRefCode').value); }
-  document.getElementById('wdBtn').onclick = async () => {const { data: p, error } = await supabaseClient.from('profiles').select('points').eq('id', userId).single();if(error || p.points < 10000) return showModal({title:'Gagal', text:'Poin kamu kurang dari 10.000', callback:()=>{}});showModal({title:'Withdraw 10.000 Poin',text:`Transfer ke:\n${REK_BCA}\n\nMasukkan No. Rek/Dana lu:`,input:true,callback: async (acc) => {if(!acc) return;const { error: wdError } = await supabaseClient.from('withdrawals').insert({user_id:userId, amount:10000, method:'Bank/Dana', account:acc, status:'pending'});if(wdError) return showModal({title:'Error DB', text: wdError.message, callback:()=>{}});await supabaseClient.from('profiles').update({points: p.points - 10000}).eq('id', userId);appMsg.innerText = 'WD 10.000 poin diajukan. Tunggu admin bos.';loadProfile();}});}
-  document.getElementById('upgradeBtn').onclick = async () => {showModal({title:'Upgrade 10rb', text:`Transfer ke:\n${REK_BCA}\n\nUpload bukti di sini:`, input:true, callback: async (url) => {if(!url) return;await supabaseClient.from('profiles').update({upgrade_status:'pending', upgrade_proof_url:url}).eq('id', userId);appMsg.innerText = 'Bukti terkirim. Tunggu approval admin.';loadProfile();}});}
+  document.getElementById('wdBtn').onclick = async () => {const { data: p } = await supabaseClient.from('profiles').select('points').eq('id', userId).single();if(p.points < 10000) return showModal({title:'Gagal', text:'Poin < 10.000', callback:()=>{}});showModal({title:'Withdraw 10.000 Poin',text:`Ke:\n${REK_BCA}\n\nNo Rek/Dana:`,input:true,callback: async (acc) => {if(!acc) return;await supabaseClient.from('withdrawals').insert({user_id:userId, amount:10000, method:'Bank/Dana', account:acc, status:'pending'});await supabaseClient.from('profiles').update({points: p.points - 10000}).eq('id', userId);appMsg.innerText = 'WD diajukan.';loadProfile();}});}
+  document.getElementById('upgradeBtn').onclick = async () => {showModal({title:'Upgrade 10rb', text:`Ke:\n${REK_BCA}\n\nBukti:`, input:true, callback: async (url) => {if(!url) return;await supabaseClient.from('profiles').update({upgrade_status:'pending', upgrade_proof_url:url}).eq('id', userId);appMsg.innerText = 'Bukti terkirim.';loadProfile();}});}
 </script>
 </body>
 </html>
