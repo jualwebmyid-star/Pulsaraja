@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Pulsa Raja - WA OTP V12.7</title>
+<title>Pulsa Raja - WA OTP V12.8</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
@@ -113,7 +113,7 @@ button:disabled{opacity:0.5;cursor:not-allowed;pointer-events:none}
   const CHANNEL_LINK = 'https://www.youtube.com/@NAMA_CHANNEL_LU?sub_confirmation=1';
   const ADMIN_PHONE = '6281234567890';
 
-  const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY)
+  const supabaseClient = createClient(SUPABASE_URL, SUPABASE_KEY, {auth:{persistSession:true, autoRefreshToken:true}})
   let userId = null; let currentPhone = ''; let loadingProfile = false;
   const authMsg = document.getElementById('authMsg');
   const appMsg = document.getElementById('appMsg');
@@ -150,48 +150,56 @@ button:disabled{opacity:0.5;cursor:not-allowed;pointer-events:none}
     loadProfile();
   }
 
-  document.getElementById('verifOtpBtn').onclick = async () => {
+  // FIX UTAMA: KALO GAGAL LOGIN > RESET PASSWORD > LOGIN LAGI
+  async function handleLogin(phone, token){
     const btn = document.getElementById('verifOtpBtn');
+    btn.disabled = true;
+    authMsg.innerText = 'Verifikasi...';
+    const fakeEmail = phone + '@pulsaraja.fake';
+
+    let { data: loginData, error: loginErr } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
+
+    if(loginErr){
+      if(loginErr.message.includes('Invalid login credentials')){
+        authMsg.innerText = 'Reset password akun lama...';
+        // 1. SIGNIN DULU PAKE TOKEN LAMA APA AJA BIAR DAPET SESSION
+        const { data: resetSession } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: '123456'});
+
+        if(resetSession.user){
+          // 2. UPDATE PASSWORD JADI OTP BARU
+          const { error: updateErr } = await supabaseClient.auth.updateUser({password: token});
+          if(updateErr) throw updateErr;
+          // 3. LOGIN LAGI PAKE OTP BARU
+          loginData = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
+        } else {
+          // KALO GAK ADA AKUN SAMA SEKALI = DAFTAR BARU
+          const ref = getRefCode(); let referred_by = null;
+          if(ref){ const {data:rf} = await supabaseClient.from('profiles').select('id').eq('referral_code',ref).single(); if(rf) referred_by = rf.id; }
+          await supabaseClient.auth.signUp({email: fakeEmail, password: token, options:{data:{phone, referred_by}}});
+          loginData = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
+        }
+      } else {
+        throw loginErr;
+      }
+    }
+
+    if(!loginData.session) throw new Error('Session gagal. Cek Email Confirm OFF');
+    await enterApp(loginData.user);
+    btn.disabled = false;
+  }
+
+  document.getElementById('verifOtpBtn').onclick = async () => {
     try{
-      btn.disabled = true;
       const token = document.getElementById('otp').value.trim();
       if(token.length!== 6) throw new Error('OTP 6 digit bos');
-      authMsg.innerText = 'Verifikasi...';
       const otpData = JSON.parse(localStorage.getItem('otp_' + currentPhone) || 'null');
       if(!otpData || otpData.code!= parseInt(token) || Date.now() > otpData.exp) throw new Error('OTP salah/kadaluarsa');
       localStorage.removeItem('otp_' + currentPhone);
-
-      const fakeEmail = currentPhone + '@pulsaraja.fake';
-      console.log('LOGIN:', fakeEmail);
-
-      let { data: loginData, error: loginErr } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
-      console.log('LOGIN RES:', loginErr, loginData);
-
-      if(loginErr){
-        if(loginErr.message.includes('Invalid login credentials')){
-          console.log('DAFTAR BARU...');
-          const ref = getRefCode(); let referred_by = null;
-          if(ref){ const {data:rf} = await supabaseClient.from('profiles').select('id').eq('referral_code',ref).single(); if(rf) referred_by = rf.id; }
-          let { data: signData, error: signErr } = await supabaseClient.auth.signUp({email: fakeEmail, password: token, options:{data:{phone:currentPhone, referred_by}}});
-          console.log('DAFTAR RES:', signErr, signData);
-          if(signErr &&!signErr.message.includes('already registered')) throw signErr;
-
-          console.log('LOGIN ULANG...');
-          let { data: login2, error: loginErr2 } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
-          if(loginErr2) throw loginErr2;
-          loginData = login2;
-        } else {
-          throw loginErr;
-        }
-      }
-
-      if(!loginData.session) throw new Error('Session gagal dibuat. Cek Email Confirm Supabase OFF');
-      await enterApp(loginData.user);
-
+      await handleLogin(currentPhone, token);
     }catch(e){
       console.error(e);
       authMsg.innerText = 'ERROR: ' + e.message;
-      btn.disabled = false;
+      document.getElementById('verifOtpBtn').disabled = false;
     }
   }
   document.getElementById('gantiWaBtn').onclick = () => {document.getElementById('otpBox').classList.add('hidden');document.getElementById('waLoginBox').classList.remove('hidden');authMsg.innerText='';}
