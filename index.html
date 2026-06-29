@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Pulsa Raja - WA OTP V13.1</title>
+<title>Pulsa Raja - WA OTP V13.2</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 <style>
@@ -121,6 +121,7 @@ button:disabled{opacity:0.5;cursor:not-allowed;pointer-events:none}
   function getRefCode() { const url = window.location.href; const match = url.match(/[?&]ref=([^&]+)/i); return match? match[1].trim() : null; }
   function getToday() { return new Date().toISOString().split('T')[0]; }
   function showPage(id){document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById(id).classList.add('active');document.querySelectorAll('.navBtn').forEach(b=>b.classList.remove('active'));document.querySelector(`.navBtn[onclick="showPage('${id}')"]`).classList.add('active');}
+  const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
   const modal = document.getElementById('modal');const modalTitle = document.getElementById('modalTitle');const modalText = document.getElementById('modalText');const modalInputBox = document.getElementById('modalInputBox');const modalInput = document.getElementById('modalInput');const modalOk = document.getElementById('modalOk');const modalCancel = document.getElementById('modalCancel');let modalCallback = null;
   function showModal({title, text, input=false, callback}) {modalTitle.innerText = title; modalText.innerText = text;modalInputBox.classList.toggle('hidden',!input); modalInput.value = '';modal.classList.remove('hidden'); modalCallback = callback;}
@@ -156,28 +157,25 @@ button:disabled{opacity:0.5;cursor:not-allowed;pointer-events:none}
     authMsg.innerText = 'Verifikasi...';
     const fakeEmail = phone + '@pulsaraja.fake';
 
-    // TRIK BARU: COBA LOGIN DULU
-    let { data: loginData, error: loginErr } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
+    // TRIK NUKLIR: DAFTAR DULU, TUNGGU, BARU LOGIN
+    authMsg.innerText = 'Buat akun...';
+    const ref = getRefCode(); let referred_by = null;
+    if(ref){ const {data:rf} = await supabaseClient.from('profiles').select('id').eq('referral_code',ref).single(); if(rf) referred_by = rf.id; }
 
-    if(loginErr){
-      // KALO GAGAL = DAFTAR DULU TANPA PEDULIIN SESSION
-      authMsg.innerText = 'Daftar akun baru...';
-      const ref = getRefCode(); let referred_by = null;
-      if(ref){ const {data:rf} = await supabaseClient.from('profiles').select('id').eq('referral_code',ref).single(); if(rf) referred_by = rf.id; }
-      await supabaseClient.auth.signUp({email: fakeEmail, password: token, options:{data:{phone, referred_by}, emailRedirectTo: undefined}});
+    // 1. SIGNUP DULU, ABAIKAN KALO UDAH ADA
+    await supabaseClient.auth.signUp({email: fakeEmail, password: token, options:{data:{phone, referred_by}}});
 
-      // TUNGGU 1 DETIK BIAR SUPABASE NYIMPEN
-      await new Promise(r => setTimeout(r, 1000));
+    // 2. TUNGGU 2 DETIK BIAR DB SUPABASE KE-UPDATE
+    await sleep(2000);
 
-      // LOGIN LAGI PAKSA
-      let { data: loginData2, error: loginErr2 } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
-      if(loginErr2) throw loginErr2;
-      loginData = loginData2;
+    // 3. LOGIN PAKSA SAMPE 3 KALI
+    for(let i=0; i<3; i++){
+      authMsg.innerText = `Login percobaan ${i+1}/3...`;
+      let { data, error } = await supabaseClient.auth.signInWithPassword({email: fakeEmail, password: token});
+      if(data?.session) return await enterApp(data.user);
+      await sleep(1000);
     }
-
-    if(!loginData?.session) throw new Error('Session gagal. Cek: 1.Email ON 2.Confirm OFF 3.Save');
-    await enterApp(loginData.user);
-    btn.disabled = false;
+    throw new Error('Login gagal 3x. Cek Confirm email OFF + Hapus user lama');
   }
 
   document.getElementById('verifOtpBtn').onclick = async () => {
